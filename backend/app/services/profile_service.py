@@ -62,6 +62,22 @@ async def list_profiles(
     return profiles, total
 
 
+async def list_all_active_profiles(db: AsyncSession) -> list[EnvironmentProfile]:
+    """Fetch all active profiles with their packages, without pagination.
+
+    Used by the /diagnose endpoint to iterate every profile through the
+    CompatibilityResolver.
+    """
+    result = await db.execute(
+        select(EnvironmentProfile)
+        .where(EnvironmentProfile.deleted_at.is_(None))
+        .where(EnvironmentProfile.status == "ACTIVE")
+        .options(selectinload(EnvironmentProfile.packages))
+        .order_by(EnvironmentProfile.name)
+    )
+    return list(result.scalars().all())
+
+
 async def get_profile_by_slug(
     db: AsyncSession,
     slug: str,
