@@ -48,10 +48,12 @@ def get_provider() -> LLMProvider:
         )
 
     if provider_name == "ollama":
-        raise LLMProviderError(
-            "ollama",
-            "Ollama local provider is not yet implemented. "
-            "Use 'openrouter' or 'mock' for now.",
+        from app.ai.providers.ollama import OllamaProvider
+        return OllamaProvider(
+            base_url=settings.ollama_base_url,
+            model=settings.ollama_model,
+            max_tokens=settings.ai_max_tokens,
+            temperature=settings.ai_temperature,
         )
 
     raise LLMProviderError(
