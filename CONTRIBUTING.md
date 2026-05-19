@@ -17,9 +17,23 @@ Please read the [Code of Conduct](./CODE_OF_CONDUCT.md) to keep our community ap
    python -m venv .venv
    source .venv/bin/activate  # On Windows: .venv\Scripts\activate
    pip install -e ".[dev]"
+   cd ..
    ```
-4. **Run Migrations & Seeds**:
+
+4. **Install Pre-commit Hooks**:
+   We recommend installing `pre-commit` globally so it works across all your projects and terminal sessions without needing to activate a virtual environment.
    ```bash
+   # Recommended: Install globally
+   pipx install pre-commit  # OR: pip install pre-commit
+   
+   # From the repo root, install the hooks
+   pre-commit install
+   ```
+   > **Note**: If you prefer not to install it globally, you can use the version installed in `backend/.venv`, but you **must** ensure that virtual environment is active whenever you run `git commit`.
+
+5. **Run Migrations & Seeds** (from `backend/`):
+   ```bash
+   cd backend
    alembic upgrade head
    python -m app.services.seed_service
    ```
@@ -62,7 +76,7 @@ See [TESTING.md](./docs/TESTING.md) for more details.
 ## Pull Request Guidelines
 
 1. Ensure all tests pass.
-2. Format your code with `black` and `ruff`.
+2. Ensure your code is formatted with `black` and `ruff`. (The pre-commit hooks installed in Step 4 will handle this automatically upon `git commit`).
 3. Ensure type checking passes (`mypy app/`).
 4. Update relevant documentation in the `docs/` folder.
 5. Fill out the Pull Request template completely.
