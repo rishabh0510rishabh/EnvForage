@@ -8,7 +8,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from app.models.profile import EnvironmentProfile
+from app.models.profile import EnvironmentProfile, ProfilePackage
 from app.schemas.profile import ProfileFilters
 
 
