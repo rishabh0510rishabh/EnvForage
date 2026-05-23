@@ -2,7 +2,7 @@
 Profile service — business logic for profile CRUD operations.
 """
 import uuid
-from datetime import UTC, datetime, timezone
+from datetime import UTC, datetime
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
