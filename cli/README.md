@@ -47,7 +47,7 @@ All commands output `DiagnosticReport` JSON compatible with `POST /api/v1/diagno
 
 ```json
 {
-  "agent_version": "0.1.0",
+  "agent_version": "1.0.0",
   "os": { "name": "Ubuntu 22.04", "version": "22.04", "architecture": "x86_64" },
   "cpu": { "brand": "Intel Core i9-13900K", "cores": 24, "threads": 32 },
   "ram": { "total_gb": 64.0, "available_gb": 48.2 },
@@ -66,3 +66,9 @@ All commands output `DiagnosticReport` JSON compatible with `POST /api/v1/diagno
 | Windows 10/11 | ✅ Full support |
 | WSL2 | ✅ Full support |
 | macOS | ❌ Out of scope (no CUDA) |
+
+## Troubleshooting
+
+For common CLI, API, and environment issues, see:
+
+`../TROUBLESHOOTING.md`

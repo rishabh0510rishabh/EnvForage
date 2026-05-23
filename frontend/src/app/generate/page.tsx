@@ -7,7 +7,7 @@ import { api } from "../../services/api";
 import { Profile, ScriptGenerationRequest, ScriptGenerationResponse } from "../../types";
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
-import { Check, ChevronRight, Copy, Download, Loader2, Server } from "lucide-react";
+import { Check, ChevronRight, Download, Loader2, Server } from "lucide-react";
 
 function WizardContent() {
   const searchParams = useSearchParams();
@@ -32,8 +32,24 @@ function WizardContent() {
       try {
         const data = await api.getProfiles();
         setProfiles(data);
-        if (!selectedProfile && data.length > 0) {
+        
+        let active = data[0];
+        if (initialProfileSlug) {
+          const found = data.find(p => p.slug === initialProfileSlug);
+          if (found) active = found;
+        } else if (data.length > 0) {
           setSelectedProfile(data[0].slug);
+        }
+
+        if (active) {
+          if (active.python_versions && active.python_versions.length > 0) {
+            setPythonVersion(active.python_versions[0]);
+          }
+          if (active.cuda_required && active.cuda_versions && active.cuda_versions.length > 0) {
+            setCudaVersion(active.cuda_versions[0]);
+          } else {
+            setCudaVersion("");
+          }
         }
       } catch (err) {
         console.error(err);
@@ -42,7 +58,8 @@ function WizardContent() {
       }
     }
     fetchProfiles();
-  }, [selectedProfile]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleGenerate = async () => {
     setGenerating(true);
@@ -58,8 +75,8 @@ function WizardContent() {
       const res = await api.generateScript(req);
       setResult(res);
       setStep(3); // Move to results step
-    } catch (err: any) {
-      setError(err.message || "Failed to generate script");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to generate script");
     } finally {
       setGenerating(false);
     }
@@ -85,19 +102,6 @@ function WizardContent() {
   };
 
   const activeProfile = profiles.find(p => p.slug === selectedProfile);
-
-  useEffect(() => {
-    if (activeProfile) {
-      if (activeProfile.python_versions?.length > 0 && !activeProfile.python_versions.includes(pythonVersion)) {
-        setPythonVersion(activeProfile.python_versions[0]);
-      }
-      if (activeProfile.cuda_required && activeProfile.cuda_versions && activeProfile.cuda_versions.length > 0 && !activeProfile.cuda_versions.includes(cudaVersion)) {
-        setCudaVersion(activeProfile.cuda_versions[0]);
-      } else if (!activeProfile.cuda_required) {
-        setCudaVersion("");
-      }
-    }
-  }, [activeProfile, pythonVersion, cudaVersion]);
 
   if (loadingProfiles) {
     return (
@@ -132,7 +136,17 @@ function WizardContent() {
               {profiles.map(p => (
                 <div 
                   key={p.slug} 
-                  onClick={() => setSelectedProfile(p.slug)}
+                  onClick={() => {
+                    setSelectedProfile(p.slug);
+                    if (p.python_versions && p.python_versions.length > 0) {
+                      setPythonVersion(p.python_versions[0]);
+                    }
+                    if (p.cuda_required && p.cuda_versions && p.cuda_versions.length > 0) {
+                      setCudaVersion(p.cuda_versions[0]);
+                    } else {
+                      setCudaVersion("");
+                    }
+                  }}
                   style={{ 
                     padding: '1rem', 
                     border: `1px solid ${selectedProfile === p.slug ? 'var(--brand-primary)' : 'var(--border-subtle)'}`,
@@ -346,7 +360,7 @@ function StepIndicator({ num, active, label }: { num: number, active: boolean, l
   );
 }
 
-function CheckCircleIcon(props: any) {
+function CheckCircleIcon(props: React.SVGProps<SVGSVGElement> & { size?: number }) {
   return (
     <svg xmlns="http://www.w3.org/2000/svg" width={props.size || 24} height={props.size || 24} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
       <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />

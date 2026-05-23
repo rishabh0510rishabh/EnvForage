@@ -1,6 +1,6 @@
 # EnvForge — Template System Design
 
-> **Version**: 0.1.0
+> **Version**: 1.0.0
 > **Status**: Planning
 > **Last Updated**: 2026-05-06
 

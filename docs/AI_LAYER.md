@@ -1,6 +1,6 @@
 # EnvForge — AI Layer Design
 
-> **Version**: 0.4.0
+> **Version**: 1.0.0
 > **Status**: Phase 4 — In Progress
 > **Last Updated**: 2026-05-14
 

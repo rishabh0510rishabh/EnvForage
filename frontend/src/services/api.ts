@@ -17,7 +17,7 @@ export const api = {
   getProfiles: async (os?: string, cuda?: boolean, tags?: string[]): Promise<Profile[]> => {
     const params = new URLSearchParams();
     if (os) params.append('os', os);
-    if (cuda !== undefined) params.append('cuda', cuda.toString());
+    if (cuda !== undefined) params.append('cuda_required', cuda.toString());
     if (tags && tags.length > 0) {
       tags.forEach(tag => params.append('tags', tag));
     }
@@ -104,7 +104,7 @@ export const api = {
     // After stream completes, parse the full accumulated JSON
     try {
       return JSON.parse(fullContent) as TroubleshootResponse;
-    } catch (err) {
+    } catch {
       console.error('Failed to parse final AI response:', fullContent);
       throw new Error('AI returned invalid JSON structure');
     }

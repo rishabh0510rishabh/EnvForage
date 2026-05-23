@@ -1,6 +1,6 @@
 # EnvForge — Feature Specifications
 
-> **Version**: 0.3.1
+> **Version**: 1.0.0
 > **Status**: Phase 1, 3 & Production Infrastructure Implemented
 > **Last Updated**: 2026-05-16
 

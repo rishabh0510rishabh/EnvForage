@@ -71,3 +71,63 @@ def test_conda_template_with_cuda():
     assert "3.11" in result.content
     assert "torch" in result.content
 
+def test_conda_template_contains_channels():
+    """Output must include the channels section with conda-forge."""
+    context = make_context(profile_name="myenv", python_version="3.10")
+    renderer = TemplateRenderer()
+    result = renderer.render("environment.yml", context)
+    assert "channels:" in result.content
+    assert "conda-forge" in result.content
+    assert "defaults" in result.content
+
+
+def test_conda_template_contains_install_comment():
+    """Output must include the conda env create install instruction."""
+    context = make_context(profile_name="myenv", python_version="3.10")
+    renderer = TemplateRenderer()
+    result = renderer.render("environment.yml", context)
+    assert "conda env create -f environment.yml" in result.content
+
+
+def test_conda_template_python_version_uses_single_equals():
+    """Conda requires 'python=3.10' not 'python==3.10'."""
+    context = make_context(profile_name="myenv", python_version="3.10")
+    renderer = TemplateRenderer()
+    result = renderer.render("environment.yml", context)
+    assert "python=3.10" in result.content
+    assert "python==3.10" not in result.content
+
+
+def test_conda_template_empty_packages():
+    """Template renders cleanly with no packages — only python dependency."""
+    context = make_context(profile_name="empty-env", python_version="3.11", packages=[])
+    renderer = TemplateRenderer()
+    result = renderer.render("environment.yml", context)
+    assert "empty-env" in result.content
+    assert "python=3.11" in result.content
+    assert "dependencies:" in result.content
+
+
+def test_conda_template_cuda_variant_goes_to_pip_section():
+    """Packages with CUDA variant ('+' in spec) must appear under pip: section."""
+    context = make_context(
+        profile_name="gpu-env",
+        python_version="3.11",
+        cuda_version="11.8",
+        packages=[
+            ResolvedPackage(name="torch", version="2.0.0", cuda_variant="cu118"),
+        ],
+    )
+    renderer = TemplateRenderer()
+    result = renderer.render("environment.yml", context)
+    assert "pip:" in result.content
+    assert "torch" in result.content
+
+
+def test_conda_template_name_field_matches_profile():
+    """The 'name:' field must exactly match the profile name."""
+    context = make_context(profile_name="pytorch-cuda", python_version="3.11")
+    renderer = TemplateRenderer()
+    result = renderer.render("environment.yml", context)
+    assert "name: pytorch-cuda" in result.content
+

@@ -24,8 +24,8 @@ from pathlib import Path
 
 from envforge_agent.schemas import PythonInfo
 
-# Python versions to probe (3.8–3.12)
-_PROBE_VERSIONS = ["3.8", "3.9", "3.10", "3.11", "3.12"]
+# Python versions to probe (3.8–3.13)
+_PROBE_VERSIONS = ["3.8", "3.9", "3.10", "3.11", "3.12","3.13"]
 
 # Inspector script run inside each discovered Python to get its full info
 _INSPECTOR = """

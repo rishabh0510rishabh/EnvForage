@@ -53,7 +53,7 @@ class DiagnosticReportSchema(BaseModel):
     Structured diagnostic report produced by the CLI agent.
     This is both the CLI output format and the POST /diagnose request body.
     """
-    agent_version: str = Field("0.1.0", description="envforge-agent version")
+    agent_version: str = Field("1.0.0", description="envforge-agent version")
     os: OSInfo
     cpu: CPUInfo
     ram: RAMInfo

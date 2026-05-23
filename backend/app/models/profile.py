@@ -1,6 +1,7 @@
 """SQLAlchemy ORM models for environment profiles."""
 import uuid
 from datetime import date, datetime
+from typing import Any
 
 from sqlalchemy import (
     Boolean,
@@ -35,7 +36,7 @@ class EnvironmentProfile(Base):
     cuda_versions: Mapped[list[str] | None] = mapped_column(ARRAY(String))
     status: Mapped[str] = mapped_column(String(16), nullable=False, default="ACTIVE")
     last_validated: Mapped[date | None] = mapped_column(Date)
-    metadata_: Mapped[dict | None] = mapped_column("metadata", JSONB)
+    metadata_: Mapped[dict[str, Any] | None] = mapped_column("metadata", JSONB)
 
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False

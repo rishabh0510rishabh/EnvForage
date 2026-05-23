@@ -68,7 +68,7 @@ class DiagnosticReport(BaseModel):
     This is both the CLI output format and the POST /api/v1/diagnose request body.
     Fields must remain in sync with backend/app/schemas/diagnostic.py.
     """
-    agent_version: str = Field("0.1.0", description="envforge-agent version")
+    agent_version: str = Field("1.0.1", description="envforge-agent version")
     os: OSInfo
     cpu: CPUInfo
     ram: RAMInfo

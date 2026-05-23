@@ -85,3 +85,6 @@ envforge fix --report <PATH> --profile <PROFILE_SLUG> [OPTIONS]
 envforge fix --report my_report.json --profile pytorch-cuda
 # Outputs the generated bash/powershell script directly to the terminal.
 ```
+## Troubleshooting
+
+See `../TROUBLESHOOTING.md` for common errors, connection issues, and environment fixes.

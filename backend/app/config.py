@@ -26,12 +26,12 @@ class Settings(BaseSettings):
     # ── Application ───────────────────────────────────────────
     environment: Literal["development", "staging", "production"] = "development"
     debug: bool = False
-    secret_key: str
+    secret_key: str = "dev-secret-key-change-in-production"
     app_name: str = "EnvForage"
-    app_version: str = "0.1.0"
+    app_version: str = "1.0.0"
 
     # ── Database ──────────────────────────────────────────────
-    database_url: str
+    database_url: str = "postgresql+asyncpg://postgres:postgres@localhost:5432/envforge"
 
     # ── Redis ─────────────────────────────────────────────────
     # If set, the rate limiter will use Redis instead of in-memory storage.

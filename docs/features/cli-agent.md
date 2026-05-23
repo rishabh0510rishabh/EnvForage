@@ -54,7 +54,7 @@ and serves as the contract between the CLI agent and the API.
 
 ```python
 class DiagnosticReportSchema(BaseModel):
-    agent_version: str            # "0.1.0"
+    agent_version: str            # "1.0.0"
     os: OSInfo
     cpu: CPUInfo
     ram: RAMInfo

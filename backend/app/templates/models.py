@@ -15,7 +15,7 @@ class TemplateContext:
     profile_id: str
     profile_name: str
     resolved: ResolvedEnvironment
-    envforge_version: str = "0.1.0"
+    envforge_version: str = "1.0.0"
     generated_at: datetime = field(default_factory=datetime.utcnow)
     warnings: list[str] = field(default_factory=list)
     extra: dict[str, Any] = field(default_factory=dict)

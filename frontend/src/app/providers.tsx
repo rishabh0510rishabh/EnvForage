@@ -22,19 +22,6 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setTheme] = useState<"dark" | "light" | "system">("dark");
   const [mounted, setMounted] = useState(false);
 
-  // Initialize theme from localStorage on mount
-  useEffect(() => {
-    setMounted(true);
-    const storedTheme = localStorage.getItem("theme") as "dark" | "light" | "system" | null;
-    if (storedTheme) {
-      setTheme(storedTheme);
-      applyTheme(storedTheme);
-    } else {
-      // Default to dark mode
-      applyTheme("dark");
-    }
-  }, []);
-
   const applyTheme = (newTheme: "dark" | "light" | "system") => {
     const htmlElement = document.documentElement;
     
@@ -48,6 +35,20 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       htmlElement.setAttribute("data-theme", prefersDark ? "dark" : "light");
     }
   };
+
+  // Initialize theme from localStorage on mount
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setMounted(true);
+    const storedTheme = localStorage.getItem("theme") as "dark" | "light" | "system" | null;
+    if (storedTheme) {
+      setTheme(storedTheme);
+      applyTheme(storedTheme);
+    } else {
+      // Default to dark mode
+      applyTheme("dark");
+    }
+  }, []);
 
   const toggleTheme = () => {
     const newTheme = theme === "dark" ? "light" : "dark";

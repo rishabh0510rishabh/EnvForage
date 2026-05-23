@@ -1,6 +1,6 @@
 # EnvForge — Workflow Documentation
 
-> **Version**: 0.3.0
+> **Version**: 1.0.0
 > **Status**: Phase 1 & 3 Implemented
 > **Last Updated**: 2026-05-14
 
@@ -117,7 +117,7 @@ Select Target Profile from dropdown → Click "Run Check"
     ▼
 POST /api/v1/diagnose
 Body: DiagnosticReportSchema {
-  "agent_version": "0.1.0",
+  "agent_version": "1.0.0",
   "os": { "name": "Ubuntu 22.04", "version": "22.04", "architecture": "x86_64" },
   "cpu": { "brand": "Intel Core i9", "cores": 12, "threads": 24 },
   "ram": { "total_gb": 32.0, "available_gb": 20.0 },

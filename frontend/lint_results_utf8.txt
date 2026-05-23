@@ -1,0 +1,133 @@
+
+> frontend@0.1.0 lint
+> eslint
+
+
+C:\Users\risha\Documents\Projects\EnvForge\frontend\src\app\diagnose\page.tsx
+  26:16  warning  'err' is defined but never used           @typescript-eslint/no-unused-vars
+  40:19  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  52:19  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\risha\Documents\Projects\EnvForge\frontend\src\app\generate\page.tsx
+   10:31  warning  'Copy' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  @typescript-eslint/no-unused-vars
+   61:19  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          @typescript-eslint/no-explicit-any
+   92:9   error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\risha\Documents\Projects\EnvForge\frontend\src\app\generate\page.tsx:92:9
+  90 |     if (activeProfile) {
+  91 |       if (activeProfile.python_versions?.length > 0 && !activeProfile.python_versions.includes(pythonVersion)) {
+> 92 |         setPythonVersion(activeProfile.python_versions[0]);
+     |         ^^^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  93 |       }
+  94 |       if (activeProfile.cuda_required && activeProfile.cuda_versions && activeProfile.cuda_versions.length > 0 && !activeProfile.cuda_versions.includes(cudaVersion)) {
+  95 |         setCudaVersion(activeProfile.cuda_versions[0]);  react-hooks/set-state-in-effect
+  349:33  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          @typescript-eslint/no-explicit-any
+
+C:\Users\risha\Documents\Projects\EnvForge\frontend\src\app\layout.tsx
+  28:15  error  Do not use an `<a>` element to navigate to `/`. Use `<Link />` from `next/link` instead. See: https://nextjs.org/docs/messages/no-html-link-for-pages           @next/next/no-html-link-for-pages
+  32:17  error  Do not use an `<a>` element to navigate to `/profiles/`. Use `<Link />` from `next/link` instead. See: https://nextjs.org/docs/messages/no-html-link-for-pages  @next/next/no-html-link-for-pages
+
+C:\Users\risha\Documents\Projects\EnvForge\frontend\src\app\page.tsx
+  5:47  warning  'CheckCircle' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\risha\Documents\Projects\EnvForge\frontend\src\app\profiles\[slug]\page.tsx
+  24:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\risha\Documents\Projects\EnvForge\frontend\src\app\profiles\page.tsx
+  25:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\risha\Documents\Projects\EnvForge\frontend\src\app\providers.tsx
+  27:5  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\risha\Documents\Projects\EnvForge\frontend\src\app\providers.tsx:27:5
+  25 |   // Initialize theme from localStorage on mount
+  26 |   useEffect(() => {
+> 27 |     setMounted(true);
+     |     ^^^^^^^^^^ Avoid calling setState() directly within an effect
+  28 |     const storedTheme = localStorage.getItem("theme") as "dark" | "light" | "system" | null;
+  29 |     if (storedTheme) {
+  30 |       setTheme(storedTheme);                                                                                 react-hooks/set-state-in-effect
+  31:7  error  Error: Cannot access variable before it is declared
+
+`applyTheme` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+C:\Users\risha\Documents\Projects\EnvForge\frontend\src\app\providers.tsx:31:7
+  29 |     if (storedTheme) {
+  30 |       setTheme(storedTheme);
+> 31 |       applyTheme(storedTheme);
+     |       ^^^^^^^^^^ `applyTheme` accessed before it is declared
+  32 |     } else {
+  33 |       // Default to dark mode
+  34 |       applyTheme("dark");
+
+C:\Users\risha\Documents\Projects\EnvForge\frontend\src\app\providers.tsx:38:3
+  36 |   }, []);
+  37 |
+> 38 |   const applyTheme = (newTheme: "dark" | "light" | "system") => {
+     |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 39 |     const htmlElement = document.documentElement;
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 40 |     
+     …
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 49 |     }
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 50 |   };
+     | ^^^^^ `applyTheme` is declared here
+  51 |
+  52 |   const toggleTheme = () => {
+  53 |     const newTheme = theme === "dark" ? "light" : "dark";  react-hooks/immutability
+
+C:\Users\risha\Documents\Projects\EnvForge\frontend\src\app\troubleshoot\page.tsx
+   24:3   warning  'SuggestedFix' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 @typescript-eslint/no-unused-vars
+   80:19  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 @typescript-eslint/no-explicit-any
+  102:19  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 @typescript-eslint/no-explicit-any
+  121:19  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 @typescript-eslint/no-explicit-any
+  367:18  error    Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+C:\Users\risha\Documents\Projects\EnvForge\frontend\src\app\troubleshoot\page.tsx:367:18
+  365 |               <div style={{ marginTop: "1rem" }}>
+  366 |                 <div style={{ fontSize: "0.85rem", color: "var(--text-muted)", marginBottom: "0.5rem" }}>Confidence</div>
+> 367 |                 <ConfidenceBar value={result.confidence} />
+      |                  ^^^^^^^^^^^^^ This component is created during render
+  368 |               </div>
+  369 |             </div>
+  370 |
+
+C:\Users\risha\Documents\Projects\EnvForge\frontend\src\app\troubleshoot\page.tsx:142:25
+  140 |   // ── Confidence bar ─────────────────────────────────────────────────────
+  141 |
+> 142 |   const ConfidenceBar = ({ value }: { value: number }) => {
+      |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 143 |     const pct = Math.round(value * 100);
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 144 |     const color = pct >= 70 ? "var(--brand-accent)" : pct >= 40 ? "#eab308" : "#ef4444";
+      …
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 157 |     );
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 158 |   };
+      | ^^^^ The component is created during render here
+  159 |
+  160 |   // ── Render ─────────────────────────────────────────────────────────────
+  161 |  react-hooks/static-components
+
+C:\Users\risha\Documents\Projects\EnvForge\frontend\src\services\api.ts
+  107:14  warning  'err' is defined but never used  @typescript-eslint/no-unused-vars
+
+✖ 20 problems (15 errors, 5 warnings)
+

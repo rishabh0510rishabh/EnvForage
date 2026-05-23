@@ -267,11 +267,11 @@ class CompatibilityResolver:
                 component="python",
                 constraint=(
                     f"{package_name} {version} requires Python "
-                    f"{entry.min_python}–{entry.max_python}"
+                    f"{entry.min_python}-{entry.max_python}"
                 ),
                 detected=f"Python {python_version}",
                 suggestion=(
-                    f"Use Python {entry.min_python}–{entry.max_python}, "
+                    f"Use Python {entry.min_python}-{entry.max_python}, "
                     f"or select a different {package_name} version."
                 ),
                 docs_url="https://pytorch.org/get-started/locally/",

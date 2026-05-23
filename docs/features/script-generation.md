@@ -94,7 +94,7 @@ All Jinja2 templates receive these variables via `TemplateContext.to_dict()`:
 | `packages[].pip_spec` | `str` | `"torch==2.1.2+cu118"` |
 | `warnings[]` | `list[str]` | `["WSL2 requires host NVIDIA driver"]` |
 | `generated_at` | `str` | `"2026-05-06 14:30 UTC"` |
-| `envforge_version` | `str` | `"0.1.0"` |
+| `envforge_version` | `str` | `"1.0.0"` |
 
 ---
 

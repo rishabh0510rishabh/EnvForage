@@ -47,6 +47,11 @@ class MockProvider(LLMProvider):
                 repair_script_available=False,
                 confidence=0.5,
             )
+
+        if response_model.__name__ == "AISafetyVerdict":
+            return response_model(is_safe=True, reason="[Mock] Safe by default.")
+
+        raise ValueError(f"MockProvider does not support response model: {response_model}")
     async def stream(
         self,
         system_prompt: str,

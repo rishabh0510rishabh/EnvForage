@@ -45,7 +45,19 @@ def _detect_windows(arch: str) -> OSInfo:
         build_number = winreg.QueryValueEx(key, "CurrentBuildNumber")[0]
         display_version = winreg.QueryValueEx(key, "DisplayVersion")[0]
         version = f"{display_version} (Build {build_number})"
+        
         name = product_name
+        # On Windows 11, ProductName registry key might still report "Windows 10 ..."
+        # for backwards compatibility. We correct this by checking build number or platform.release().
+        if "Windows 10" in name:
+            is_win11 = False
+            try:
+                if int(build_number) >= 22000:
+                    is_win11 = True
+            except ValueError:
+                pass
+            if is_win11 or platform.release() == "11":
+                name = name.replace("Windows 10", "Windows 11")
     except Exception:
         name = f"Windows {platform.release()}"
         version = platform.version()

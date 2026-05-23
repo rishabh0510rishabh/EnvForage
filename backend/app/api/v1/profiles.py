@@ -4,11 +4,7 @@ import logging
 from fastapi import APIRouter, HTTPException, Query, status
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 
-logger = logging.getLogger(__name__)
-
 from app.api.deps import DB
-
-logger = logging.getLogger(__name__)
 from app.schemas.profile import (
     ProfileCreateSchema,
     ProfileDetailSchema,
@@ -17,6 +13,8 @@ from app.schemas.profile import (
     ProfileSummarySchema,
 )
 from app.services import profile_service
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
@@ -91,7 +89,7 @@ async def create_profile(profile_in: ProfileCreateSchema, db: DB) -> ProfileDeta
 
 
 @router.delete("/profiles/{slug}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_profile(slug: str, db: DB):
+async def delete_profile(slug: str, db: DB) -> None:
     """
     Soft delete a profile by slug.
     """

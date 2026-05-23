@@ -1,5 +1,6 @@
 """Troubleshoot endpoint — POST /api/v1/troubleshoot."""
 import logging
+from collections.abc import AsyncIterator
 
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import StreamingResponse
@@ -36,13 +37,13 @@ async def troubleshoot(
     request: TroubleshootRequest,
     db: DB,
     _rate_limit: None = Depends(ai_rate_limit),
-):
+) -> StreamingResponse:
     """
     Accept a structured diagnostic report and return a stream of AI-powered
     troubleshooting tokens via Server-Sent Events (SSE).
     """
     try:
-        async def event_generator():
+        async def event_generator() -> AsyncIterator[str]:
             try:
                 async for chunk in _service.stream_troubleshoot(request, db):
                     # Format as standard SSE

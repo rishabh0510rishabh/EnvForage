@@ -1,6 +1,7 @@
 """SQLAlchemy ORM models for diagnostic reports and verification results."""
 import uuid
 from datetime import datetime
+from typing import Any
 
 from sqlalchemy import Boolean, ForeignKey, String, Text, func
 from sqlalchemy.dialects.postgresql import JSONB, UUID
@@ -15,7 +16,7 @@ class DiagnosticReport(Base):
     id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
     )
-    report_data: Mapped[dict] = mapped_column(JSONB, nullable=False)
+    report_data: Mapped[dict[str, Any]] = mapped_column(JSONB, nullable=False)
     os_type: Mapped[str | None] = mapped_column(String(16))
     gpu_name: Mapped[str | None] = mapped_column(String(128))
     cuda_version: Mapped[str | None] = mapped_column(String(16))

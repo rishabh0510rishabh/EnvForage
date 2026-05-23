@@ -252,7 +252,7 @@ class OpenRouterProvider(LLMProvider):
                     error_body = await response.aread()
                     raise LLMProviderError(
                         "openrouter",
-                        f"HTTP {response.status_code}: {error_body[:500]}",
+                        f"HTTP {response.status_code}: {error_body.decode(errors='replace')[:500]}",
                     )
 
                 async for line in response.aiter_lines():

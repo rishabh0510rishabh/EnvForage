@@ -1,8 +1,8 @@
 # EnvForge — Project Structure
 
-> **Version**: 0.1.0
-> **Status**: Planning
-> **Last Updated**: 2026-05-06
+> **Version**: 1.0.0
+> **Status**: Production
+> **Last Updated**: 2026-05-21
 
 This document defines the canonical folder structure for EnvForge.
 All contributors should respect this structure and place new files accordingly.

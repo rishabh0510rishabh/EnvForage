@@ -5,8 +5,6 @@ from typing import TypeVar
 
 from pydantic import BaseModel
 
-from pydantic import BaseModel
-
 T = TypeVar("T", bound=BaseModel)
 
 
@@ -40,7 +38,7 @@ class LLMProvider(ABC):
         ...
 
     @abstractmethod
-    async def stream(
+    def stream(
         self,
         system_prompt: str,
         user_message: str,

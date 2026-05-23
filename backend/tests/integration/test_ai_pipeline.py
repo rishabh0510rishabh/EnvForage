@@ -28,7 +28,7 @@ def prompt_builder():
 @pytest.fixture
 def sample_diagnostic():
     return {
-        "agent_version": "0.1.0",
+        "agent_version": "1.0.0",
         "os": {"name": "Ubuntu 22.04", "version": "22.04", "architecture": "x86_64", "wsl_version": None},
         "cpu": {"brand": "Intel i9-13900K", "cores": 24, "threads": 32},
         "ram": {"total_gb": 64, "available_gb": 48},

@@ -1,7 +1,7 @@
 """Unit tests for validate_profiles.py CLI utility."""
 import tempfile
 from pathlib import Path
-import pytest
+
 import yaml
 from click.testing import CliRunner
 

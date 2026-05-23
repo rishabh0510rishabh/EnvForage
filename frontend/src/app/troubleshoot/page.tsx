@@ -21,7 +21,6 @@ import {
 import {
   TroubleshootRequest,
   TroubleshootResponse,
-  SuggestedFix,
   RepairResponse,
 } from "../../types";
 import { api } from "../../services/api";
@@ -35,7 +34,7 @@ const severityConfig = {
 
 // Sample diagnostic for the prefill button
 const SAMPLE_DIAGNOSTIC = {
-  agent_version: "0.1.0",
+  agent_version: "1.0.0",
   os: { name: "Ubuntu 22.04.3 LTS", version: "22.04", architecture: "x86_64", wsl_version: null },
   cpu: { brand: "Intel Core i9-13900K", cores: 24, threads: 32 },
   ram: { total_gb: 64, available_gb: 48 },
@@ -46,6 +45,25 @@ const SAMPLE_DIAGNOSTIC = {
     { version: "3.11.4", path: "/usr/bin/python3.11", is_venv: false, venv_path: null, pip_version: "23.2.1" },
   ],
   active_python: { version: "3.10.12", path: "/usr/bin/python3.10", is_venv: false, venv_path: null, pip_version: "22.0.2" },
+};
+
+// ── Confidence bar ─────────────────────────────────────────────────────
+const ConfidenceBar = ({ value }: { value: number }) => {
+  const pct = Math.round(value * 100);
+  const color = pct >= 70 ? "var(--brand-accent)" : pct >= 40 ? "#eab308" : "#ef4444";
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+      <div style={{ flexGrow: 1, height: "6px", background: "rgba(255,255,255,0.06)", borderRadius: "3px", overflow: "hidden" }}>
+        <motion.div
+          initial={{ width: 0 }}
+          animate={{ width: `${pct}%` }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          style={{ height: "100%", background: color, borderRadius: "3px" }}
+        />
+      </div>
+      <span style={{ fontSize: "0.85rem", fontWeight: 600, color, minWidth: "40px" }}>{pct}%</span>
+    </div>
+  );
 };
 
 export default function TroubleshootPage() {
@@ -77,8 +95,8 @@ export default function TroubleshootPage() {
       if (!diagnostic.os || !diagnostic.cpu) {
         throw new Error("Missing required fields: os, cpu");
       }
-    } catch (err: any) {
-      setError(err.message || "Invalid JSON format.");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Invalid JSON format.");
       return;
     }
 
@@ -99,8 +117,8 @@ export default function TroubleshootPage() {
       if (response.suggested_fixes.length > 0) {
         setExpandedFix(0);
       }
-    } catch (err: any) {
-      setError(err.message || "AI troubleshooting failed. Check that the backend is running.");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "AI troubleshooting failed. Check that the backend is running.");
     } finally {
       setLoading(false);
       setStreamingText("");
@@ -118,8 +136,8 @@ export default function TroubleshootPage() {
         },
       });
       setRepairScripts((prev) => ({ ...prev, [templateId]: response }));
-    } catch (err: any) {
-      setError(err.message || "Repair script generation failed.");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Repair script generation failed.");
     } finally {
       setRepairLoading(null);
     }
@@ -135,26 +153,6 @@ export default function TroubleshootPage() {
     setDiagnosticJson(JSON.stringify(SAMPLE_DIAGNOSTIC, null, 2));
     setUserDescription("PyTorch says torch.cuda.is_available() returns False even though I have an NVIDIA GPU.");
     setProfileSlug("pytorch-cuda");
-  };
-
-  // ── Confidence bar ─────────────────────────────────────────────────────
-
-  const ConfidenceBar = ({ value }: { value: number }) => {
-    const pct = Math.round(value * 100);
-    const color = pct >= 70 ? "var(--brand-accent)" : pct >= 40 ? "#eab308" : "#ef4444";
-    return (
-      <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-        <div style={{ flexGrow: 1, height: "6px", background: "rgba(255,255,255,0.06)", borderRadius: "3px", overflow: "hidden" }}>
-          <motion.div
-            initial={{ width: 0 }}
-            animate={{ width: `${pct}%` }}
-            transition={{ duration: 0.8, ease: "easeOut" }}
-            style={{ height: "100%", background: color, borderRadius: "3px" }}
-          />
-        </div>
-        <span style={{ fontSize: "0.85rem", fontWeight: 600, color, minWidth: "40px" }}>{pct}%</span>
-      </div>
-    );
   };
 
   // ── Render ─────────────────────────────────────────────────────────────
@@ -241,7 +239,7 @@ export default function TroubleshootPage() {
               <textarea
                 value={diagnosticJson}
                 onChange={(e) => setDiagnosticJson(e.target.value)}
-                placeholder={'{\n  "agent_version": "0.1.0",\n  "os": { "name": "Ubuntu 22.04" ... },\n  "gpus": [{ "name": "RTX 4090" ... }],\n  "cuda": { "version": "12.1" ... }\n}'}
+                placeholder={'{\n  "agent_version": "1.0.0",\n  "os": { "name": "Ubuntu 22.04" ... },\n  "gpus": [{ "name": "RTX 4090" ... }],\n  "cuda": { "version": "12.1" ... }\n}'}
                 style={{
                   width: "100%", height: "240px", background: "rgba(0,0,0,0.3)",
                   border: "1px solid var(--border-strong)", borderRadius: "8px",

@@ -2,13 +2,18 @@
 import re
 import uuid
 from datetime import datetime
+from typing import Any
 
 from fastapi import APIRouter, HTTPException
 
 from app.api.deps import DB
 from app.models.diagnostic import VerificationCheck, VerificationResult
 from app.models.profile import EnvironmentProfile
-from app.schemas.verify import VerificationRequest, VerificationResponse
+from app.schemas.verify import (
+    VerificationCheckSchema,
+    VerificationRequest,
+    VerificationResponse,
+)
 
 router = APIRouter()
 
@@ -16,13 +21,13 @@ router = APIRouter()
 ANSI_ESCAPE = re.compile(r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])')
 
 
-def parse_output(text: str):
+def parse_output(text: str) -> tuple[str, list[dict[str, Any]]]:
     """
     Parse raw terminal output from verification scripts.
     Extracts [PASS], [FAIL], and [WARN] indicators.
     """
     clean_text = ANSI_ESCAPE.sub('', text)
-    checks = []
+    checks: list[dict[str, Any]] = []
     overall_status = "passed"
 
     lines = clean_text.splitlines()
@@ -111,7 +116,11 @@ async def verify_environment(
         profile_id=db_result.profile_id,
         overall_status=db_result.overall_status,
         checks=[
-            {"check_name": c["name"], "passed": c["passed"], "detail": c["detail"]}
+            VerificationCheckSchema(
+                check_name=c["name"],
+                passed=c["passed"],
+                detail=c["detail"]
+            )
             for c in parsed_checks
         ]
     )

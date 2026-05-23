@@ -4,9 +4,10 @@ Template Engine — renders Jinja2 templates into setup scripts.
 All rendered output passes through SafetyFilter before being returned.
 This module never executes generated code; it only renders text.
 """
+from collections.abc import Sequence
 from pathlib import Path
 
-from jinja2 import Environment, FileSystemLoader, StrictUndefined
+from jinja2 import Environment, FileSystemLoader, StrictUndefined, select_autoescape
 
 from app.templates.models import RenderResult, TemplateContext
 from app.templates.safety import validate_rendered_output
@@ -41,8 +42,8 @@ PROFILE_VERIFY_TEMPLATES: dict[str, str] = {
 def _build_jinja_env() -> Environment:
     return Environment(
         loader=FileSystemLoader(str(TEMPLATES_DIR)),
-        undefined=StrictUndefined,   # Error on undefined variables
-        autoescape=False,            # Shell scripts are NOT HTML — no escaping
+        undefined=StrictUndefined,
+        autoescape=select_autoescape(enabled_extensions=(), default_for_string=False),
         trim_blocks=True,
         lstrip_blocks=True,
     )
@@ -92,7 +93,7 @@ class TemplateRenderer:
 
     def render_all(
         self,
-        output_filenames: list[str],
+        output_filenames: Sequence[str],
         context: TemplateContext,
     ) -> list[RenderResult]:
         """Render multiple output formats from the same context."""

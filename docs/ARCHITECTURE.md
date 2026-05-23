@@ -1,6 +1,6 @@
 # EnvForge — System Architecture
 
-> **Version**: 0.2.0
+> **Version**: 1.0.0
 > **Status**: Phase 1 & 3 Implemented
 > **Last Updated**: 2026-05-14
 

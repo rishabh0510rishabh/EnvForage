@@ -1,6 +1,7 @@
 """SQLAlchemy ORM models for script generation jobs."""
 import uuid
 from datetime import datetime
+from typing import Any
 
 from sqlalchemy import DateTime, ForeignKey, String, Text, func
 from sqlalchemy.dialects.postgresql import JSONB, UUID
@@ -19,10 +20,10 @@ class ScriptGenerationJob(Base):
     target_os: Mapped[str] = mapped_column(String(16), nullable=False)
     python_version: Mapped[str] = mapped_column(String(8), nullable=False)
     cuda_version: Mapped[str | None] = mapped_column(String(16))
-    overrides: Mapped[dict | None] = mapped_column(JSONB)
+    overrides: Mapped[dict[str, Any] | None] = mapped_column(JSONB)
     status: Mapped[str] = mapped_column(String(16), nullable=False, default="PENDING")
     error: Mapped[str | None] = mapped_column(Text)
-    resolved_env: Mapped[dict | None] = mapped_column(JSONB)
+    resolved_env: Mapped[dict[str, Any] | None] = mapped_column(JSONB)
 
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False

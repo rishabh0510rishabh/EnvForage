@@ -4,6 +4,7 @@ Compatibility Engine error types.
 All errors are structured with actionable context — no bare string exceptions.
 """
 from dataclasses import dataclass, field
+from typing import Any
 
 
 @dataclass
@@ -25,7 +26,7 @@ class IncompatibilityError(Exception):
             f"Fix: {self.suggestion}"
         )
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "code": "INCOMPATIBLE_VERSIONS",
             "component": self.component,

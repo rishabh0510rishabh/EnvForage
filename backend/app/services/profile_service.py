@@ -2,7 +2,7 @@
 Profile service — business logic for profile CRUD operations.
 """
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime, timezone
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -10,6 +10,7 @@ from sqlalchemy.orm import selectinload
 
 from app.models.profile import EnvironmentProfile, ProfilePackage
 from app.schemas.profile import ProfileCreateSchema, ProfileFilters
+
 
 async def list_profiles(
     db: AsyncSession,
@@ -96,20 +97,20 @@ async def create_profile(
     # Create main profile entity
     profile_data = profile_in.model_dump(exclude={"packages"})
     db_profile = EnvironmentProfile(**profile_data)
-    
+
     # Create associated packages
     for pkg_in in profile_in.packages:
         pkg_data = pkg_in.model_dump()
         db_pkg = ProfilePackage(**pkg_data)
         db_profile.packages.append(db_pkg)
-        
+
     db.add(db_profile)
     try:
         await db.commit()
     except Exception:
         await db.rollback()
         raise
-    
+
     # Fetch the profile again with packages selectinloaded to avoid lazy-loading errors
     profile = await get_profile_by_id(db, db_profile.id)
     if not profile:
@@ -125,10 +126,10 @@ async def delete_profile(
     profile = await get_profile_by_slug(db, slug)
     if not profile:
         return False
-        
-    profile.deleted_at = datetime.now(timezone.utc)
+
+    profile.deleted_at = datetime.now(UTC)
     profile.status = "DELETED"
-    
+
     try:
         await db.commit()
     except Exception:

@@ -24,3 +24,6 @@ repos:
         exclude: ^backend/alembic/
       - id: check-yaml
         exclude: ^backend/alembic/
+      - id: check-added-large-files
+      - id: check-merge-conflict
+      - id: detect-private-key

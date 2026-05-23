@@ -3,7 +3,7 @@ Data models for the Compatibility Engine.
 Pure dataclasses — no I/O, no database, no side effects.
 """
 from dataclasses import dataclass, field
-from typing import Literal
+from typing import Any, Literal
 
 OSTarget = Literal["LINUX", "WSL", "WIN"]
 
@@ -37,7 +37,7 @@ class ResolvedEnvironment:
     packages: list[ResolvedPackage] = field(default_factory=list)
     warnings: list[str] = field(default_factory=list)
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "python_version": self.python_version,
             "cuda_version": self.cuda_version,

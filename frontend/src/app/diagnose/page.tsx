@@ -23,7 +23,7 @@ export default function DiagnosePage() {
         const data = await api.getProfiles();
         setProfiles(data);
         if (data.length > 0) setSelectedProfile(data[0].slug);
-      } catch (err) {}
+      } catch {}
     }
     loadProfiles();
   }, []);
@@ -37,8 +37,8 @@ export default function DiagnosePage() {
       }
       setReport(parsed as DiagnosticReport);
       setVerifyResult(null);
-    } catch (err: any) {
-      setError(err.message || "Invalid JSON.");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Invalid JSON.");
     }
   };
 
@@ -49,8 +49,8 @@ export default function DiagnosePage() {
     try {
       const result = await api.diagnose(report, selectedProfile);
       setVerifyResult(result);
-    } catch (err: any) {
-      setError(err.message || "Verification failed.");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Verification failed.");
     } finally {
       setVerifying(false);
     }
@@ -75,7 +75,7 @@ export default function DiagnosePage() {
           <textarea 
             value={jsonInput}
             onChange={(e) => setJsonInput(e.target.value)}
-            placeholder='{\n  "agent_version": "0.1.0",\n  "os": {\n    "name": "Ubuntu 22.04"...\n}'
+            placeholder='{\n  "agent_version": "1.0.0",\n  "os": {\n    "name": "Ubuntu 22.04"...\n}'
             style={{ 
               width: '100%', height: '300px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--border-strong)', 
               borderRadius: '8px', padding: '1rem', color: 'var(--text-primary)', fontFamily: 'var(--font-mono)', fontSize: '0.9rem',

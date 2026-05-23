@@ -1,6 +1,6 @@
 """Pydantic schemas for script generation API."""
 import uuid
-from typing import Literal
+from typing import Any, Literal
 
 from pydantic import BaseModel, Field
 
@@ -54,4 +54,4 @@ class GenerationResponse(BaseModel):
 
 class GenerationErrorResponse(BaseModel):
     """Response when compatibility resolution fails."""
-    error: dict  # Structured IncompatibilityError details
+    error: dict[str, Any]  # Structured IncompatibilityError details

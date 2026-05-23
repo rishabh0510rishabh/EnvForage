@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Outfit, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider, ThemeToggle } from "./providers";
+import Link from "next/link";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const outfit = Outfit({ subsets: ["latin"], variable: "--font-outfit" });
@@ -25,13 +26,13 @@ export default function RootLayout({
         <nav className="glass-nav" style={{ position: 'sticky', top: 0, zIndex: 50, padding: '1rem 0' }}>
           <div className="container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
-              <a href="/" style={{ fontSize: '1.5rem', fontWeight: 700, fontFamily: 'var(--font-display)', letterSpacing: '-0.02em' }}>
+              <Link href="/" style={{ fontSize: '1.5rem', fontWeight: 700, fontFamily: 'var(--font-display)', letterSpacing: '-0.02em' }}>
                 Env<span className="text-gradient">Forge</span>
-              </a>
+              </Link>
               <div style={{ display: 'flex', gap: '1.5rem', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
-                <a href="/profiles">Profiles</a>
-                <a href="/diagnose">Diagnose</a>
-                <a href="/troubleshoot">AI Troubleshoot</a>
+                <Link href="/profiles">Profiles</Link>
+                <Link href="/diagnose">Diagnose</Link>
+                <Link href="/troubleshoot">AI Troubleshoot</Link>
               </div>
             </div>
             <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
@@ -53,8 +54,8 @@ export default function RootLayout({
           <div className="container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.85rem' }}>
             <p>© {new Date().getFullYear()} EnvForge. Open Source Tooling.</p>
             <div style={{ display: 'flex', gap: '1rem' }}>
-              <a href="/docs">Documentation</a>
-              <a href="/privacy">Privacy</a>
+              <Link href="/docs">Documentation</Link>
+              <Link href="/privacy">Privacy</Link>
             </div>
           </div>
         </footer>

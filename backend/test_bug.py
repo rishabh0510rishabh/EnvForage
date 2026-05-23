@@ -1,6 +1,8 @@
 import asyncio
+
 from app.database import AsyncSessionLocal
 from app.services.profile_service import get_profile_by_slug
+
 
 async def main():
     async with AsyncSessionLocal() as db:

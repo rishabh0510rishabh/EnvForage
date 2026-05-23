@@ -22,8 +22,8 @@ export default function ProfilesPage() {
       try {
         const data = await api.getProfiles();
         setProfiles(data);
-      } catch (err: any) {
-        setError(err.message || "Failed to load profiles");
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to load profiles");
       } finally {
         setLoading(false);
       }

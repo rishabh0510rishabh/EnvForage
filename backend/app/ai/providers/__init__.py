@@ -39,7 +39,7 @@ def get_provider() -> LLMProvider:
     if provider_name == "openai":
         from app.ai.providers.openai import OpenAIProvider
         # Safely extract dynamic configuration values from environment context settings
-        api_key = getattr(settings, "openai_api_key", None)
+        api_key = settings.openai_api_key
         base_url = getattr(settings, "openai_base_url", "https://api.openai.com/v1")
 
         return OpenAIProvider(

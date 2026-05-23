@@ -1,9 +1,11 @@
 import pytest
-from httpx import AsyncClient, ASGITransport
-from app.main import app
-from app.database import get_db
-from app.models.profile import EnvironmentProfile, ProfilePackage
+from httpx import ASGITransport, AsyncClient
 from sqlalchemy import select
+from sqlalchemy.orm import selectinload
+
+from app.database import get_db
+from app.main import app
+from app.models.profile import EnvironmentProfile
 
 pytestmark = pytest.mark.asyncio
 
@@ -73,7 +75,9 @@ async def test_profile_crud_lifecycle(client, db_session):
 
     # Verify state in DB directly
     db_result = await db_session.execute(
-        select(EnvironmentProfile).where(EnvironmentProfile.slug == profile_slug)
+        select(EnvironmentProfile)
+        .options(selectinload(EnvironmentProfile.packages))
+        .where(EnvironmentProfile.slug == profile_slug)
     )
     db_profile = db_result.scalar_one_or_none()
     assert db_profile is not None
@@ -133,7 +137,7 @@ async def test_create_duplicate_slug_conflict(client):
         "os_support": ["LINUX"],
         "python_versions": ["3.10"],
     }
-    
+
     # First creation
     res1 = await client.post("/api/v1/profiles", json=profile_data)
     assert res1.status_code == 201

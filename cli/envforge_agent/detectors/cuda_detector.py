@@ -127,18 +127,32 @@ def _cuda_path_env_version() -> str | None:
 
 def _nvidia_smi_cuda_version() -> str | None:
     """Get CUDA version from nvidia-smi (driver-reported, not toolkit)."""
+    # Method A: Try specific query-gpu first
     try:
         result = subprocess.run(
             ["nvidia-smi", "--query-gpu=cuda_version", "--format=csv,noheader"],
             capture_output=True, text=True, timeout=10,
         )
-        if result.returncode != 0:
-            return None
-        ver = result.stdout.strip().splitlines()[0].strip()
-        if ver and re.match(r"\d+\.\d+", ver):
-            return ver
+        if result.returncode == 0:
+            ver = result.stdout.strip().splitlines()[0].strip()
+            if ver and re.match(r"\d+\.\d+", ver):
+                return ver
     except (FileNotFoundError, subprocess.TimeoutExpired, IndexError):
         pass
+
+    # Method B: Fall back to standard nvidia-smi output and regex parsing
+    try:
+        result = subprocess.run(
+            ["nvidia-smi"],
+            capture_output=True, text=True, timeout=10,
+        )
+        if result.returncode == 0:
+            match = re.search(r"CUDA\s+Version:\s*(\d+\.\d+)", result.stdout)
+            if match:
+                return match.group(1)
+    except (FileNotFoundError, subprocess.TimeoutExpired):
+        pass
+
     return None
 
 

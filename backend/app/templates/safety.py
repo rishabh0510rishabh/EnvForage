@@ -35,7 +35,7 @@ FORBIDDEN_PATTERNS: list[tuple[str, str]] = [
     (r"base64\s+--decode\s*\|.*sh", "Base64 decode pipe to shell"),
 ]
 
-_COMPILED: list[tuple[re.Pattern, str]] = [
+_COMPILED: list[tuple[re.Pattern[str], str]] = [
     (re.compile(pattern, re.IGNORECASE | re.DOTALL), desc)
     for pattern, desc in FORBIDDEN_PATTERNS
 ]

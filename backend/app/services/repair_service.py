@@ -12,7 +12,12 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from jinja2 import Environment, FileSystemLoader, StrictUndefined
+from jinja2 import (
+    Environment,
+    FileSystemLoader,
+    StrictUndefined,
+    select_autoescape,
+)
 
 from app.ai.prompts.system import AVAILABLE_REPAIR_TEMPLATES
 from app.templates.safety import validate_rendered_output
@@ -42,7 +47,7 @@ def _build_repair_env() -> Environment:
     return Environment(
         loader=FileSystemLoader(str(REPAIR_TEMPLATES_DIR)),
         undefined=StrictUndefined,
-        autoescape=False,
+        autoescape=select_autoescape(enabled_extensions=(), default_for_string=False),
         trim_blocks=True,
         lstrip_blocks=True,
     )
@@ -78,7 +83,7 @@ class RepairService:
         self,
         template_id: str,
         params: dict[str, Any] | None = None,
-    ) -> dict[str, str]:
+    ) -> dict[str, Any]:
         """
         Render a repair script from a template ID and parameters.
 

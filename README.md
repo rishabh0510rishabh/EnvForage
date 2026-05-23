@@ -8,8 +8,21 @@ Stop wrestling with CUDA version mismatches, Python dependency hell, and OS-spec
 
 ---
 
+## 👥 Contributors
+
+A massive thank you to all the developers who have contributed code, resolved issues, and helped shape EnvForge into a production-grade ML environment provisioning platform!
+
+<a href="https://github.com/rishabh0510rishabh/EnvForage/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=rishabh0510rishabh/EnvForage" alt="Contributors Grid" style="max-width: 100%; border-radius: 8px;" />
+</a>
+
+*Made with [contrib.rocks](https://contrib.rocks).*
+
+---
+
 ## 📑 Table of Contents
 - [Project Overview](#project-overview)
+- [Contributors](#contributors)
 - [Features](#features)
 - [Architecture](#architecture)
 - [Quick Start](#quick-start)
@@ -113,9 +126,10 @@ We love open source! Please read our [Contributing Guide](./CONTRIBUTING.md) to 
 
 - **Phase 1**: Core Backend (Compatibility Engine, Template Engine) ✅
 - **Phase 2**: CLI Diagnostic Agent (`envforge-agent`) ✅
-- **Phase 3**: Next.js Frontend Web App ⏳
-- **Phase 4**: AI Troubleshooting Layer
-- **Phase 5**: Environment Verification
+- **Phase 3**: Next.js Frontend Web App ✅
+- **Phase 4**: AI Troubleshooting Layer ✅
+- **Phase 5**: Environment Verification ✅
+- **Phase 6**: Polish & Production Readiness ✅
 
 See the full [ROADMAP.md](./docs/ROADMAP.md) for details.
 
