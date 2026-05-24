@@ -1,6 +1,6 @@
 # EnvForge 🛠️
 
-> **>production-grade ML environment provisioning platform**
+> **Production-grade ML environment provisioning platform**
 
 EnvForge is a developer tooling platform that generates intelligent, safe, and deterministic ML/AI environment setup scripts for Windows, WSL, Linux, and CUDA systems.
 
