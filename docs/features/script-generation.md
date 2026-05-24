@@ -76,6 +76,7 @@ GenerationResponse { job_id, scripts[], resolved_packages[], warnings[], downloa
 | `"Dockerfile"` | `jinja/config/dockerfile.j2` | Docker image |
 | `"devcontainer.json"` | `jinja/config/devcontainer.j2` | VS Code dev container |
 | `"verify_torch.sh"` | `jinja/verify/verify_torch.sh.j2` | PyTorch CUDA check |
+| `".gitignore"` | `jinja/config/gitignore.j2` | ML-focused .gitignore template |
 
 ---
 
