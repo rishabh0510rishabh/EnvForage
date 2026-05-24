@@ -1,6 +1,6 @@
 # EnvForge 🛠️
 
-> **production-grade developer tooling platform**
+> **>production-grade ML environment provisioning platform**
 
 EnvForge is a developer tooling platform that generates intelligent, safe, and deterministic ML/AI environment setup scripts for Windows, WSL, Linux, and CUDA systems.
 
@@ -12,7 +12,7 @@ Stop wrestling with CUDA version mismatches, Python dependency hell, and OS-spec
 
 Huge thanks to all the developers who have contributed code, resolved issues, and helped shape EnvForge into a production-grade ML environment provisioning platform!
 
-<a href="https://github.com/rishabh0510rishabh/EnvForage/graphs/contributors">
+<a href="https://github.com/rishabh0510rishabh/EnvForge/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=rishabh0510rishabh/EnvForge" alt="Contributors Grid" style="max-width: 100%; border-radius: 8px;" />
 </a>
 
@@ -82,7 +82,7 @@ envforge diagnose
 ### 2. Run the Backend (Docker)
 ```bash
 git clone https://github.com/rishabh0510rishabh/EnvForge.git
-cd EnvForage
+cd EnvForge
 docker-compose up -d
 ```
 The API is now running at `http://localhost:8000`.
