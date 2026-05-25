@@ -60,6 +60,6 @@ class ProfilesYamlSchema(BaseModel):
 
 class GenerationRequest(BaseModel):
     """Schema for validating a generation request payload."""
-    target_os: Literal["Linux", "Windows", "WSL"]
+    target_os: Literal["Linux", "Windows", "WSL", "macOS"]
     framework: str = Field(..., min_length=1, max_length=64)
     cuda_version: str = Field(..., min_length=1, max_length=16)

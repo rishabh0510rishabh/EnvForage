@@ -125,7 +125,7 @@ pip install \
 info "Package installation complete ✓"
 
 # ── MPS Verification (PyTorch) ────────────────────────────────────────────────
-{% if 'torch' in [pkg.name for pkg in packages] %}
+{% if 'torch' in packages | map(attribute='name') | list %}
 info "Verifying MPS acceleration for PyTorch..."
 TORCH_IMPORT=$(python -c "import torch; print('OK')" 2>/dev/null || echo "FAIL")
 if [[ "$TORCH_IMPORT" == "OK" ]]; then
@@ -143,7 +143,7 @@ fi
 {% endif %}
 
 # ── Metal Verification (TensorFlow) ───────────────────────────────────────────
-{% if 'tensorflow' in [pkg.name for pkg in packages] %}
+{% if 'tensorflow' in packages | map(attribute='name') | list %}
 info "Verifying Metal acceleration for TensorFlow..."
 TF_IMPORT=$(python -c "import tensorflow as tf; print('OK')" 2>/dev/null || echo "FAIL")
 if [[ "$TF_IMPORT" == "OK" ]]; then

@@ -6,7 +6,7 @@ from __future__ import annotations
 
 import subprocess
 import unittest
-from unittest.mock import patch, MagicMock, mock_open
+from unittest.mock import patch, MagicMock
 
 from envforge_agent.detectors.gpu_detector import (
     detect_gpus,

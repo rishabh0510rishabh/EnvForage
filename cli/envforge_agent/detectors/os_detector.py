@@ -7,9 +7,7 @@ Handles: Linux, Windows, WSL2, macOS (including Apple Silicon).
 from __future__ import annotations
 
 import platform
-import re
 import subprocess
-import sys
 
 from envforge_agent.schemas import OSInfo
 
@@ -148,9 +146,9 @@ def _detect_macos(arch: str) -> OSInfo:
             text=True,
             timeout=5,
         )
-        version = result.stdout.strip() if result.returncode == 0 else (platform.mac_ver()[0] or platform.release())
+        version = result.stdout.strip() if result.returncode == 0 else platform.mac_ver()[0]
     except Exception:
-        version = platform.mac_ver()[0] or platform.release()
+        version = platform.mac_ver()[0]
 
     return OSInfo(
         name="macOS",

@@ -27,13 +27,15 @@ else
 fi
 
 # Check 2: macOS version (MPS requires 12.3+)
-MACOS_VER=$(sw_vers -productVersion)
-MACOS_MAJOR=$(echo $MACOS_VER | cut -d'.' -f1)
-MACOS_MINOR=$(echo $MACOS_VER | cut -d'.' -f2)
-if [[ $MACOS_MAJOR -gt 12 ]] || ([[ $MACOS_MAJOR -eq 12 ]] && [[ $MACOS_MINOR -ge 3 ]]); then
-    pass "macOS version: $MACOS_VER (MPS compatible)"
-else
-    fail "macOS $MACOS_VER does not support MPS (requires 12.3+)"
+if [[ "$OS" == "Darwin" ]]; then
+    MACOS_VER=$(sw_vers -productVersion)
+    MACOS_MAJOR=$(echo "$MACOS_VER" | cut -d'.' -f1)
+    MACOS_MINOR=$(echo "$MACOS_VER" | cut -d'.' -f2)
+    if [[ $MACOS_MAJOR -gt 12 ]] || ([[ $MACOS_MAJOR -eq 12 ]] && [[ $MACOS_MINOR -ge 3 ]]); then
+        pass "macOS version: $MACOS_VER (MPS compatible)"
+    else
+        fail "macOS $MACOS_VER does not support MPS (requires 12.3+)"
+    fi
 fi
 
 # Check 3: Python version
