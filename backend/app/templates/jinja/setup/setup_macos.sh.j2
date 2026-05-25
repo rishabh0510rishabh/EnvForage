@@ -127,9 +127,9 @@ info "Package installation complete ✓"
 # ── MPS Verification (PyTorch) ────────────────────────────────────────────────
 {% if 'torch' in [pkg.name for pkg in packages] %}
 info "Verifying MPS acceleration for PyTorch..."
-TORCH_IMPORT=$(python3 -c "import torch; print('OK')" 2>/dev/null || echo "FAIL")
+TORCH_IMPORT=$(python -c "import torch; print('OK')" 2>/dev/null || echo "FAIL")
 if [[ "$TORCH_IMPORT" == "OK" ]]; then
-    MPS_AVAILABLE=$(python3 -c "import torch; print(torch.backends.mps.is_available())" 2>/dev/null || echo "False")
+    MPS_AVAILABLE=$(python -c "import torch; print(torch.backends.mps.is_available())" 2>/dev/null || echo "False")
     if [[ "$MPS_AVAILABLE" == "True" ]]; then
         info "✓ PyTorch MPS is available and ready for acceleration"
     else
@@ -145,9 +145,9 @@ fi
 # ── Metal Verification (TensorFlow) ───────────────────────────────────────────
 {% if 'tensorflow' in [pkg.name for pkg in packages] %}
 info "Verifying Metal acceleration for TensorFlow..."
-TF_IMPORT=$(python3 -c "import tensorflow as tf; print('OK')" 2>/dev/null || echo "FAIL")
+TF_IMPORT=$(python -c "import tensorflow as tf; print('OK')" 2>/dev/null || echo "FAIL")
 if [[ "$TF_IMPORT" == "OK" ]]; then
-    METAL_DEVICES=$(python3 -c "import tensorflow as tf; print(len(tf.config.list_physical_devices('GPU')))" 2>/dev/null || echo "0")
+    METAL_DEVICES=$(python -c "import tensorflow as tf; print(len(tf.config.list_physical_devices('GPU')))" 2>/dev/null || echo "0")
     if [[ "$METAL_DEVICES" -gt 0 ]]; then
         info "✓ TensorFlow Metal GPUs detected: $METAL_DEVICES device(s)"
     else

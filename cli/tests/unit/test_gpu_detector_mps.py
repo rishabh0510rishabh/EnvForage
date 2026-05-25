@@ -195,12 +195,12 @@ class TestGetMacosVersion(unittest.TestCase):
         self.assertEqual(version, "13.5.1")
 
     def test_get_macos_version_sw_vers_fails_fallback_to_platform(self):
-        """When sw_vers fails, fallback to platform.release()."""
+        """When sw_vers fails, fallback to platform.mac_ver() product version."""
         with patch("subprocess.run", side_effect=Exception("sw_vers failed")):
-            with patch("platform.release", return_value="22.6.0"):
+            with patch("platform.mac_ver", return_value=("13.5.1", ("", "", ""), "")):
                 version = _get_macos_version()
-        
-        self.assertEqual(version, "22.6.0")
+
+        self.assertEqual(version, "13.5.1")
 
     def test_get_macos_version_all_fail_returns_none(self):
         """When all methods fail, return None."""

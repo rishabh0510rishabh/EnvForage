@@ -148,9 +148,9 @@ def _detect_macos(arch: str) -> OSInfo:
             text=True,
             timeout=5,
         )
-        version = result.stdout.strip() if result.returncode == 0 else platform.release()
+        version = result.stdout.strip() if result.returncode == 0 else (platform.mac_ver()[0] or platform.release())
     except Exception:
-        version = platform.release()
+        version = platform.mac_ver()[0] or platform.release()
 
     return OSInfo(
         name="macOS",

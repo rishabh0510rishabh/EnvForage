@@ -250,10 +250,11 @@ def _get_macos_version() -> str | None:
             return result.stdout.strip()
     except Exception as e:
         logger.debug(f"sw_vers command failed: {e}")
-    
-    # Fallback: platform.release() returns kernel version (e.g., "22.6.0" for macOS 13.5)
+
+    # Fallback: platform.mac_ver()[0] returns the macOS product version.
     try:
-        return platform.release()
+        version = platform.mac_ver()[0]
+        return version or None
     except Exception:
         return None
 

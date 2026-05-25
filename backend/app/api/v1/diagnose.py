@@ -40,7 +40,7 @@ async def diagnose(
         target_os = "WSL"
     elif report.os and "windows" in report.os.name.lower():
         target_os = "WIN"
-    elif report.os and "macos" in report.os.name.lower():
+    elif report.os and ("macos" in report.os.name.lower() or "darwin" in report.os.name.lower()):
         target_os = "MACOS"
     else:
         target_os = "LINUX"

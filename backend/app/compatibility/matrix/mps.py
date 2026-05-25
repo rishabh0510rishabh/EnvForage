@@ -10,8 +10,6 @@ Sources:
 """
 from __future__ import annotations
 
-from app.compatibility.errors import UnknownVersionError
-
 # ── PyTorch + MPS ─────────────────────────────────────────────────────────
 
 # PyTorch version -> minimum macOS version required for MPS
