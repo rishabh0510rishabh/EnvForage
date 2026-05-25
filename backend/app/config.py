@@ -67,17 +67,17 @@ class Settings(BaseSettings):
     rate_limit_ai_rpm: int = 10       # AI troubleshoot: requests per minute
     rate_limit_repair_rpm: int = 20   # Repair endpoint: requests per minute
     rate_limit_general_rpm: int = 60  # General API: requests per minute
-    @model_validator(mode="after")
-    def validate_secret_key(self):
-        if (
-            self.environment == "production"
-            and self.secret_key == "dev-secret-key-change-in-production"
-        ):
-            raise ValueError(
-                "Production environment requires a strong SECRET_KEY."
-            )
+        @model_validator(mode="after")
+        def validate_secret_key(self):
+               if (
+                      self.environment == "production"
+                      and self.secret_key == "dev-secret-key-change-in-production"
+               ):
+                  raise ValueError(
+                   "Production environment requires a strong SECRET_KEY."
+               )
 
-         return self
+               return self
 
 @lru_cache
 def get_settings() -> Settings:
