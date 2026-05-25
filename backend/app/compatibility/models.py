@@ -5,7 +5,7 @@ Pure dataclasses — no I/O, no database, no side effects.
 from dataclasses import dataclass, field
 from typing import Any, Literal
 
-OSTarget = Literal["LINUX", "WSL", "WIN"]
+OSTarget = Literal["LINUX", "WSL", "WIN", "MACOS"]
 
 
 @dataclass(frozen=True)

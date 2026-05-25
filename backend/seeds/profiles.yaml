@@ -194,3 +194,66 @@ profiles:
       - name: scipy
         version_spec: "1.13.0"
         install_order: 7
+
+  - slug: pytorch-mps
+    name: "PyTorch Metal (Apple Silicon)"
+    description: >
+      PyTorch optimized for Apple Silicon Macs (M1/M2/M3/M4) with Metal Performance
+      Shaders (MPS) acceleration. Includes torchvision and torchaudio. Ideal for
+      deep learning on macOS with native GPU acceleration.
+    tags: [deep-learning, gpu, mps, pytorch, apple-silicon]
+    os_support: [MACOS]
+    cuda_required: false
+    python_versions: ["3.10", "3.11", "3.12", "3.13"]
+    cuda_versions: []
+    status: ACTIVE
+    last_validated: "2026-05-24"
+    packages:
+      - name: torch
+        version_spec: "2.5.0"
+        install_order: 0
+      - name: torchvision
+        version_spec: "0.20.0"
+        install_order: 1
+      - name: torchaudio
+        version_spec: "2.5.0"
+        install_order: 2
+      - name: numpy
+        version_spec: "1.26.4"
+        install_order: 3
+      - name: matplotlib
+        version_spec: "3.8.4"
+        install_order: 4
+      - name: scipy
+        version_spec: "1.13.0"
+        install_order: 5
+
+  - slug: tensorflow-metal
+    name: "TensorFlow Metal (Apple Silicon)"
+    description: >
+      TensorFlow with Metal acceleration for Apple Silicon Macs (M1/M2/M3/M4).
+      Includes tensorflow-metal plugin for native GPU acceleration. Requires
+      TensorFlow 2.11+ for Metal support.
+    tags: [deep-learning, gpu, metal, tensorflow, apple-silicon]
+    os_support: [MACOS]
+    cuda_required: false
+    python_versions: ["3.10", "3.11", "3.12", "3.13"]
+    cuda_versions: []
+    status: ACTIVE
+    last_validated: "2026-05-24"
+    packages:
+      - name: tensorflow
+        version_spec: "2.16.0"
+        install_order: 0
+      - name: tensorflow-metal
+        version_spec: "1.1.0"
+        install_order: 1
+      - name: numpy
+        version_spec: "1.26.4"
+        install_order: 2
+      - name: matplotlib
+        version_spec: "3.8.4"
+        install_order: 3
+      - name: pandas
+        version_spec: "2.2.2"
+        install_order: 4

@@ -34,12 +34,14 @@ async def diagnose(
     a compatibility analysis: which profiles are compatible,
     and what issues were found.
     """
-    # Map OS to OSTarget: "LINUX", "WSL", "WIN"
+    # Map OS to OSTarget: "LINUX", "WSL", "WIN", "MACOS"
     target_os: OSTarget
     if report.os and report.os.wsl_version:
         target_os = "WSL"
     elif report.os and "windows" in report.os.name.lower():
         target_os = "WIN"
+    elif report.os and "macos" in report.os.name.lower():
+        target_os = "MACOS"
     else:
         target_os = "LINUX"
 

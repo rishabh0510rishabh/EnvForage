@@ -2,7 +2,7 @@
 OS detection module.
 
 Detects: OS name, version, architecture, and WSL version.
-Handles: Linux, Windows, WSL2.
+Handles: Linux, Windows, WSL2, macOS (including Apple Silicon).
 """
 from __future__ import annotations
 
@@ -28,6 +28,8 @@ def detect_os() -> OSInfo:
         return _detect_windows(arch)
     elif system == "Linux":
         return _detect_linux(arch)
+    elif system == "Darwin":
+        return _detect_macos(arch)
     else:
         return OSInfo(name=system, version=platform.version(), architecture=arch)
 
@@ -128,3 +130,31 @@ def _detect_wsl() -> str | None:
         pass
 
     return None
+
+
+# ── macOS ─────────────────────────────────────────────────────────────────────
+
+def _detect_macos(arch: str) -> OSInfo:
+    """
+    Detect macOS information.
+
+    Returns macOS version and architecture (arm64 = Apple Silicon, x86_64 = Intel).
+    """
+    try:
+        # Get macOS version via sw_vers command (most reliable)
+        result = subprocess.run(
+            ["sw_vers", "-productVersion"],
+            capture_output=True,
+            text=True,
+            timeout=5,
+        )
+        version = result.stdout.strip() if result.returncode == 0 else platform.release()
+    except Exception:
+        version = platform.release()
+
+    return OSInfo(
+        name="macOS",
+        version=version,
+        architecture=arch,
+        wsl_version=None,
+    )

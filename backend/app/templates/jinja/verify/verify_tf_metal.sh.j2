@@ -1,0 +1,163 @@
+#!/bin/bash
+# ==============================================================================
+# EnvForge Environment Verification — TensorFlow Metal (Apple Silicon)
+# Profile  : {{ profile.name }}
+# Generated: {{ generated_at }}
+# ==============================================================================
+set -euo pipefail
+
+GREEN='\033[0;32m'; RED='\033[0;31m'; YELLOW='\033[1;33m'; NC='\033[0m'
+pass() { echo -e "${GREEN}[PASS]${NC} $1"; }
+fail() { echo -e "${RED}[FAIL]${NC} $1"; FAILED=$((FAILED+1)); }
+warn() { echo -e "${YELLOW}[WARN]${NC} $1"; }
+
+FAILED=0
+
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo " EnvForge Verification — {{ profile.name }} (Metal)"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+# Check 1: macOS environment
+OS=$(uname -s)
+ARCH=$(uname -m)
+if [[ "$OS" != "Darwin" ]] || [[ "$ARCH" != "arm64" ]]; then
+    fail "Not running on macOS Apple Silicon (arm64). Detected: $OS $ARCH"
+else
+    pass "macOS Apple Silicon environment"
+fi
+
+# Check 2: macOS version (Metal requires 12.1+)
+MACOS_VER=$(sw_vers -productVersion)
+MACOS_MAJOR=$(echo $MACOS_VER | cut -d'.' -f1)
+MACOS_MINOR=$(echo $MACOS_VER | cut -d'.' -f2)
+if [[ $MACOS_MAJOR -gt 12 ]] || ([[ $MACOS_MAJOR -eq 12 ]] && [[ $MACOS_MINOR -ge 1 ]]); then
+    pass "macOS version: $MACOS_VER (Metal compatible)"
+else
+    fail "macOS $MACOS_VER does not support Metal (requires 12.1+)"
+fi
+
+# Check 3: Python version
+PY_VER=$(python3 --version 2>&1 | cut -d' ' -f2 | cut -d'.' -f1,2)
+if [[ "$PY_VER" == "{{ python_version }}" ]]; then
+    pass "Python {{ python_version }} ($(python3 --version))"
+else
+    fail "Python version mismatch: expected {{ python_version }}, got $PY_VER"
+fi
+
+# Check 4: TensorFlow import
+if python3 -c "import tensorflow as tf; print(f'TensorFlow {tf.__version__}')" 2>/dev/null; then
+    pass "TensorFlow import successful"
+else
+    fail "TensorFlow import failed — is it installed?"
+fi
+
+# Check 5: tensorflow-metal installation
+TF_METAL=$(python3 -c "import tensorflow_metal; print(tensorflow_metal.__version__)" 2>/dev/null || echo "NOT_INSTALLED")
+if [[ "$TF_METAL" != "NOT_INSTALLED" ]]; then
+    pass "tensorflow-metal is installed (v$TF_METAL)"
+else
+    warn "tensorflow-metal not found"
+    warn "  GPU acceleration may not be available"
+    warn "  Install with: pip install tensorflow-metal"
+fi
+
+# Check 6: GPU device detection
+GPU_COUNT=$(python3 -c "import tensorflow as tf; print(len(tf.config.list_physical_devices('GPU')))" 2>/dev/null || echo "0")
+if [[ "$GPU_COUNT" -gt 0 ]]; then
+    pass "Metal GPUs detected: $GPU_COUNT device(s)"
+    
+    # List GPU details
+    GPU_INFO=$(python3 << 'EOF' 2>/dev/null || echo "")
+import tensorflow as tf
+gpus = tf.config.list_physical_devices('GPU')
+for i, gpu in enumerate(gpus):
+    print(f"  GPU {i}: {gpu}")
+EOF
+)
+    if [[ ! -z "$GPU_INFO" ]]; then
+        echo "$GPU_INFO" | while read line; do
+            echo "    $line"
+        done
+    fi
+else
+    fail "No GPU devices detected by TensorFlow"
+    warn "Metal acceleration may not be available"
+fi
+
+# Check 7: Try to create a tensor on GPU
+if [[ "$GPU_COUNT" -gt 0 ]]; then
+    TENSOR_TEST=$(python3 << 'EOF' 2>/dev/null || echo "FAIL")
+import tensorflow as tf
+try:
+    with tf.device('/GPU:0'):
+        x = tf.random.normal([10, 10])
+        y = tf.matmul(x, x)
+    print("OK")
+except Exception as e:
+    print(f"ERROR: {e}")
+EOF
+)
+    if [[ "$TENSOR_TEST" == "OK" ]]; then
+        pass "Can create and compute tensors on Metal GPU"
+    else
+        fail "Cannot compute on Metal GPU: $TENSOR_TEST"
+    fi
+fi
+
+# Check 8: Logging level (suppress Metal warnings in verbose mode)
+echo ""
+echo "Note: TensorFlow may show Metal plugin warnings on startup."
+echo "This is normal and does not indicate a problem."
+echo ""
+
+# Check 9: Compare CPU vs GPU performance (optional benchmark)
+info_perf() { echo -e "\033[0;34m[INFO]${NC} $1"; }
+info_perf "Optional: Running Metal performance check..."
+
+PERF_CHECK=$(python3 << 'EOF' 2>/dev/null || echo "SKIP")
+import tensorflow as tf
+import time
+
+# Suppress TensorFlow logging
+tf.get_logger().setLevel('ERROR')
+
+size = 100
+x = tf.random.normal([size, size])
+
+# CPU
+with tf.device('/CPU:0'):
+    t0 = time.time()
+    y_cpu = tf.matmul(x, x)
+    t_cpu = time.time() - t0
+
+# GPU
+gpus = tf.config.list_physical_devices('GPU')
+if len(gpus) > 0:
+    with tf.device('/GPU:0'):
+        t0 = time.time()
+        y_gpu = tf.matmul(x, x)
+        t_gpu = time.time() - t0
+    print(f"CPU: {t_cpu*1000:.2f}ms | GPU: {t_gpu*1000:.2f}ms | Speedup: {t_cpu/t_gpu:.2f}x")
+else:
+    print("No GPU available")
+EOF
+)
+
+if [[ "$PERF_CHECK" != "SKIP" ]]; then
+    info_perf "Performance: $PERF_CHECK"
+fi
+
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+if [[ $FAILED -eq 0 ]]; then
+    echo -e "${GREEN}✓ All checks passed — Metal is ready!${NC}"
+    echo ""
+    echo "  Usage in TensorFlow:"
+    echo "    with tf.device('/GPU:0'):"
+    echo "        output = model(input)"
+    echo ""
+    echo "    (or use automatic device placement — TensorFlow will use GPU automatically)"
+    exit 0
+else
+    echo -e "${RED}✗ $FAILED check(s) failed${NC}"
+    exit 1
+fi

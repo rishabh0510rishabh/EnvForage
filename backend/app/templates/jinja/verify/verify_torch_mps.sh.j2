@@ -1,0 +1,130 @@
+#!/bin/bash
+# ==============================================================================
+# EnvForge Environment Verification — PyTorch MPS (Apple Silicon)
+# Profile  : {{ profile.name }}
+# Generated: {{ generated_at }}
+# ==============================================================================
+set -euo pipefail
+
+GREEN='\033[0;32m'; RED='\033[0;31m'; YELLOW='\033[1;33m'; NC='\033[0m'
+pass() { echo -e "${GREEN}[PASS]${NC} $1"; }
+fail() { echo -e "${RED}[FAIL]${NC} $1"; FAILED=$((FAILED+1)); }
+warn() { echo -e "${YELLOW}[WARN]${NC} $1"; }
+
+FAILED=0
+
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo " EnvForge Verification — {{ profile.name }} (MPS)"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+# Check 1: macOS environment
+OS=$(uname -s)
+ARCH=$(uname -m)
+if [[ "$OS" != "Darwin" ]] || [[ "$ARCH" != "arm64" ]]; then
+    fail "Not running on macOS Apple Silicon (arm64). Detected: $OS $ARCH"
+else
+    pass "macOS Apple Silicon environment"
+fi
+
+# Check 2: macOS version (MPS requires 12.3+)
+MACOS_VER=$(sw_vers -productVersion)
+MACOS_MAJOR=$(echo $MACOS_VER | cut -d'.' -f1)
+MACOS_MINOR=$(echo $MACOS_VER | cut -d'.' -f2)
+if [[ $MACOS_MAJOR -gt 12 ]] || ([[ $MACOS_MAJOR -eq 12 ]] && [[ $MACOS_MINOR -ge 3 ]]); then
+    pass "macOS version: $MACOS_VER (MPS compatible)"
+else
+    fail "macOS $MACOS_VER does not support MPS (requires 12.3+)"
+fi
+
+# Check 3: Python version
+PY_VER=$(python3 --version 2>&1 | cut -d' ' -f2 | cut -d'.' -f1,2)
+if [[ "$PY_VER" == "{{ python_version }}" ]]; then
+    pass "Python {{ python_version }} ($(python3 --version))"
+else
+    fail "Python version mismatch: expected {{ python_version }}, got $PY_VER"
+fi
+
+# Check 4: PyTorch import
+if python3 -c "import torch; print(f'torch {torch.__version__}')" 2>/dev/null; then
+    pass "PyTorch import successful"
+else
+    fail "PyTorch import failed — is it installed?"
+fi
+
+# Check 5: MPS backend availability
+MPS_AVAIL=$(python3 -c "import torch; print(torch.backends.mps.is_available())" 2>/dev/null || echo "Unknown")
+if [[ "$MPS_AVAIL" == "True" ]]; then
+    pass "MPS backend is available and working"
+    
+    # Check 6: MPS device build
+    MPS_BUILD=$(python3 -c "import torch; print(torch.backends.mps.is_built())" 2>/dev/null || echo "Unknown")
+    if [[ "$MPS_BUILD" == "True" ]]; then
+        pass "MPS is properly built in PyTorch"
+    else
+        warn "MPS available but not properly built (may still work)"
+    fi
+else
+    fail "torch.backends.mps.is_available() returned: $MPS_AVAIL"
+    warn "MPS may not be available on this system"
+    warn "  - Check macOS version (requires 12.3+)"
+    warn "  - Verify Apple Silicon architecture (arm64)"
+    warn "  - Reinstall PyTorch: pip install --upgrade torch torchvision torchaudio"
+fi
+
+# Check 7: Try to create a tensor on MPS device
+if [[ "$MPS_AVAIL" == "True" ]]; then
+    TENSOR_TEST=$(python3 -c "import torch; x = torch.randn(10, device='mps'); print('OK')" 2>/dev/null || echo "FAIL")
+    if [[ "$TENSOR_TEST" == "OK" ]]; then
+        pass "Can create and compute tensors on MPS device"
+    else
+        fail "Cannot create tensors on MPS device — MPS may not be fully functional"
+    fi
+fi
+
+# Check 8: Compare CPU vs MPS performance (optional benchmark)
+echo ""
+info_perf() { echo -e "\033[0;34m[INFO]${NC} $1"; }
+info_perf "Optional: Running MPS performance check..."
+
+PERF_CHECK=$(python3 << 'EOF' 2>/dev/null || echo "SKIP")
+import torch
+import time
+
+# Small benchmark
+size = 1000
+x = torch.randn(size, size)
+
+# CPU
+t0 = time.time()
+y_cpu = torch.matmul(x, x)
+t_cpu = time.time() - t0
+
+# MPS
+if torch.backends.mps.is_available():
+    x_mps = x.to('mps')
+    t0 = time.time()
+    y_mps = torch.matmul(x_mps, x_mps)
+    t_mps = time.time() - t0
+    print(f"CPU: {t_cpu*1000:.2f}ms | MPS: {t_mps*1000:.2f}ms | Speedup: {t_cpu/t_mps:.2f}x")
+else
+    print("MPS not available")
+EOF
+)
+
+if [[ "$PERF_CHECK" != "SKIP" ]]; then
+    info_perf "Performance: $PERF_CHECK"
+fi
+
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+if [[ $FAILED -eq 0 ]]; then
+    echo -e "${GREEN}✓ All checks passed — MPS is ready!${NC}"
+    echo ""
+    echo "  Usage in PyTorch:"
+    echo "    device = torch.device('mps' if torch.backends.mps.is_available() else 'cpu')"
+    echo "    model = MyModel().to(device)"
+    echo "    output = model(input.to(device))"
+    exit 0
+else
+    echo -e "${RED}✗ $FAILED check(s) failed${NC}"
+    exit 1
+fi

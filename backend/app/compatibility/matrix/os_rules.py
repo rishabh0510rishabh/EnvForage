@@ -6,7 +6,7 @@ generated, not package version compatibility.
 """
 from typing import Literal
 
-OSTarget = Literal["LINUX", "WSL", "WIN"]
+OSTarget = Literal["LINUX", "WSL", "WIN", "MACOS"]
 
 # ── Script format rules ────────────────────────────────────────────────────────
 
@@ -15,6 +15,7 @@ OS_SCRIPT_FORMATS: dict[str, list[str]] = {
     "LINUX": ["setup.sh", "requirements.txt", "Dockerfile", "docker-compose.yml", "devcontainer.json"],
     "WSL":   ["setup.sh", "requirements.txt", "Dockerfile", "docker-compose.yml", "devcontainer.json"],
     "WIN": ["setup.ps1", "requirements.txt", "Dockerfile", "docker-compose.yml", "devcontainer.json"],
+    "MACOS": ["setup.sh", "requirements.txt"],
 }
 
 # ── CUDA / GPU rules ──────────────────────────────────────────────────────────
@@ -32,6 +33,24 @@ WSL_GPU_NOTE = (
     "WSL2 GPU access requires NVIDIA drivers installed on the Windows host. "
     "Do NOT install CUDA toolkit inside WSL if drivers are already on Windows. "
     "See: https://docs.nvidia.com/cuda/wsl-user-guide/"
+)
+
+# macOS MPS notes
+MACOS_MPS_NOTE = (
+    "Metal Performance Shaders (MPS) acceleration is available on Apple Silicon Macs. "
+    "The generated setup script includes verification commands to check MPS availability. "
+    "See: https://pytorch.org/docs/stable/notes/mps.html"
+)
+
+TENSORFLOW_METAL_NOTE = (
+    "TensorFlow Metal acceleration is available on macOS. "
+    "Install tensorflow-metal alongside TensorFlow for GPU acceleration. "
+    "See: https://github.com/apple/tensorflow_metal"
+)
+
+MACOS_ARM64_CPU_NOTE = (
+    "You are running macOS on Apple Silicon (ARM64 architecture). "
+    "Consider using frameworks with native ARM64 support for optimal performance."
 )
 
 
@@ -52,6 +71,18 @@ def get_os_notes(
 
     if target_os == "WIN" and "tensorflow" in frameworks and cuda_required:
         notes.append(TENSORFLOW_WINDOWS_GPU_NOTE)
+
+    if target_os == "MACOS":
+        # Always suggest awareness of Apple Silicon benefits
+        notes.append(MACOS_ARM64_CPU_NOTE)
+        
+        # Add MPS-specific notes for PyTorch
+        if "torch" in frameworks or "pytorch" in frameworks:
+            notes.append(MACOS_MPS_NOTE)
+        
+        # Add Metal-specific notes for TensorFlow
+        if "tensorflow" in frameworks:
+            notes.append(TENSORFLOW_METAL_NOTE)
 
     return notes
 

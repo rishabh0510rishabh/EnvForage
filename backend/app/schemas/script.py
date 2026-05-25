@@ -5,7 +5,7 @@ from typing import Any, Literal
 
 from pydantic import BaseModel, Field
 
-OSTarget = Literal["LINUX", "WSL", "WIN"]
+OSTarget = Literal["LINUX", "WSL", "WIN", "MACOS"]
 OutputFormat = Literal["setup.sh", "setup.ps1", "requirements.txt", "Dockerfile", "docker-compose.yml", "devcontainer.json", "pyproject.toml"]
 
 

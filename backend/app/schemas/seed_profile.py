@@ -4,7 +4,7 @@ from typing import Literal
 
 from pydantic import BaseModel, Field, field_validator
 
-ALLOWED_OS = frozenset({"LINUX", "WSL", "WIN"})
+ALLOWED_OS = frozenset({"LINUX", "WSL", "WIN", "MACOS"})
 
 
 class ProfilePackageSeedSchema(BaseModel):
