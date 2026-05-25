@@ -35,7 +35,7 @@ class OpenAIProvider(LLMProvider):
         self.temperature = temperature
         self.headers = {
             "Authorization": f"Bearer {self.api_key}",
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
         }
 
     async def complete(
@@ -104,7 +104,7 @@ class OpenAIProvider(LLMProvider):
     ) -> AsyncIterator[str]:
         """
         Send a completion request to OpenAI and stream the response content.
-        This generator yields tokens as they arrive.
+        This generator yields tokens as they arrive with resilient transient error handling.
         """
         schema_json = json.dumps(response_model.model_json_schema(), indent=2)
         enhanced_system = (
@@ -127,9 +127,10 @@ class OpenAIProvider(LLMProvider):
         }
 
         async def generator() -> AsyncIterator[str]:
-            async with httpx.AsyncClient(timeout=60.0) as client:
-                max_retries = 3
+            max_retries = 3
+            base_delay = 2.0
 
+            async with httpx.AsyncClient(timeout=60.0) as client:
                 for attempt in range(max_retries):
                     try:
                         async with client.stream(
@@ -146,7 +147,7 @@ class OpenAIProvider(LLMProvider):
 
                                 if retry_after:
                                     if retry_after.isdigit():
-                                        delay = max(0, int(retry_after))
+                                        delay = max(0, float(retry_after))
                                     else:
                                         try:
                                             retry_at = parsedate_to_datetime(retry_after)
@@ -164,16 +165,21 @@ class OpenAIProvider(LLMProvider):
                                     delay = 2 ** attempt
 
                                 logger.warning(
-                                    "OpenAI rate limited. Retrying in %s seconds...",
-                                    delay,
+                                    "OpenAI rate limited (429). Retrying in %s seconds... (Attempt %d/%d)",
+                                    delay, attempt + 1, max_retries
                                 )
+
+                                if attempt >= max_retries - 1:
+                                    raise LLMProviderError(
+                                        "openai",
+                                        "Rate limited (429) - OpenAI streaming retry attempts exhausted.",
+                                    )
 
                                 await asyncio.sleep(delay)
                                 continue
 
                             if response.status_code != 200:
                                 error_body = await response.aread()
-
                                 raise LLMProviderError(
                                     "openai",
                                     f"HTTP {response.status_code}: {error_body.decode(errors='replace')[:500]}",
@@ -208,17 +214,30 @@ class OpenAIProvider(LLMProvider):
                                     if content:
                                         yield content
 
+                            # Stream completed successfully, return to exit the generator loop
                             return
 
                     except httpx.HTTPError as e:
-                        if attempt == max_retries - 1:
-                            raise LLMProviderError("openai", str(e)) from e
-                        await asyncio.sleep(2 ** attempt)
+                        # If this is our last attempt, don't sleep; let the loop finish and drop to final exception
+                        if attempt >= max_retries - 1:
+                            logger.error(
+                                "Transient network connection error on final attempt: %s.", str(e)
+                            )
+                            break
+
+                        delay = float(base_delay**attempt)
+                        logger.warning(
+                            "Transient network error during OpenAI stream: %s. Retrying in %d seconds... (Attempt %d/%d)",
+                            str(e), delay, attempt + 1, max_retries
+                        )
+                        await asyncio.sleep(delay or 0.0)
                         continue
 
+                # This is reached if loop finishes completely without returning or hitting a short-circuit raise
                 raise LLMProviderError(
                     "openai",
                     "OpenAI streaming failed after maximum retry attempts.",
                 )
 
         return generator()
+

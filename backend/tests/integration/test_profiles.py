@@ -145,7 +145,7 @@ async def test_create_duplicate_slug_conflict(client):
     # Duplicate creation
     res2 = await client.post("/api/v1/profiles", json=profile_data)
     assert res2.status_code == 409
-    assert "already exists" in res2.json()["detail"].lower()
+    assert "already exists" in res2.json()["detail"]["error"]["message"].lower()
 
 
 async def test_get_nonexistent_profile_returns_404(client):

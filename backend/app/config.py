@@ -7,6 +7,7 @@ All configuration is sourced from environment variables or a local `.env` file.
 shares the same env-loading bootstrap before `Settings` is read.
 """
 from functools import lru_cache
+from pathlib import Path
 from typing import Literal
 
 from dotenv import load_dotenv
@@ -29,6 +30,7 @@ class Settings(BaseSettings):
     secret_key: str = "dev-secret-key-change-in-production"
     app_name: str = "EnvForage"
     app_version: str = "1.0.0"
+    custom_template_dir: Path | None = None
 
     # ── Database ──────────────────────────────────────────────
     database_url: str = "postgresql+asyncpg://postgres:postgres@localhost:5432/envforge"

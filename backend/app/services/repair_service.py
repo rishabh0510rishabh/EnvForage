@@ -8,7 +8,7 @@ Flow:
     AI suggestion → template lookup → render → SafetyFilter → return script
 """
 import logging
-from datetime import datetime
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -106,7 +106,7 @@ class RepairService:
 
         # Build context
         context = {**_DEFAULT_CONTEXT}
-        context["generated_at"] = datetime.utcnow().strftime("%Y-%m-%d %H:%M UTC")
+        context["generated_at"] = datetime.now(UTC).strftime("%Y-%m-%d %H:%M UTC")
         if params:
             context.update(params)
 

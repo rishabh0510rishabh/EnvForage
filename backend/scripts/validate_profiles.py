@@ -13,7 +13,7 @@ backend_dir = Path(__file__).resolve().parent.parent
 if str(backend_dir) not in sys.path:
     sys.path.insert(0, str(backend_dir))
 
-from app.schemas.seed_profile import ProfileSeedSchema, ProfilesYamlSchema
+from app.schemas.seed_profile import ProfileSeedSchema, ProfilesYamlSchema  # noqa: E402
 
 
 def validate_logical_consistency(profile: ProfileSeedSchema) -> list[str]:
@@ -145,12 +145,16 @@ def main(path: Path) -> None:
     click.echo(f"Validating {total_files} file(s)...")
 
     failed_files = 0
-    for file in sorted(files_to_validate):
+    for file_item in sorted(files_to_validate):
         # Display relative path for clean logs
-        rel_path = file.relative_to(backend_dir.parent) if backend_dir.parent in file.parents else file
+        if backend_dir.parent in file_item.parents:
+            rel_path = file_item.relative_to(backend_dir.parent)
+        else:
+            rel_path = file_item
+
         click.echo(f"Checking {rel_path}... ", nl=False)
 
-        is_valid, errors = validate_profile_file(file)
+        is_valid, errors = validate_profile_file(file_item)
         if is_valid:
             if errors and "skipped" in errors[0]:
                 click.secho("SKIPPED (not a profile)", fg="yellow")

@@ -1,6 +1,7 @@
 """Unit tests for validate_profiles.py CLI utility."""
 import tempfile
 from pathlib import Path
+from typing import Any
 
 import yaml
 from click.testing import CliRunner
@@ -8,7 +9,7 @@ from click.testing import CliRunner
 from scripts.validate_profiles import main, validate_profile_file
 
 
-def _valid_profile() -> dict:
+def _valid_profile() -> dict[str, Any]:
     return {
         "slug": "pytorch-cuda",
         "name": "PyTorch CUDA",

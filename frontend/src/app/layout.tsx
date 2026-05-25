@@ -4,9 +4,9 @@ import "./globals.css";
 import { ThemeProvider, ThemeToggle } from "./providers";
 import Link from "next/link";
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
-const outfit = Outfit({ subsets: ["latin"], variable: "--font-outfit" });
-const jetbrainsMono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-jetbrains-mono" });
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
+const outfit = Outfit({ subsets: ["latin"], variable: "--font-outfit", display: "swap" });
+const jetbrainsMono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-jetbrains-mono", display: "swap" });
 
 export const metadata: Metadata = {
   title: "EnvForge | ML Environment Provisioning",
@@ -20,7 +20,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.variable} ${outfit.variable} ${jetbrainsMono.variable}`}>
+      <body className={`${inter.variable} ${outfit.variable} ${jetbrainsMono.variable}`} style={{ backgroundColor: "var(--bg-core)" }}>
         <ThemeProvider>
         {/* Navigation Bar */}
         <nav className="glass-nav" style={{ position: 'sticky', top: 0, zIndex: 50, padding: '1rem 0' }}>

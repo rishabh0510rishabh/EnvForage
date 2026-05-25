@@ -3,9 +3,8 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 
-import pytest
 
 from envforge_agent.schemas import DiagnosticReport
 

@@ -136,3 +136,4 @@ async def delete_profile(
         await db.rollback()
         raise
     return True
+

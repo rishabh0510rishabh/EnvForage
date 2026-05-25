@@ -65,6 +65,24 @@ EnvForge is a production-grade ML/AI environment provisioning platform. It provi
 └──────────────────────────────────────────────────────────────────┘
 ```
 
+### Mermaid Architecture Diagram
+
+```mermaid
+graph TD
+    A[Next.js Web App] --> B[FastAPI Backend]
+    C[CLI Diagnostic Agent] --> B
+
+    B --> D[Compatibility Engine]
+    B --> E[Template Engine]
+    B --> F[AI Reasoning Layer]
+
+    D --> G[PostgreSQL]
+    E --> G
+    F --> G
+
+    E --> H[Generated Scripts]
+    F --> I[Troubleshooting Suggestions]
+```
 ---
 
 ## 3. Layer Responsibilities
@@ -127,6 +145,19 @@ EnvForge is a production-grade ML/AI environment provisioning platform. It provi
 - Collects system info: OS, GPU, VRAM, CUDA, Python, drivers
 - Outputs structured JSON — can pipe to API or view locally
 - No network requirement; works fully offline
+
+### Diagnose → Troubleshoot → Repair Workflow
+
+```mermaid
+flowchart TD
+
+    A[envforge diagnose] --> B[Generate DiagnosticReport]
+    B --> C[Send Report to Backend API]
+    C --> D[Compatibility Analysis]
+    D --> E[AI Troubleshooting Layer]
+    E --> F[Suggested Fixes]
+    F --> G[Repair Script Generation]
+```
 
 **Phase 1 Implementation**: Backend `POST /api/v1/diagnose` endpoint implemented and
 accepts `DiagnosticReportSchema` JSON. The CLI agent package itself is Phase 2.

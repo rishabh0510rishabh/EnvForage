@@ -22,6 +22,7 @@ from app.api.v1 import (
 )
 from app.cache import get_redis_client
 from app.config import get_settings
+from app.core.handlers import register_exception_handlers
 from app.database import AsyncSessionLocal
 
 
@@ -53,6 +54,8 @@ def create_app() -> FastAPI:
         lifespan=lifespan,
     )
 
+    register_exception_handlers(app)
+
     # ── CORS ─────────────────────────────────────────────────
     app.add_middleware(
         CORSMiddleware,
@@ -78,7 +81,6 @@ def create_app() -> FastAPI:
         redis_status = "ok"
         overall = "healthy"
 
-        # Check database
         try:
             async with asyncio.timeout(2):
                 async with AsyncSessionLocal() as session:
@@ -87,7 +89,6 @@ def create_app() -> FastAPI:
             db_status = "unavailable"
             overall = "degraded"
 
-        # Check Redis
         try:
             async with asyncio.timeout(2):
                 redis = await get_redis_client()

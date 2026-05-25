@@ -33,22 +33,18 @@ def test_empty_model():
 
 @pytest.mark.asyncio
 async def test_complete_success():
-
     provider = OllamaProvider()
 
     mock_response = Mock()
-
     mock_response.json.return_value = {
         "response": json.dumps({"message": "Hello"})
     }
-
     mock_response.raise_for_status.return_value = None
 
     mock_client = AsyncMock()
     mock_client.post.return_value = mock_response
 
     with patch("httpx.AsyncClient") as mock_async_client:
-
         mock_async_client.return_value.__aenter__.return_value = mock_client
 
         result = await provider.complete(
@@ -66,26 +62,21 @@ async def test_complete_success():
 
 @pytest.mark.asyncio
 async def test_complete_empty_response():
-
     provider = OllamaProvider()
 
     mock_response = Mock()
-
     mock_response.json.return_value = {
         "response": ""
     }
-
     mock_response.raise_for_status.return_value = None
 
     mock_client = AsyncMock()
     mock_client.post.return_value = mock_response
 
     with patch("httpx.AsyncClient") as mock_async_client:
-
         mock_async_client.return_value.__aenter__.return_value = mock_client
 
         with pytest.raises(LLMProviderError):
-
             await provider.complete(
                 "system",
                 "user",
@@ -99,26 +90,21 @@ async def test_complete_empty_response():
 
 @pytest.mark.asyncio
 async def test_complete_invalid_json():
-
     provider = OllamaProvider()
 
     mock_response = Mock()
-
     mock_response.json.return_value = {
         "response": "not valid json"
     }
-
     mock_response.raise_for_status.return_value = None
 
     mock_client = AsyncMock()
     mock_client.post.return_value = mock_response
 
     with patch("httpx.AsyncClient") as mock_async_client:
-
         mock_async_client.return_value.__aenter__.return_value = mock_client
 
         with pytest.raises(LLMProviderError):
-
             await provider.complete(
                 "system",
                 "user",
@@ -132,21 +118,37 @@ async def test_complete_invalid_json():
 
 @pytest.mark.asyncio
 async def test_complete_connection_error():
-
     provider = OllamaProvider()
 
     mock_client = AsyncMock()
-
-    mock_client.post.side_effect = httpx.ConnectError(
-        "Connection failed"
-    )
+    mock_client.post.side_effect = httpx.ConnectError("Connection failed")
 
     with patch("httpx.AsyncClient") as mock_async_client:
-
         mock_async_client.return_value.__aenter__.return_value = mock_client
 
         with pytest.raises(LLMProviderError):
+            await provider.complete(
+                "system",
+                "user",
+                MockResponse,
+            )
 
+
+# -----------------------------
+# TIMEOUT ERROR TEST (NEW)
+# -----------------------------
+
+@pytest.mark.asyncio
+async def test_complete_timeout_error():
+    provider = OllamaProvider()
+
+    mock_client = AsyncMock()
+    mock_client.post.side_effect = httpx.ReadTimeout("Request timed out")
+
+    with patch("httpx.AsyncClient") as mock_async_client:
+        mock_async_client.return_value.__aenter__.return_value = mock_client
+
+        with pytest.raises(LLMProviderError):
             await provider.complete(
                 "system",
                 "user",
@@ -160,7 +162,6 @@ async def test_complete_connection_error():
 
 @pytest.mark.asyncio
 async def test_stream_success():
-
     provider = OllamaProvider()
 
     stream_lines = [
@@ -177,18 +178,19 @@ async def test_stream_success():
     mock_response.aiter_lines = mock_aiter_lines
     mock_response.raise_for_status.return_value = None
 
+    # mock_stream handles the async context manager protocol (async with client.stream)
     mock_stream = AsyncMock()
     mock_stream.__aenter__.return_value = mock_response
 
-    mock_client = Mock()
-    mock_client.stream.return_value = mock_stream
+    # client itself is an AsyncMock, but its .stream attribute must be a regular Mock
+    # so calling client.stream() returns mock_stream directly, not a coroutine.
+    mock_client = AsyncMock()
+    mock_client.stream = Mock(return_value=mock_stream)
 
     with patch("httpx.AsyncClient") as mock_async_client:
-
         mock_async_client.return_value.__aenter__.return_value = mock_client
 
         chunks = []
-
         async for chunk in provider.stream(
             "system",
             "user",
@@ -205,7 +207,6 @@ async def test_stream_success():
 
 @pytest.mark.asyncio
 async def test_stream_skips_invalid_json():
-
     provider = OllamaProvider()
 
     stream_lines = [
@@ -225,15 +226,13 @@ async def test_stream_skips_invalid_json():
     mock_stream = AsyncMock()
     mock_stream.__aenter__.return_value = mock_response
 
-    mock_client = Mock()
-    mock_client.stream.return_value = mock_stream
+    mock_client = AsyncMock()
+    mock_client.stream = Mock(return_value=mock_stream)
 
     with patch("httpx.AsyncClient") as mock_async_client:
-
         mock_async_client.return_value.__aenter__.return_value = mock_client
 
         chunks = []
-
         async for chunk in provider.stream(
             "system",
             "user",
@@ -250,21 +249,40 @@ async def test_stream_skips_invalid_json():
 
 @pytest.mark.asyncio
 async def test_stream_connection_error():
-
     provider = OllamaProvider()
 
-    mock_client = Mock()
-
-    mock_client.stream.side_effect = httpx.ConnectError(
-        "Connection failed"
-    )
+    # Using a standard Mock instead of AsyncMock for the attribute method
+    # prevents an unawaited coroutine warning when the side_effect fires
+    mock_client = AsyncMock()
+    mock_client.stream = Mock(side_effect=httpx.ConnectError("Connection failed"))
 
     with patch("httpx.AsyncClient") as mock_async_client:
-
         mock_async_client.return_value.__aenter__.return_value = mock_client
 
         with pytest.raises(LLMProviderError):
+            async for _ in provider.stream(
+                "system",
+                "user",
+                MockResponse,
+            ):
+                pass
 
+
+# -----------------------------
+# STREAM TIMEOUT ERROR (NEW)
+# -----------------------------
+
+@pytest.mark.asyncio
+async def test_stream_timeout_error():
+    provider = OllamaProvider()
+
+    mock_client = AsyncMock()
+    mock_client.stream = Mock(side_effect=httpx.ReadTimeout("Request timed out"))
+
+    with patch("httpx.AsyncClient") as mock_async_client:
+        mock_async_client.return_value.__aenter__.return_value = mock_client
+
+        with pytest.raises(LLMProviderError):
             async for _ in provider.stream(
                 "system",
                 "user",

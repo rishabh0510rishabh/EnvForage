@@ -7,6 +7,8 @@ Never raises — returns empty list if detection methods are not available.
 """
 from __future__ import annotations
 
+import subprocess
+
 import logging
 import platform
 import re

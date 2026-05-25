@@ -72,8 +72,8 @@ def new_result_processor(self, dialect, coltype):
         return process
     return _orig_result_processor(self, dialect, coltype)
 
-ARRAY.bind_processor = new_bind_processor
-ARRAY.result_processor = new_result_processor
+ARRAY.bind_processor = new_bind_processor # type: ignore[method-assign]
+ARRAY.result_processor = new_result_processor # type: ignore[method-assign]
 
 # Use in-memory SQLite for unit tests (no Postgres needed)
 TEST_DB_URL = "sqlite+aiosqlite:///:memory:"

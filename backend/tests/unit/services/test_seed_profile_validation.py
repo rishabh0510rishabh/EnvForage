@@ -1,6 +1,7 @@
 """Unit tests for profiles.yaml Pydantic validation schemas."""
 from datetime import date
 from pathlib import Path
+from typing import Any
 
 import pytest
 import yaml
@@ -13,7 +14,7 @@ SEEDS_FILE = (
 )
 
 
-def _valid_profile() -> dict:
+def _valid_profile() -> dict[str, Any]:
     return {
         "slug": "pytorch-cuda",
         "name": "PyTorch CUDA",

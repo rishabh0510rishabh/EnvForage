@@ -5,10 +5,13 @@ All rendered output passes through SafetyFilter before being returned.
 This module never executes generated code; it only renders text.
 """
 from collections.abc import Sequence
+from functools import lru_cache
 from pathlib import Path
 
-from jinja2 import Environment, FileSystemLoader, StrictUndefined, select_autoescape
+from jinja2 import ChoiceLoader, FileSystemLoader, StrictUndefined, select_autoescape
+from jinja2.sandbox import SandboxedEnvironment
 
+from app.config import get_settings
 from app.templates.models import RenderResult, TemplateContext
 from app.templates.safety import validate_rendered_output
 
@@ -54,9 +57,15 @@ PROFILE_VERIFY_TEMPLATES: dict[str, str] = {
     "llm-finetune":        "verify_torch.sh",
 }
 
-def _build_jinja_env() -> Environment:
-    return Environment(
-        loader=FileSystemLoader(str(TEMPLATES_DIR)),
+@lru_cache(maxsize=16)
+def _get_jinja_env(custom_template_dir: Path | None) -> SandboxedEnvironment:
+    loaders = []
+    if custom_template_dir:
+        loaders.append(FileSystemLoader(str(custom_template_dir)))
+    loaders.append(FileSystemLoader(str(TEMPLATES_DIR)))
+
+    return SandboxedEnvironment(
+        loader=ChoiceLoader(loaders),
         undefined=StrictUndefined,
         autoescape=select_autoescape(enabled_extensions=(), default_for_string=False),
         trim_blocks=True,
@@ -64,7 +73,7 @@ def _build_jinja_env() -> Environment:
     )
 
 
-_JINJA_ENV = _build_jinja_env()
+_JINJA_ENV = _get_jinja_env(None)
 
 
 class TemplateRenderer:
@@ -110,7 +119,9 @@ class TemplateRenderer:
                     f"Known: {list(TEMPLATE_MAP.keys())}"
                 )
 
-        template = _JINJA_ENV.get_template(template_path)
+        settings = get_settings()
+        env = _get_jinja_env(settings.custom_template_dir)
+        template = env.get_template(template_path)
         rendered = template.render(**context.to_dict())
         safe_content = validate_rendered_output(rendered, template_name=template_path)
 

@@ -1,10 +1,11 @@
 """Profile endpoints — GET /api/v1/profiles and /api/v1/profiles/{slug}."""
 import logging
 
-from fastapi import APIRouter, HTTPException, Query, status
+from fastapi import APIRouter, Query, status
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 
 from app.api.deps import DB
+from app.core.exceptions import ConflictError, EntityNotFoundError, InternalServerError
 from app.schemas.profile import (
     ProfileCreateSchema,
     ProfileDetailSchema,
@@ -53,19 +54,15 @@ async def get_profile(slug: str, db: DB) -> ProfileDetailSchema:
     """
     profile = await profile_service.get_profile_by_slug(db, slug)
     if profile is None:
-        raise HTTPException(
-            status_code=404,
-            detail={
-                "error": {
-                    "code": "PROFILE_NOT_FOUND",
-                    "message": f"Profile '{slug}' not found",
-                }
-            },
-        )
+        raise EntityNotFoundError(resource=f"Profile '{slug}'", error_code="PROFILE_NOT_FOUND")
     return ProfileDetailSchema.model_validate(profile)
 
 
-@router.post("/profiles", response_model=ProfileDetailSchema, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/profiles",
+    response_model=ProfileDetailSchema,
+    status_code=status.HTTP_201_CREATED,
+)
 async def create_profile(profile_in: ProfileCreateSchema, db: DB) -> ProfileDetailSchema:
     """
     Create a new environment profile.
@@ -73,19 +70,14 @@ async def create_profile(profile_in: ProfileCreateSchema, db: DB) -> ProfileDeta
     try:
         profile = await profile_service.create_profile(db, profile_in)
         return ProfileDetailSchema.model_validate(profile)
-    except IntegrityError:
+    except IntegrityError as exc:
         await db.rollback()
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail="A profile with this slug already exists."
-        )
-    except SQLAlchemyError as e:
+        logger.warning("Duplicate profile slug: %s", profile_in.slug)
+        raise ConflictError(f"Profile '{profile_in.slug}' already exists.") from exc
+    except SQLAlchemyError as exc:
         await db.rollback()
-        logger.error("Database error while creating profile: %s", str(e))
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="An internal error occurred while creating the profile."
-        )
+        logger.exception("Database error while creating profile")
+        raise InternalServerError("Failed to create profile.") from exc
 
 
 @router.delete("/profiles/{slug}", status_code=status.HTTP_204_NO_CONTENT)
@@ -95,12 +87,4 @@ async def delete_profile(slug: str, db: DB) -> None:
     """
     deleted = await profile_service.delete_profile(db, slug)
     if not deleted:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail={
-                "error": {
-                    "code": "PROFILE_NOT_FOUND",
-                    "message": f"Profile '{slug}' not found",
-                }
-            },
-        )
+        raise EntityNotFoundError(resource=f"Profile '{slug}'", error_code="PROFILE_NOT_FOUND")

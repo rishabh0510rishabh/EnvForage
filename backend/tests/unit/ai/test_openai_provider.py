@@ -37,7 +37,34 @@ async def test_openai_stream_rate_limit_short_circuit():
             async for _ in generator:
                 pass
 
-        assert "OpenAI streaming failed after maximum retry attempts" in str(exc_info.value)
+        assert "Rate limited (429)" in str(exc_info.value)
         assert mock_stream_call.call_count == 3
-        assert mock_sleep.call_count == 3
+        assert mock_sleep.call_count == 2
         mock_sleep.assert_has_calls([call(1), call(1)])
+
+
+@pytest.mark.asyncio
+async def test_openai_stream_network_error_retry_and_exhaustion():
+    """Verify that OpenAIProvider.stream retries on httpx.HTTPError and exhausts all retries."""
+    provider = OpenAIProvider(api_key="test_key")
+
+    # Simulate a transport layer network drop-out when stream() is called
+    with (
+        patch("httpx.AsyncClient.stream", side_effect=httpx.ConnectError("Connection timed out")) as mock_stream_call,
+        patch("asyncio.sleep", AsyncMock()) as mock_sleep,
+    ):
+        generator = provider.stream(
+            system_prompt="Test system", user_message="Test user", response_model=DummyModel
+        )
+
+        with pytest.raises(LLMProviderError) as exc_info:
+            async for _ in generator:
+                pass
+
+        # Verify the trailing exception fallback is reached cleanly
+        assert "OpenAI streaming failed after maximum retry attempts." in str(exc_info.value)
+
+        # Verify the loop attempted the stream 3 times and backed off/slept twice
+        assert mock_stream_call.call_count == 3
+        assert mock_sleep.call_count == 2
+        mock_sleep.assert_has_calls([call(1.0), call(2.0)])
