@@ -194,3 +194,46 @@ profiles:
       - name: scipy
         version_spec: "1.13.0"
         install_order: 7
+
+  - slug: langchain-rag
+    name: "LangChain RAG"
+    description: >
+      Retrieval-Augmented Generation environment using LangChain,
+      ChromaDB, FAISS, and SentenceTransformers for building
+      AI-powered document retrieval pipelines.
+    tags: [rag, langchain, embeddings, vector-db, llm]
+    os_support: [LINUX, WSL, WIN]
+    cuda_required: false
+    python_versions: ["3.10", "3.11", "3.12"]
+    cuda_versions: ["11.8", "12.1"]
+    status: ACTIVE
+    last_validated: "2026-05-26"
+    packages:
+      - name: langchain
+        version_spec: "0.3.0"
+        install_order: 0
+
+      - name: chromadb
+        version_spec: "0.5.0"
+        install_order: 1
+
+      - name: faiss-cpu
+        version_spec: "1.8.0"
+        install_order: 2
+
+      - name: sentence-transformers
+        version_spec: "3.0.0"
+        install_order: 3
+
+      - name: transformers
+        version_spec: "4.41.0"
+        install_order: 4
+
+      - name: torch
+        version_spec: "2.5.0"
+        install_order: 5
+        is_optional: true
+
+      - name: numpy
+        version_spec: "1.26.4"
+        install_order: 6
