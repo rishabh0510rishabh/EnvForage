@@ -50,6 +50,7 @@ class Settings(BaseSettings):
 
     # ── AI / LLM ─────────────────────────────────────────────
     envforge_llm_provider: Literal["openai", "openrouter", "ollama", "mock"] = "mock"
+    envforge_llm_provider_fallbacks: str = ""
     openai_api_key: str = ""
     openai_model: str = "gpt-4o"
     openrouter_api_key: str = ""

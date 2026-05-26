@@ -81,7 +81,7 @@ class AITroubleshootService:
 
         # ── Step 2: Call LLM ──────────────────────────────────────────────
         provider = get_provider()
-        provider_name = type(provider).__name__
+        provider_name = getattr(provider, "provider_name", type(provider).__name__)
         model_name = getattr(provider, "model", "unknown")
 
         try:
@@ -92,6 +92,8 @@ class AITroubleshootService:
                 user_message=user_message,
                 response_model=TroubleshootResponse,
             )
+            provider_name = getattr(provider, "provider_name", type(provider).__name__)
+            model_name = getattr(provider, "model", "unknown")
         except LLMProviderError as exc:
             # Log the failed attempt
             latency_ms = int((time.monotonic() - start_time) * 1000)
