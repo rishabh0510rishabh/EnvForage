@@ -1,7 +1,8 @@
 """Troubleshoot endpoint — POST /api/v1/troubleshoot."""
-import logging
+
 from collections.abc import AsyncIterator
 
+import structlog
 from fastapi import APIRouter, Depends
 from fastapi.responses import StreamingResponse
 
@@ -12,7 +13,7 @@ from app.api.deps import DB
 from app.core.exceptions import AIServiceUnavailableError, InternalServerError
 from app.middleware.rate_limit import ai_rate_limit
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger(__name__)
 router = APIRouter()
 
 _service = AITroubleshootService()
@@ -26,34 +27,27 @@ _service = AITroubleshootService()
         "Submit a diagnostic report and receive a streaming AI-generated "
         "root cause analysis. Returns a text/event-stream of JSON tokens."
     ),
-    responses={
-        201: {"description": "Streaming troubleshoot analysis started"},
-        500: {"description": "Internal error"},
-        503: {"description": "AI service unavailable"},
-        429: {"description": "Rate limit exceeded"},
-    },
 )
 async def troubleshoot(
     request: TroubleshootRequest,
     db: DB,
     _rate_limit: None = Depends(ai_rate_limit),
 ) -> StreamingResponse:
-    """
-    Accept a structured diagnostic report and return a stream of AI-powered
-    troubleshooting tokens via Server-Sent Events (SSE).
-    """
-    try:
-        async def event_generator() -> AsyncIterator[str]:
-            try:
-                async for chunk in _service.stream_troubleshoot(request, db):
-                    yield f"data: {chunk}\n\n"
-            except Exception:
-                logger.exception("Error in troubleshoot stream generator")
-                yield (
-                    "data: {\"error\":\"STREAM_ERROR\","
-                    "\"message\":\"Internal streaming error.\"}\n\n"
-                )
 
+    async def event_generator() -> AsyncIterator[str]:
+        try:
+            async for chunk in _service.stream_troubleshoot(request, db):
+                yield f"data: {chunk}\n\n"
+        except Exception:
+            logger.exception(
+                "troubleshoot_stream_error",
+                event="stream_generator_failed",
+            )
+            yield (
+                'data: {"error":"STREAM_ERROR","message":"Internal streaming error."}\n\n'
+            )
+
+    try:
         return StreamingResponse(
             event_generator(),
             media_type="text/event-stream",
@@ -65,14 +59,21 @@ async def troubleshoot(
         )
 
     except LLMProviderError as exc:
-        logger.error("LLM provider error: %s", exc)
+        logger.error(
+            "llm_provider_error",
+            provider=getattr(exc, "provider", None),
+            reason=getattr(exc, "reason", str(exc)),
+        )
         raise AIServiceUnavailableError(
             provider=getattr(exc, "provider", None),
             reason=getattr(exc, "reason", str(exc)),
         ) from exc
 
     except Exception as exc:
-        logger.exception("Unexpected error in troubleshoot endpoint")
+        logger.exception(
+            "unexpected_troubleshoot_error",
+            error=str(exc),
+        )
         raise InternalServerError(
             "An unexpected error occurred during AI analysis."
         ) from exc
