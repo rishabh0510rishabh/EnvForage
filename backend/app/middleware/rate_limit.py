@@ -243,6 +243,11 @@ def _make_backend() -> RateLimitBackend:
 
 _backend = _make_backend()
 
+# Fallback used when RedisBackend raises a connection error at request time.
+# A single shared instance preserves the sliding-window state across all
+# requests that arrive while Redis is degraded.
+_fallback_backend = InMemoryBackend()
+
 
 # ── Rate Limiter ──────────────────────────────────────────────────────────────
 
@@ -274,9 +279,39 @@ class RateLimiter:
         client_ip = self._get_client_ip(request)
         key = f"rate_limit:{request.url.path}:{client_ip}"
 
-        allowed, info = await self.backend.is_allowed(
-            key, self.max_requests, self.window_seconds,
-        )
+        try:
+            allowed, info = await self.backend.is_allowed(
+                key, self.max_requests, self.window_seconds,
+            )
+        except Exception as exc:
+            # Determine whether this is a Redis connectivity problem.
+            # We import lazily so the module still works when redis is not
+            # installed (InMemoryBackend-only deployments).
+            _is_redis_error = False
+            try:
+                from redis.exceptions import (
+                    ConnectionError as _RedisConnError,
+                    TimeoutError as _RedisTimeout,
+                )
+                _is_redis_error = isinstance(exc, (_RedisConnError, _RedisTimeout))
+            except ImportError:
+                # redis package not present — any exception from a backend that
+                # somehow reached here is treated as a connection failure.
+                _is_redis_error = True
+
+            if _is_redis_error:
+                logger.warning(
+                    "Redis connection error during rate limit check for %s on %s "
+                    "— falling back to in-memory backend. Error: %s",
+                    client_ip, request.url.path, exc,
+                )
+                allowed, info = await _fallback_backend.is_allowed(
+                    key, self.max_requests, self.window_seconds,
+                )
+            else:
+                # Non-Redis exception (programming bug, etc.) — re-raise so it
+                # is not silently swallowed.
+                raise
 
         if not allowed:
             logger.warning(
