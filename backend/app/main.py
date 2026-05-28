@@ -3,6 +3,7 @@ FastAPI application factory and lifespan management.
 """
 
 import asyncio
+import typing
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 
@@ -92,13 +93,15 @@ def create_app() -> FastAPI:
             overall = "degraded"
 
         try:
-            async with asyncio.timeout(2):
+            async with asyncio.timeout(1):  # Enforce 1s timeout to prevent TCP blackhole hang
                 redis = await get_redis_client()
                 if redis is None:
                     redis_status = "not_configured"
                 else:
-                    import typing
                     await typing.cast(typing.Any, redis).ping()
+        except TimeoutError:
+            redis_status = "unavailable"
+            overall = "degraded"
         except Exception:
             redis_status = "unavailable"
             overall = "degraded"

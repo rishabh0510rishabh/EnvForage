@@ -118,3 +118,24 @@ def test_health_redis_not_configured():
     body = response.json()
     assert body["status"] == "healthy"
     assert body["services"]["redis"] == "not_configured"
+
+
+# ── Redis timeout (TCP blackhole) ─────────────────────────────────────────────
+
+
+def test_health_redis_timeout():
+    """Verify that a Redis ping timeout causes degraded status within 1s."""
+    timed_out_redis = AsyncMock()
+    timed_out_redis.ping = AsyncMock(side_effect=TimeoutError())
+    with (
+        patch("app.main.AsyncSessionLocal", return_value=_mock_db_ok()),
+        patch(
+            "app.main.get_redis_client", new=AsyncMock(return_value=timed_out_redis)
+        ),
+    ):
+        response = TestClient(create_app()).get("/health")
+    assert response.status_code == 503
+    body = response.json()
+    assert body["status"] == "degraded"
+    assert body["services"]["database"] == "ok"
+    assert body["services"]["redis"] == "unavailable"

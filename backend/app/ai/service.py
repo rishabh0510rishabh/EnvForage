@@ -153,20 +153,25 @@ class AITroubleshootService:
 
         total_tokens = token_usage.get("total_tokens", 0) if token_usage else 0
 
-        await self._persist_session(
-            db,
-            session_id,
-            request,
-            llm_result,
-            provider_name,
-            model_name,
-        )
+        persist_failed = False
+        try:
+            await self._persist_session(
+                db,
+                session_id,
+                request,
+                llm_result,
+                provider_name,
+                model_name,
+            )
+        except Exception:
+            persist_failed = True
+
         await self._log_audit(
             db,
             session_id=session_id,
             input_hash=input_hash,
-            safety_passed=True,
-            safety_violation=None,
+            safety_passed=not persist_failed,
+            safety_violation="DB persistence failure" if persist_failed else None,
             provider=provider_name,
             tokens_used=total_tokens,
             latency_ms=latency_ms,
@@ -339,8 +344,9 @@ class AITroubleshootService:
 
             except Exception as exc:
                 await db.rollback()
+                # 1. Use logger.exception to capture the full traceback
 
-                logger.error(
+                logger.exception(
                     "Failed to persist AI session " "(attempt %d/%d): %s",
                     attempt + 1,
                     max_retries,
@@ -354,6 +360,14 @@ class AITroubleshootService:
                     )
 
                     await asyncio.sleep(1)
+                else:
+                      # 2. On final permanent failure, log critical and raise so troubleshoot() can update the audit log
+                    logger.critical(
+                        "AI session persistence permanently failed for session %s",
+                        session_id,
+                    )
+                    raise
+
 
         logger.critical(
             "AI session persistence permanently failed" " for session %s",
@@ -390,7 +404,7 @@ class AITroubleshootService:
             )
             db.add(log)
         except Exception as exc:
-            logger.error("Failed to write audit log: %s", exc)
+            logger.exception("Failed to write audit log to database: %s", exc)
 
 
 #confidence gating

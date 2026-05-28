@@ -52,11 +52,14 @@ logger = logging.getLogger(__name__)
 
 # ── Backend ABC ───────────────────────────────────────────────────────────────
 
+
 class RateLimitBackend(ABC):
     """Abstract rate limit storage backend."""
 
     @abstractmethod
-    async def is_allowed(self, key: str, max_requests: int, window_seconds: int) -> tuple[bool, dict[str, Any]]:
+    async def is_allowed(
+        self, key: str, max_requests: int, window_seconds: int
+    ) -> tuple[bool, dict[str, Any]]:
         """
         Check if a request is allowed under the rate limit.
 
@@ -78,6 +81,7 @@ class RateLimitBackend(ABC):
 
 # ── In-memory backend (development / single-worker) ───────────────────────────
 
+
 class InMemoryBackend(RateLimitBackend):
     """
     Sliding-window rate limiter using in-memory storage.
@@ -91,7 +95,9 @@ class InMemoryBackend(RateLimitBackend):
         self._last_cleanup = time.monotonic()
         self._cleanup_interval = 60.0  # seconds
 
-    async def is_allowed(self, key: str, max_requests: int, window_seconds: int) -> tuple[bool, dict[str, Any]]:
+    async def is_allowed(
+        self, key: str, max_requests: int, window_seconds: int
+    ) -> tuple[bool, dict[str, Any]]:
         now = time.monotonic()
 
         if now - self._last_cleanup > self._cleanup_interval:
@@ -125,7 +131,8 @@ class InMemoryBackend(RateLimitBackend):
     async def cleanup(self) -> None:
         now = time.monotonic()
         empty_keys = [
-            key for key, timestamps in self._requests.items()
+            key
+            for key, timestamps in self._requests.items()
             if not timestamps or max(timestamps) < now - 300
         ]
         for key in empty_keys:
@@ -135,6 +142,7 @@ class InMemoryBackend(RateLimitBackend):
 
 
 # ── Redis backend (production / multi-worker) ─────────────────────────────────
+
 
 class RedisBackend(RateLimitBackend):
     """
@@ -157,8 +165,11 @@ class RedisBackend(RateLimitBackend):
             ) from exc
         self._client = aioredis.from_url(redis_url, decode_responses=True)
 
-    async def is_allowed(self, key: str, max_requests: int, window_seconds: int) -> tuple[bool, dict[str, Any]]:
+    async def is_allowed(
+        self, key: str, max_requests: int, window_seconds: int
+    ) -> tuple[bool, dict[str, Any]]:
         import uuid
+
         now = time.time()
         window_start = now - window_seconds
 
@@ -184,7 +195,7 @@ class RedisBackend(RateLimitBackend):
             if oldest:
                 retry_after = int(float(oldest[0][1]) + window_seconds - now) + 1
             else:
-                retry_after = window_seconds
+                retry_after = int(window_seconds)
             return False, {
                 "remaining": 0,
                 "limit": max_requests,
@@ -196,7 +207,7 @@ class RedisBackend(RateLimitBackend):
         return True, {
             "remaining": remaining,
             "limit": max_requests,
-            "reset": window_seconds,
+            "reset": int(window_seconds),
             "window": window_seconds,
         }
 
@@ -206,6 +217,7 @@ class RedisBackend(RateLimitBackend):
 
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
+
 
 def _mask_redis_url(url: str) -> str:
     """
@@ -228,6 +240,7 @@ def _mask_redis_url(url: str) -> str:
 
 # ── Backend factory ───────────────────────────────────────────────────────────
 
+
 def _make_backend() -> RateLimitBackend:
     """
     Return a RedisBackend if REDIS_URL is configured, else InMemoryBackend.
@@ -235,7 +248,9 @@ def _make_backend() -> RateLimitBackend:
     """
     settings = get_settings()
     if settings.redis_url:
-        logger.info("Rate limiter using Redis backend: %s", _mask_redis_url(settings.redis_url))
+        logger.info(
+            "Rate limiter using Redis backend: %s", _mask_redis_url(settings.redis_url)
+        )
         return RedisBackend(settings.redis_url)
     logger.info("Rate limiter using in-memory backend (single-instance only)")
     return InMemoryBackend()
@@ -250,6 +265,7 @@ _fallback_backend = InMemoryBackend()
 
 
 # ── Rate Limiter ──────────────────────────────────────────────────────────────
+
 
 class RateLimiter:
     """
@@ -316,7 +332,10 @@ class RateLimiter:
         if not allowed:
             logger.warning(
                 "Rate limit exceeded: %s on %s (limit: %d/%ds)",
-                client_ip, request.url.path, self.max_requests, self.window_seconds,
+                client_ip,
+                request.url.path,
+                self.max_requests,
+                self.window_seconds,
             )
             raise HTTPException(
                 status_code=429,
