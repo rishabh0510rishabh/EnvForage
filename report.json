@@ -1,66 +1,66 @@
 {
-  "agent_version": "1.0.0",
-  "os": {
-    "name": "Windows 11 Home Single Language",
-    "version": "25H2 (Build 26200)",
-    "architecture": "AMD64",
-    "wsl_version": null
-  },
-  "cpu": {
-    "brand": "13th Gen Intel(R) Core(TM) i5-13450HX",
-    "cores": 10,
-    "threads": 16
-  },
-  "ram": {
-    "total_gb": 15.78,
-    "available_gb": 4.65
-  },
-  "gpus": [
-    {
-      "name": "NVIDIA GeForce RTX 3050 6GB Laptop GPU",
-      "vram_gb": 6.0,
-      "driver_version": "595.79",
-      "index": 0
-    }
-  ],
-  "cuda": {
-    "version": "13.2",
-    "toolkit_path": null,
-    "cudnn_version": null,
-    "nccl_version": null
-  },
-  "rocm": {
-    "version": null,
-    "gcn_arch": null
-  },
-  "python_installations": [
-    {
-      "version": "3.14.3",
-      "path": "C:\\Users\\risha\\Documents\\Projects\\EnvForge\\backend\\.venv\\Scripts\\python.exe",
-      "is_venv": true,
-      "venv_path": "C:\\Users\\risha\\Documents\\Projects\\EnvForge\\backend\\.venv",
-      "pip_version": "26.1.1"
-    },
-    {
-      "version": "3.14.3",
-      "path": "C:\\Python314\\python.exe",
-      "is_venv": false,
-      "venv_path": null,
-      "pip_version": "25.3"
-    },
-    {
-      "version": "3.10.11",
-      "path": "C:\\Users\\risha\\AppData\\Local\\Programs\\Python\\Python310\\python.exe",
-      "is_venv": false,
-      "venv_path": null,
-      "pip_version": "23.0.1"
-    }
-  ],
-  "active_python": {
-    "version": "3.14.3",
-    "path": "C:\\Users\\risha\\Documents\\Projects\\EnvForge\\backend\\.venv\\Scripts\\python.exe",
-    "is_venv": true,
-    "venv_path": "C:\\Users\\risha\\Documents\\Projects\\EnvForge\\backend\\.venv",
-    "pip_version": "26.1.1"
-  }
+	"agent_version": "1.0.0",
+	"os": {
+		"name": "Windows 11 Home Single Language",
+		"version": "25H2 (Build 26200)",
+		"architecture": "AMD64",
+		"wsl_version": null
+	},
+	"cpu": {
+		"brand": "13th Gen Intel(R) Core(TM) i5-13450HX",
+		"cores": 10,
+		"threads": 16
+	},
+	"ram": {
+		"total_gb": 15.78,
+		"available_gb": 4.65
+	},
+	"gpus": [
+		{
+			"name": "NVIDIA GeForce RTX 3050 6GB Laptop GPU",
+			"vram_gb": 6.0,
+			"driver_version": "595.79",
+			"index": 0
+		}
+	],
+	"cuda": {
+		"version": "13.2",
+		"toolkit_path": null,
+		"cudnn_version": null,
+		"nccl_version": null
+	},
+	"rocm": {
+		"version": null,
+		"gcn_arch": null
+	},
+	"python_installations": [
+		{
+			"version": "3.14.3",
+			"path": "C:\\Users\\risha\\Documents\\Projects\\EnvForge\\backend\\.venv\\Scripts\\python.exe",
+			"is_venv": true,
+			"venv_path": "C:\\Users\\risha\\Documents\\Projects\\EnvForge\\backend\\.venv",
+			"pip_version": "26.1.1"
+		},
+		{
+			"version": "3.14.3",
+			"path": "C:\\Python314\\python.exe",
+			"is_venv": false,
+			"venv_path": null,
+			"pip_version": "25.3"
+		},
+		{
+			"version": "3.10.11",
+			"path": "C:\\Users\\risha\\AppData\\Local\\Programs\\Python\\Python310\\python.exe",
+			"is_venv": false,
+			"venv_path": null,
+			"pip_version": "23.0.1"
+		}
+	],
+	"active_python": {
+		"version": "3.14.3",
+		"path": "C:\\Users\\risha\\Documents\\Projects\\EnvForge\\backend\\.venv\\Scripts\\python.exe",
+		"is_venv": true,
+		"venv_path": "C:\\Users\\risha\\Documents\\Projects\\EnvForge\\backend\\.venv",
+		"pip_version": "26.1.1"
+	}
 }

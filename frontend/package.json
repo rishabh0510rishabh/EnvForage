@@ -1,28 +1,29 @@
 {
-  "name": "frontend",
-  "version": "1.0.1",
-  "private": true,
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "eslint . --ext .js,.jsx,.ts,.tsx"
-  },
-  "dependencies": {
-    "@types/react-syntax-highlighter": "^15.5.13",
-    "framer-motion": "^12.40.0",
-    "lucide-react": "^1.17.0",
-    "next": "16.2.6",
-    "react": "19.2.6",
-    "react-dom": "19.2.6",
-    "react-syntax-highlighter": "^16.1.1"
-  },
-  "devDependencies": {
-    "@types/node": "^25",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "eslint": "^9",
-    "eslint-config-next": "16.2.6",
-    "typescript": "^6"
-  }
+	"name": "frontend",
+	"version": "1.0.1",
+	"private": true,
+	"scripts": {
+		"dev": "next dev",
+		"build": "next build",
+		"start": "next start",
+		"lint": "eslint . --ext .js,.jsx,.ts,.tsx"
+	},
+	"dependencies": {
+		"@types/react-syntax-highlighter": "^15.5.13",
+		"@vercel/analytics": "^2.0.1",
+		"framer-motion": "^12.40.0",
+		"lucide-react": "^1.17.0",
+		"next": "16.2.6",
+		"react": "19.2.6",
+		"react-dom": "19.2.6",
+		"react-syntax-highlighter": "^16.1.1"
+	},
+	"devDependencies": {
+		"@types/node": "^25",
+		"@types/react": "^19",
+		"@types/react-dom": "^19",
+		"eslint": "^9",
+		"eslint-config-next": "16.2.6",
+		"typescript": "^6"
+	}
 }

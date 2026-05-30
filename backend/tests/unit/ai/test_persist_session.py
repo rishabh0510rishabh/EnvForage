@@ -138,7 +138,9 @@ async def test_troubleshoot_audit_marked_failed_when_persist_fails():
         mock_provider = MagicMock()
         mock_provider.complete = AsyncMock(return_value=llm_result)
         mock_provider.__class__.__name__ = "MockProvider"
-        mock_provider.last_token_usage = MagicMock(return_value={"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0})
+        mock_provider.last_token_usage = MagicMock(
+            return_value={"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0}
+        )
         mock_get_provider.return_value = mock_provider
 
         request = _make_request()
@@ -173,7 +175,9 @@ async def test_troubleshoot_audit_marked_passed_when_persist_succeeds():
         mock_provider = MagicMock()
         mock_provider.complete = AsyncMock(return_value=llm_result)
         mock_provider.__class__.__name__ = "MockProvider"
-        mock_provider.last_token_usage = MagicMock(return_value={"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0})
+        mock_provider.last_token_usage = MagicMock(
+            return_value={"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0}
+        )
         mock_get_provider.return_value = mock_provider
 
         request = _make_request()

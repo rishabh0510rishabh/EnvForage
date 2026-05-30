@@ -1,47 +1,47 @@
 import type { Metadata } from "next";
+import { Inter, JetBrains_Mono, Outfit } from "next/font/google";
 import Script from "next/script";
-import { Inter, Outfit, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
-import { ThemeProvider } from "./providers";
-import Link from "next/link";
-import Navbar from "./components/Navbar";
+import { Analytics } from "@vercel/analytics/next";
 import Footer from "./components/Footer";
+import Navbar from "./components/Navbar";
 import ScrollToTop from "./components/ScrollToTop";
+import { ThemeProvider } from "./providers";
 
 const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-  display: "swap",
+	subsets: ["latin"],
+	variable: "--font-inter",
+	display: "swap",
 });
 
 const outfit = Outfit({
-  subsets: ["latin"],
-  variable: "--font-outfit",
-  display: "swap",
+	subsets: ["latin"],
+	variable: "--font-outfit",
+	display: "swap",
 });
 
 const jetbrainsMono = JetBrains_Mono({
-  subsets: ["latin"],
-  variable: "--font-jetbrains-mono",
-  display: "swap",
+	subsets: ["latin"],
+	variable: "--font-jetbrains-mono",
+	display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "EnvForage | ML Environment Provisioning",
-  description:
-    "Generate intelligent, safe, and deterministic ML/AI environment setup scripts.",
+	title: "EnvForage | ML Environment Provisioning",
+	description:
+		"Generate intelligent, safe, and deterministic ML/AI environment setup scripts.",
 };
 
 export default function RootLayout({
-  children,
+	children,
 }: Readonly<{
-  children: React.ReactNode;
+	children: React.ReactNode;
 }>) {
-  return (
-    <html lang="en" suppressHydrationWarning>
-      <head>
-        <Script id="theme-init" strategy="beforeInteractive">
-          {`
+	return (
+		<html lang="en" suppressHydrationWarning>
+			<head>
+				<Script id="theme-init" strategy="beforeInteractive">
+					{`
             try {
               const storedTheme = localStorage.getItem("theme");
               const theme =
@@ -69,25 +69,30 @@ export default function RootLayout({
               document.documentElement.setAttribute("data-theme", "dark");
             }
           `}
-        </Script>
-      </head>
+				</Script>
+			</head>
 
+			<body
+				className={`${inter.variable} ${outfit.variable} ${jetbrainsMono.variable}`}
+				style={{ backgroundColor: "var(--bg-core)" }}
+			>
+				<ThemeProvider>
+					{/* Navigation Header */}
+					<Navbar />
 
-      <body className={`${inter.variable} ${outfit.variable} ${jetbrainsMono.variable}`} style={{ backgroundColor: "var(--bg-core)" }}>
-        <ThemeProvider>
-          {/* Navigation Header */}
-          <Navbar />
+					{/* Main Content */}
+					<main
+						style={{ minHeight: "calc(100vh - 140px)", paddingTop: "76px" }}
+					>
+						{children}
+					</main>
 
-          {/* Main Content */}
-          <main style={{ minHeight: "calc(100vh - 140px)", paddingTop: "76px" }}>
-            {children}
-          </main>
-
-          {/* Footer */}
-          <Footer />
-          <ScrollToTop />
-        </ThemeProvider>
-      </body>
-    </html>
-  );
+					{/* Footer */}
+					<Footer />
+					<ScrollToTop />
+				</ThemeProvider>
+				<Analytics />
+			</body>
+		</html>
+	);
 }

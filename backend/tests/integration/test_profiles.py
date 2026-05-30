@@ -203,7 +203,9 @@ async def test_create_profile_with_wrong_admin_key_returns_401(client):
         "os_support": ["LINUX"],
         "python_versions": ["3.11"],
     }
-    response = await client.post("/api/v1/profiles", json=profile_data, headers=wrong_headers)
+    response = await client.post(
+        "/api/v1/profiles", json=profile_data, headers=wrong_headers
+    )
     assert response.status_code == 401
     assert response.json()["detail"]["error"]["code"] == "INVALID_ADMIN_KEY"
 

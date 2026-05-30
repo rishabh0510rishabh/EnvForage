@@ -18,6 +18,7 @@ Usage:
         cuda_required=True,
     )
 """
+
 from packaging.specifiers import InvalidSpecifier, SpecifierSet
 from packaging.version import Version
 
@@ -215,7 +216,9 @@ class CompatibilityResolver:
         spec_version = constraint.version_spec
 
         # Check if the version spec is an exact version (no operators)
-        if not any(op in spec_version for op in [">=", "<=", "!=", ">", "<", "~=", "=="]):
+        if not any(
+            op in spec_version for op in [">=", "<=", "!=", ">", "<", "~=", "=="]
+        ):
             # Exact version — validate it and use it directly
             return self._resolve_exact_version(
                 package_name=package_name,
@@ -233,7 +236,6 @@ class CompatibilityResolver:
             rocm_version=rocm_version,
             cuda_variant=constraint.cuda_variant,
         )
-
 
     def _resolve_version_range(
         self,
@@ -426,4 +428,3 @@ class CompatibilityResolver:
             return "rocm" + rocm_version
 
         return None
-    

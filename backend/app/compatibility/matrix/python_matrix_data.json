@@ -1,373 +1,179 @@
 {
-    "torch": [
-        {
-            "framework": "torch",
-            "version": "2.0.0",
-            "min_python": "3.8",
-            "max_python": "3.13",
-            "supported_cuda": [
-                "11.7",
-                "11.8"
-            ],
-            "supported_rocm": [],
-            "supported_python": [
-                "3.8",
-                "3.9",
-                "3.10",
-                "3.11",
-                "3.12",
-                "3.13"
-            ]
-        },
-        {
-            "framework": "torch",
-            "version": "2.0.1",
-            "min_python": "3.8",
-            "max_python": "3.13",
-            "supported_cuda": [
-                "11.7",
-                "11.8"
-            ],
-            "supported_rocm": [],
-            "supported_python": [
-                "3.8",
-                "3.9",
-                "3.10",
-                "3.11",
-                "3.12",
-                "3.13"
-            ]
-        },
-        {
-            "framework": "torch",
-            "version": "2.1.0",
-            "min_python": "3.8",
-            "max_python": "3.13",
-            "supported_cuda": [
-                "11.8",
-                "12.1"
-            ],
-            "supported_rocm": [],
-            "supported_python": [
-                "3.8",
-                "3.9",
-                "3.10",
-                "3.11",
-                "3.12",
-                "3.13"
-            ]
-        },
-        {
-            "framework": "torch",
-            "version": "2.1.1",
-            "min_python": "3.8",
-            "max_python": "3.13",
-            "supported_cuda": [
-                "11.8",
-                "12.1"
-            ],
-            "supported_rocm": [],
-            "supported_python": [
-                "3.8",
-                "3.9",
-                "3.10",
-                "3.11",
-                "3.12",
-                "3.13"
-            ]
-        },
-        {
-            "framework": "torch",
-            "version": "2.1.2",
-            "min_python": "3.8",
-            "max_python": "3.13",
-            "supported_cuda": [
-                "11.8",
-                "12.1"
-            ],
-            "supported_rocm": [
-                "5.4.2",
-                "5.6.0"
-            ],
-            "supported_python": [
-                "3.8",
-                "3.9",
-                "3.10",
-                "3.11",
-                "3.12",
-                "3.13"
-            ]
-        },
-        {
-            "framework": "torch",
-            "version": "2.2.0",
-            "min_python": "3.8",
-            "max_python": "3.13",
-            "supported_cuda": [
-                "11.8",
-                "12.1"
-            ],
-            "supported_rocm": [],
-            "supported_python": [
-                "3.8",
-                "3.9",
-                "3.10",
-                "3.11",
-                "3.12",
-                "3.13"
-            ]
-        },
-        {
-            "framework": "torch",
-            "version": "2.2.1",
-            "min_python": "3.8",
-            "max_python": "3.13",
-            "supported_cuda": [
-                "11.8",
-                "12.1"
-            ],
-            "supported_rocm": [],
-            "supported_python": [
-                "3.8",
-                "3.9",
-                "3.10",
-                "3.11",
-                "3.12",
-                "3.13"
-            ]
-        },
-        {
-            "framework": "torch",
-            "version": "2.2.2",
-            "min_python": "3.8",
-            "max_python": "3.13",
-            "supported_cuda": [
-                "11.8",
-                "12.1"
-            ],
-            "supported_rocm": [],
-            "supported_python": [
-                "3.8",
-                "3.9",
-                "3.10",
-                "3.11",
-                "3.12",
-                "3.13"
-            ]
-        },
-        {
-            "framework": "torch",
-            "version": "2.3.0",
-            "min_python": "3.8",
-            "max_python": "3.13",
-            "supported_cuda": [
-                "11.8",
-                "12.1"
-            ],
-            "supported_rocm": [],
-            "supported_python": [
-                "3.8",
-                "3.9",
-                "3.10",
-                "3.11",
-                "3.12",
-                "3.13"
-            ]
-        },
-        {
-            "framework": "torch",
-            "version": "2.4.0",
-            "min_python": "3.8",
-            "max_python": "3.13",
-            "supported_cuda": [
-                "11.8",
-                "12.1",
-                "12.4"
-            ],
-            "supported_rocm": [
-                "6.0.0"
-            ],
-            "supported_python": [
-                "3.8",
-                "3.9",
-                "3.10",
-                "3.11",
-                "3.12",
-                "3.13"
-            ]
-        },
-        {
-            "framework": "torch",
-            "version": "2.5.0",
-            "min_python": "3.8",
-            "max_python": "3.13",
-            "supported_cuda": [
-                "11.8",
-                "12.1",
-                "12.4"
-            ],
-            "supported_rocm": [
-                "6.0.0"
-            ],
-            "supported_python": [
-                "3.8",
-                "3.9",
-                "3.10",
-                "3.11",
-                "3.12",
-                "3.13"
-            ]
-        }
-    ],
-    "tensorflow": [
-        {
-            "framework": "tensorflow",
-            "version": "2.13.0",
-            "min_python": "3.8",
-            "max_python": "3.13",
-            "supported_cuda": [
-                "11.8"
-            ],
-            "supported_rocm": [],
-            "supported_python": [
-                "3.8",
-                "3.9",
-                "3.10",
-                "3.11",
-                "3.12",
-                "3.13"
-            ]
-        },
-        {
-            "framework": "tensorflow",
-            "version": "2.14.0",
-            "min_python": "3.9",
-            "max_python": "3.13",
-            "supported_cuda": [
-                "11.8"
-            ],
-            "supported_rocm": [],
-            "supported_python": [
-                "3.9",
-                "3.10",
-                "3.11",
-                "3.12",
-                "3.13"
-            ]
-        },
-        {
-            "framework": "tensorflow",
-            "version": "2.15.0",
-            "min_python": "3.9",
-            "max_python": "3.13",
-            "supported_cuda": [
-                "12.1"
-            ],
-            "supported_rocm": [],
-            "supported_python": [
-                "3.9",
-                "3.10",
-                "3.11",
-                "3.12",
-                "3.13"
-            ]
-        },
-        {
-            "framework": "tensorflow",
-            "version": "2.16.0",
-            "min_python": "3.9",
-            "max_python": "3.13",
-            "supported_cuda": [
-                "12.1"
-            ],
-            "supported_rocm": [],
-            "supported_python": [
-                "3.9",
-                "3.10",
-                "3.11",
-                "3.12",
-                "3.13"
-            ]
-        }
-    ],
-    "ultralytics": [
-        {
-            "framework": "ultralytics",
-            "version": "8.0.0",
-            "min_python": "3.8",
-            "max_python": "3.13",
-            "supported_cuda": [
-                "11.8",
-                "12.1"
-            ],
-            "supported_rocm": [],
-            "supported_python": [
-                "3.8",
-                "3.9",
-                "3.10",
-                "3.11",
-                "3.12",
-                "3.13"
-            ]
-        },
-        {
-            "framework": "ultralytics",
-            "version": "8.1.0",
-            "min_python": "3.8",
-            "max_python": "3.13",
-            "supported_cuda": [
-                "11.8",
-                "12.1"
-            ],
-            "supported_rocm": [],
-            "supported_python": [
-                "3.8",
-                "3.9",
-                "3.10",
-                "3.11",
-                "3.12",
-                "3.13"
-            ]
-        },
-        {
-            "framework": "ultralytics",
-            "version": "8.2.0",
-            "min_python": "3.8",
-            "max_python": "3.13",
-            "supported_cuda": [
-                "11.8",
-                "12.1",
-                "12.4"
-            ],
-            "supported_rocm": [],
-            "supported_python": [
-                "3.8",
-                "3.9",
-                "3.10",
-                "3.11",
-                "3.12",
-                "3.13"
-            ]
-        },
-        {
-            "framework": "ultralytics",
-            "version": "8.3.0",
-            "min_python": "3.8",
-            "max_python": "3.13",
-            "supported_cuda": [
-                "11.8",
-                "12.1",
-                "12.4"
-            ],
-            "supported_rocm": [],
-            "supported_python": [
-                "3.8",
-                "3.9",
-                "3.10",
-                "3.11",
-                "3.12",
-                "3.13"
-            ]
-        }
-    ]
+	"torch": [
+		{
+			"framework": "torch",
+			"version": "2.0.0",
+			"min_python": "3.8",
+			"max_python": "3.13",
+			"supported_cuda": ["11.7", "11.8"],
+			"supported_rocm": [],
+			"supported_python": ["3.8", "3.9", "3.10", "3.11", "3.12", "3.13"]
+		},
+		{
+			"framework": "torch",
+			"version": "2.0.1",
+			"min_python": "3.8",
+			"max_python": "3.13",
+			"supported_cuda": ["11.7", "11.8"],
+			"supported_rocm": [],
+			"supported_python": ["3.8", "3.9", "3.10", "3.11", "3.12", "3.13"]
+		},
+		{
+			"framework": "torch",
+			"version": "2.1.0",
+			"min_python": "3.8",
+			"max_python": "3.13",
+			"supported_cuda": ["11.8", "12.1"],
+			"supported_rocm": [],
+			"supported_python": ["3.8", "3.9", "3.10", "3.11", "3.12", "3.13"]
+		},
+		{
+			"framework": "torch",
+			"version": "2.1.1",
+			"min_python": "3.8",
+			"max_python": "3.13",
+			"supported_cuda": ["11.8", "12.1"],
+			"supported_rocm": [],
+			"supported_python": ["3.8", "3.9", "3.10", "3.11", "3.12", "3.13"]
+		},
+		{
+			"framework": "torch",
+			"version": "2.1.2",
+			"min_python": "3.8",
+			"max_python": "3.13",
+			"supported_cuda": ["11.8", "12.1"],
+			"supported_rocm": ["5.4.2", "5.6.0"],
+			"supported_python": ["3.8", "3.9", "3.10", "3.11", "3.12", "3.13"]
+		},
+		{
+			"framework": "torch",
+			"version": "2.2.0",
+			"min_python": "3.8",
+			"max_python": "3.13",
+			"supported_cuda": ["11.8", "12.1"],
+			"supported_rocm": [],
+			"supported_python": ["3.8", "3.9", "3.10", "3.11", "3.12", "3.13"]
+		},
+		{
+			"framework": "torch",
+			"version": "2.2.1",
+			"min_python": "3.8",
+			"max_python": "3.13",
+			"supported_cuda": ["11.8", "12.1"],
+			"supported_rocm": [],
+			"supported_python": ["3.8", "3.9", "3.10", "3.11", "3.12", "3.13"]
+		},
+		{
+			"framework": "torch",
+			"version": "2.2.2",
+			"min_python": "3.8",
+			"max_python": "3.13",
+			"supported_cuda": ["11.8", "12.1"],
+			"supported_rocm": [],
+			"supported_python": ["3.8", "3.9", "3.10", "3.11", "3.12", "3.13"]
+		},
+		{
+			"framework": "torch",
+			"version": "2.3.0",
+			"min_python": "3.8",
+			"max_python": "3.13",
+			"supported_cuda": ["11.8", "12.1"],
+			"supported_rocm": [],
+			"supported_python": ["3.8", "3.9", "3.10", "3.11", "3.12", "3.13"]
+		},
+		{
+			"framework": "torch",
+			"version": "2.4.0",
+			"min_python": "3.8",
+			"max_python": "3.13",
+			"supported_cuda": ["11.8", "12.1", "12.4"],
+			"supported_rocm": ["6.0.0"],
+			"supported_python": ["3.8", "3.9", "3.10", "3.11", "3.12", "3.13"]
+		},
+		{
+			"framework": "torch",
+			"version": "2.5.0",
+			"min_python": "3.8",
+			"max_python": "3.13",
+			"supported_cuda": ["11.8", "12.1", "12.4"],
+			"supported_rocm": ["6.0.0"],
+			"supported_python": ["3.8", "3.9", "3.10", "3.11", "3.12", "3.13"]
+		}
+	],
+	"tensorflow": [
+		{
+			"framework": "tensorflow",
+			"version": "2.13.0",
+			"min_python": "3.8",
+			"max_python": "3.13",
+			"supported_cuda": ["11.8"],
+			"supported_rocm": [],
+			"supported_python": ["3.8", "3.9", "3.10", "3.11", "3.12", "3.13"]
+		},
+		{
+			"framework": "tensorflow",
+			"version": "2.14.0",
+			"min_python": "3.9",
+			"max_python": "3.13",
+			"supported_cuda": ["11.8"],
+			"supported_rocm": [],
+			"supported_python": ["3.9", "3.10", "3.11", "3.12", "3.13"]
+		},
+		{
+			"framework": "tensorflow",
+			"version": "2.15.0",
+			"min_python": "3.9",
+			"max_python": "3.13",
+			"supported_cuda": ["12.1"],
+			"supported_rocm": [],
+			"supported_python": ["3.9", "3.10", "3.11", "3.12", "3.13"]
+		},
+		{
+			"framework": "tensorflow",
+			"version": "2.16.0",
+			"min_python": "3.9",
+			"max_python": "3.13",
+			"supported_cuda": ["12.1"],
+			"supported_rocm": [],
+			"supported_python": ["3.9", "3.10", "3.11", "3.12", "3.13"]
+		}
+	],
+	"ultralytics": [
+		{
+			"framework": "ultralytics",
+			"version": "8.0.0",
+			"min_python": "3.8",
+			"max_python": "3.13",
+			"supported_cuda": ["11.8", "12.1"],
+			"supported_rocm": [],
+			"supported_python": ["3.8", "3.9", "3.10", "3.11", "3.12", "3.13"]
+		},
+		{
+			"framework": "ultralytics",
+			"version": "8.1.0",
+			"min_python": "3.8",
+			"max_python": "3.13",
+			"supported_cuda": ["11.8", "12.1"],
+			"supported_rocm": [],
+			"supported_python": ["3.8", "3.9", "3.10", "3.11", "3.12", "3.13"]
+		},
+		{
+			"framework": "ultralytics",
+			"version": "8.2.0",
+			"min_python": "3.8",
+			"max_python": "3.13",
+			"supported_cuda": ["11.8", "12.1", "12.4"],
+			"supported_rocm": [],
+			"supported_python": ["3.8", "3.9", "3.10", "3.11", "3.12", "3.13"]
+		},
+		{
+			"framework": "ultralytics",
+			"version": "8.3.0",
+			"min_python": "3.8",
+			"max_python": "3.13",
+			"supported_cuda": ["11.8", "12.1", "12.4"],
+			"supported_rocm": [],
+			"supported_python": ["3.8", "3.9", "3.10", "3.11", "3.12", "3.13"]
+		}
+	]
 }

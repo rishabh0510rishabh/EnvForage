@@ -1,41 +1,41 @@
 {
-  "agent_version": "1.0.0",
-  "os": {
-    "name": "Ubuntu 22.04.4 LTS",
-    "version": "22.04",
-    "architecture": "x86_64",
-    "wsl_version": null
-  },
-  "cpu": {
-    "brand": "AMD Ryzen 5 5600X",
-    "cores": 6,
-    "threads": 12
-  },
-  "ram": {
-    "total_gb": 16.0,
-    "available_gb": 10.1
-  },
-  "gpus": [],
-  "cuda": {
-    "version": null,
-    "toolkit_path": null,
-    "cudnn_version": null,
-    "nccl_version": null
-  },
-  "python_installations": [
-    {
-      "version": "3.11.9",
-      "path": "/usr/bin/python3.11",
-      "is_venv": false,
-      "venv_path": null,
-      "pip_version": "24.0"
-    }
-  ],
-  "active_python": {
-    "version": "3.11.9",
-    "path": "/usr/bin/python3.11",
-    "is_venv": false,
-    "venv_path": null,
-    "pip_version": "24.0"
-  }
+	"agent_version": "1.0.0",
+	"os": {
+		"name": "Ubuntu 22.04.4 LTS",
+		"version": "22.04",
+		"architecture": "x86_64",
+		"wsl_version": null
+	},
+	"cpu": {
+		"brand": "AMD Ryzen 5 5600X",
+		"cores": 6,
+		"threads": 12
+	},
+	"ram": {
+		"total_gb": 16.0,
+		"available_gb": 10.1
+	},
+	"gpus": [],
+	"cuda": {
+		"version": null,
+		"toolkit_path": null,
+		"cudnn_version": null,
+		"nccl_version": null
+	},
+	"python_installations": [
+		{
+			"version": "3.11.9",
+			"path": "/usr/bin/python3.11",
+			"is_venv": false,
+			"venv_path": null,
+			"pip_version": "24.0"
+		}
+	],
+	"active_python": {
+		"version": "3.11.9",
+		"path": "/usr/bin/python3.11",
+		"is_venv": false,
+		"venv_path": null,
+		"pip_version": "24.0"
+	}
 }

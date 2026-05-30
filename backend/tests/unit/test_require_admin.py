@@ -1,4 +1,5 @@
 """Unit tests for the require_admin dependency in app.api.deps."""
+
 import os
 
 import pytest
@@ -53,6 +54,7 @@ class TestRequireAdmin:
         monkeypatch.setenv("ADMIN_API_KEY", "")
         # Bust the lru_cache so get_settings() re-reads the env.
         from app.config import get_settings
+
         get_settings.cache_clear()
         try:
             with pytest.raises(HTTPException) as exc_info:

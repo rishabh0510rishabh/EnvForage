@@ -18,6 +18,8 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 load_dotenv()
 
 DEV_SECRET_KEY = "dev-secret-key-change-in-production"
+
+
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=".env",
@@ -78,14 +80,10 @@ class Settings(BaseSettings):
         """
         Validate that the default development secret key is not used in production.
         """
-        if (
-            self.environment == "production"
-            and self.secret_key == DEV_SECRET_KEY
-        ):
-            raise ValueError(
-                "Production environment requires a strong SECRET_KEY."
-            )
+        if self.environment == "production" and self.secret_key == DEV_SECRET_KEY:
+            raise ValueError("Production environment requires a strong SECRET_KEY.")
         return self
+
 
 @lru_cache
 def get_settings() -> Settings:

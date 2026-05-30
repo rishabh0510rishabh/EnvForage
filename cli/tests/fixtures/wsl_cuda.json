@@ -1,48 +1,48 @@
 {
-  "agent_version": "1.0.0",
-  "os": {
-    "name": "Ubuntu 22.04.4 LTS",
-    "version": "22.04",
-    "architecture": "x86_64",
-    "wsl_version": "WSL2"
-  },
-  "cpu": {
-    "brand": "Intel(R) Core(TM) i7-12700H",
-    "cores": 14,
-    "threads": 20
-  },
-  "ram": {
-    "total_gb": 32.0,
-    "available_gb": 22.5
-  },
-  "gpus": [
-    {
-      "name": "NVIDIA GeForce RTX 3080 Laptop GPU",
-      "vram_gb": 16.0,
-      "driver_version": "527.86",
-      "index": 0
-    }
-  ],
-  "cuda": {
-    "version": "11.8",
-    "toolkit_path": "/usr/local/cuda-11.8",
-    "cudnn_version": "8.7.0",
-    "nccl_version": null
-  },
-  "python_installations": [
-    {
-      "version": "3.11.9",
-      "path": "/usr/bin/python3.11",
-      "is_venv": false,
-      "venv_path": null,
-      "pip_version": "24.0"
-    }
-  ],
-  "active_python": {
-    "version": "3.11.9",
-    "path": "/usr/bin/python3.11",
-    "is_venv": false,
-    "venv_path": null,
-    "pip_version": "24.0"
-  }
+	"agent_version": "1.0.0",
+	"os": {
+		"name": "Ubuntu 22.04.4 LTS",
+		"version": "22.04",
+		"architecture": "x86_64",
+		"wsl_version": "WSL2"
+	},
+	"cpu": {
+		"brand": "Intel(R) Core(TM) i7-12700H",
+		"cores": 14,
+		"threads": 20
+	},
+	"ram": {
+		"total_gb": 32.0,
+		"available_gb": 22.5
+	},
+	"gpus": [
+		{
+			"name": "NVIDIA GeForce RTX 3080 Laptop GPU",
+			"vram_gb": 16.0,
+			"driver_version": "527.86",
+			"index": 0
+		}
+	],
+	"cuda": {
+		"version": "11.8",
+		"toolkit_path": "/usr/local/cuda-11.8",
+		"cudnn_version": "8.7.0",
+		"nccl_version": null
+	},
+	"python_installations": [
+		{
+			"version": "3.11.9",
+			"path": "/usr/bin/python3.11",
+			"is_venv": false,
+			"venv_path": null,
+			"pip_version": "24.0"
+		}
+	],
+	"active_python": {
+		"version": "3.11.9",
+		"path": "/usr/bin/python3.11",
+		"is_venv": false,
+		"venv_path": null,
+		"pip_version": "24.0"
+	}
 }

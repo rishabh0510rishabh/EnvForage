@@ -11,7 +11,6 @@ router = APIRouter()
 pwd = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
-
 class RegData(BaseModel):
     fname: str
     lname: str
@@ -48,5 +47,7 @@ def signin(data: LoginData) -> dict[str, str]:
         raise HTTPException(status_code=401, detail="Invalid email or password")
     exp = datetime.now(UTC) + timedelta(hours=24)
     settings = get_settings()
-    token = jwt.encode({"email": data.email, "exp": exp}, settings.secret_key, algorithm="HS256")
+    token = jwt.encode(
+        {"email": data.email, "exp": exp}, settings.secret_key, algorithm="HS256"
+    )
     return {"token": token, "email": data.email}

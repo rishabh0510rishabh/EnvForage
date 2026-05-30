@@ -1,48 +1,48 @@
 {
-  "agent_version": "1.0.0",
-  "os": {
-    "name": "Windows 11 Pro",
-    "version": "23H2 (Build 22631)",
-    "architecture": "AMD64",
-    "wsl_version": null
-  },
-  "cpu": {
-    "brand": "Intel(R) Core(TM) i9-13900K",
-    "cores": 24,
-    "threads": 32
-  },
-  "ram": {
-    "total_gb": 64.0,
-    "available_gb": 40.0
-  },
-  "gpus": [
-    {
-      "name": "NVIDIA GeForce RTX 4080",
-      "vram_gb": 16.0,
-      "driver_version": "551.61",
-      "index": 0
-    }
-  ],
-  "cuda": {
-    "version": null,
-    "toolkit_path": null,
-    "cudnn_version": null,
-    "nccl_version": null
-  },
-  "python_installations": [
-    {
-      "version": "3.11.9",
-      "path": "C:\\Python311\\python.exe",
-      "is_venv": false,
-      "venv_path": null,
-      "pip_version": "24.0"
-    }
-  ],
-  "active_python": {
-    "version": "3.11.9",
-    "path": "C:\\Python311\\python.exe",
-    "is_venv": false,
-    "venv_path": null,
-    "pip_version": "24.0"
-  }
+	"agent_version": "1.0.0",
+	"os": {
+		"name": "Windows 11 Pro",
+		"version": "23H2 (Build 22631)",
+		"architecture": "AMD64",
+		"wsl_version": null
+	},
+	"cpu": {
+		"brand": "Intel(R) Core(TM) i9-13900K",
+		"cores": 24,
+		"threads": 32
+	},
+	"ram": {
+		"total_gb": 64.0,
+		"available_gb": 40.0
+	},
+	"gpus": [
+		{
+			"name": "NVIDIA GeForce RTX 4080",
+			"vram_gb": 16.0,
+			"driver_version": "551.61",
+			"index": 0
+		}
+	],
+	"cuda": {
+		"version": null,
+		"toolkit_path": null,
+		"cudnn_version": null,
+		"nccl_version": null
+	},
+	"python_installations": [
+		{
+			"version": "3.11.9",
+			"path": "C:\\Python311\\python.exe",
+			"is_venv": false,
+			"venv_path": null,
+			"pip_version": "24.0"
+		}
+	],
+	"active_python": {
+		"version": "3.11.9",
+		"path": "C:\\Python311\\python.exe",
+		"is_venv": false,
+		"venv_path": null,
+		"pip_version": "24.0"
+	}
 }

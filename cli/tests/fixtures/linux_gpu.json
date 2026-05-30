@@ -1,55 +1,55 @@
 {
-  "agent_version": "1.0.0",
-  "os": {
-    "name": "Ubuntu 22.04.4 LTS",
-    "version": "22.04",
-    "architecture": "x86_64",
-    "wsl_version": null
-  },
-  "cpu": {
-    "brand": "Intel(R) Core(TM) i9-13900K",
-    "cores": 24,
-    "threads": 32
-  },
-  "ram": {
-    "total_gb": 64.0,
-    "available_gb": 48.2
-  },
-  "gpus": [
-    {
-      "name": "NVIDIA GeForce RTX 4090",
-      "vram_gb": 24.0,
-      "driver_version": "535.54.03",
-      "index": 0
-    }
-  ],
-  "cuda": {
-    "version": "12.1",
-    "toolkit_path": "/usr/local/cuda-12.1",
-    "cudnn_version": "8.9.0",
-    "nccl_version": "2.18.1"
-  },
-  "python_installations": [
-    {
-      "version": "3.11.9",
-      "path": "/usr/bin/python3.11",
-      "is_venv": false,
-      "venv_path": null,
-      "pip_version": "24.0"
-    },
-    {
-      "version": "3.10.14",
-      "path": "/usr/bin/python3.10",
-      "is_venv": false,
-      "venv_path": null,
-      "pip_version": "23.3"
-    }
-  ],
-  "active_python": {
-    "version": "3.11.9",
-    "path": "/usr/bin/python3.11",
-    "is_venv": false,
-    "venv_path": null,
-    "pip_version": "24.0"
-  }
+	"agent_version": "1.0.0",
+	"os": {
+		"name": "Ubuntu 22.04.4 LTS",
+		"version": "22.04",
+		"architecture": "x86_64",
+		"wsl_version": null
+	},
+	"cpu": {
+		"brand": "Intel(R) Core(TM) i9-13900K",
+		"cores": 24,
+		"threads": 32
+	},
+	"ram": {
+		"total_gb": 64.0,
+		"available_gb": 48.2
+	},
+	"gpus": [
+		{
+			"name": "NVIDIA GeForce RTX 4090",
+			"vram_gb": 24.0,
+			"driver_version": "535.54.03",
+			"index": 0
+		}
+	],
+	"cuda": {
+		"version": "12.1",
+		"toolkit_path": "/usr/local/cuda-12.1",
+		"cudnn_version": "8.9.0",
+		"nccl_version": "2.18.1"
+	},
+	"python_installations": [
+		{
+			"version": "3.11.9",
+			"path": "/usr/bin/python3.11",
+			"is_venv": false,
+			"venv_path": null,
+			"pip_version": "24.0"
+		},
+		{
+			"version": "3.10.14",
+			"path": "/usr/bin/python3.10",
+			"is_venv": false,
+			"venv_path": null,
+			"pip_version": "23.3"
+		}
+	],
+	"active_python": {
+		"version": "3.11.9",
+		"path": "/usr/bin/python3.11",
+		"is_venv": false,
+		"venv_path": null,
+		"pip_version": "24.0"
+	}
 }
