@@ -1,7 +1,6 @@
 import bashlex
-from typing import List, Set
 
-class SecurityAlertException(Exception):
+class SecurityAlertError(Exception):
     """Custom exception jab koi malicious pattern detect ho"""
     def __init__(self, message: str, payload: dict = None):
         super().__init__(message)
@@ -10,8 +9,8 @@ class SecurityAlertException(Exception):
 
 class ASTSafetyFilter:
     def __init__(self):
-        self.blocked_commands: Set[str] = {"rm", "mkfs", "dd", "chmod", "chown"}
-        self.dangerous_flags: Set[str] = {"-rf", "-r", "-f"}
+        self.blocked_commands: set[str] = {"rm", "mkfs", "dd", "chmod", "chown"}
+        self.dangerous_flags: set[str] = {"-rf", "-r", "-f"}
 
     def _normalize_word(self, node) -> str:
         """Quotes aur Backslashes ko remove karke command normalise karta hai"""
@@ -40,7 +39,7 @@ class ASTSafetyFilter:
                 has_root_target = any("/" in arg for arg in args)
                 
                 if has_danger_flag or has_root_target:
-                    raise SecurityAlertException(
+                    raise SecurityAlertError(
                         message=f"Critical Security Violation: Blocked command root '{root_cmd}' with dangerous arguments.",
                         payload={"command": root_cmd, "args": args, "status": "blocked"}
                     )
@@ -62,7 +61,7 @@ class ASTSafetyFilter:
         try:
             trees = bashlex.parse(script_content)
         except Exception as e:
-            raise SecurityAlertException(
+            raise SecurityAlertError(
                 message="Unparseable or heavily obfuscated script structure detected.",
                 payload={"error": str(e), "status": "blocked"}
             )

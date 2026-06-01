@@ -34,7 +34,7 @@ from app.schemas.script import (
     ResolvedPackage as ResponseResolvedPackage,
 )
 # Hamari nayi AST security core logic class aur exception ko import kiya
-from app.services.safety import ASTSafetyFilter, SecurityAlertException
+from app.services.safety import ASTSafetyFilter, SecurityAlertError
 from app.templates.engine import TemplateRenderer
 from app.templates.models import TemplateContext
 
@@ -207,7 +207,7 @@ async def generate_scripts(
             try:
                 # Naya deterministic parse tree algorithm call kiya
                 _safety_filter.analyze_script(rr.content)
-            except SecurityAlertException as e:
+            except SecurityAlertError as e:
                 # Malicious obfuscation pattern caught here!
                 _logger.warning("Script payload block triggered by AST validation: %s", e.message)
                 raise HTTPException(
