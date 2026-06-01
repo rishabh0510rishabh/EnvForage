@@ -110,7 +110,7 @@ class Settings(BaseSettings):
         if self.environment == "production":
             # 1. Existing secret key check
             if self.secret_key == DEV_SECRET_KEY:
-                raise ValueError("Production environment requires a strong SECRET_KEY.")
+    raise ValueError("secret_key cannot be the default development key")
 
             # 2. Check for unintended fallback to localhost default in production (normalized check)
             if "http://localhost:3000" in self.allowed_origins_list:
@@ -119,7 +119,6 @@ class Settings(BaseSettings):
                     "Please explicitly set your production ALLOWED_ORIGINS environment variable."
                 )
         return self
-
 
 @lru_cache
 def get_settings() -> Settings:
