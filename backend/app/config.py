@@ -52,11 +52,13 @@ class Settings(BaseSettings):
 
     @property
     def allowed_origins_list(self) -> list[str]:
+        """Split and normalize comma-separated allowed origins into a list of strings."""
         return [o.strip() for o in self.allowed_origins.split(",") if o.strip()]
 
     @field_validator("allowed_origins", mode="after")
     @classmethod
     def validate_origins(cls, v: str) -> str:
+        """Validate format parameters of individual CORS entries inside allowed_origins."""
         origins = [o.strip() for o in v.split(",")]
         for origin in origins:
             if not origin:
@@ -98,14 +100,13 @@ class Settings(BaseSettings):
     rate_limit_ai_rpm: int = 10  # AI troubleshoot: requests per minute
     rate_limit_repair_rpm: int = 20  # Repair endpoint: requests per minute
     rate_limit_general_rpm: int = 60  # General API: requests per minute
+
     # ── Admin API Key ─────────────────────────────────────────
     admin_api_key: str = ""
 
     @model_validator(mode="after")
     def validate_production_safeguards(self) -> "Settings":
-        """
-        Validate security baselines when running in a production ecosystem.
-        """
+        """Validate security baselines when running in a production ecosystem."""
         if self.environment == "production":
             # 1. Existing secret key check
             if self.secret_key == DEV_SECRET_KEY:
