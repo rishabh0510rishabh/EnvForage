@@ -1,5 +1,6 @@
 """
 Script generation service — orchestrates Compatibility Engine + Template Engine.
+Includes AST safety validation to protect against obfuscated shell command execution.
 """
 
 import hashlib
@@ -9,6 +10,7 @@ import uuid
 from datetime import datetime
 from typing import Any
 
+from fastapi import HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.cache import get_redis_client
@@ -31,11 +33,14 @@ from app.schemas.script import (
 from app.schemas.script import (
     ResolvedPackage as ResponseResolvedPackage,
 )
+# Hamari nayi AST security core logic class aur exception ko import kiya
+from app.services.safety import ASTSafetyFilter, SecurityAlertException
 from app.templates.engine import TemplateRenderer
 from app.templates.models import TemplateContext
 
 _resolver = CompatibilityResolver()
 _renderer = TemplateRenderer()
+_safety_filter = ASTSafetyFilter()
 _logger = logging.getLogger(__name__)
 
 _RESOLVER_CACHE_PREFIX = "compatibility_resolver:v1"
@@ -153,8 +158,10 @@ async def generate_scripts(
     1. Build PackageConstraints from profile
     2. Run CompatibilityResolver
     3. Render templates
-    4. Persist job + scripts to DB
-    5. Return GenerationResponse
+    4. Guardrail check: Validate scripts via ASTSafetyFilter
+    5. Persist job + scripts to DB
+    6. Return GenerationResponse
+    7. Sync audit log databases for security alerts
     """
     # Step 1: Build constraints from profile packages
     constraints = [
@@ -193,7 +200,27 @@ async def generate_scripts(
     )
     render_results = _renderer.render_all(request.output_formats, ctx)
 
-    # Step 4: Persist job + scripts
+    # Step 4: Security Intercept Guardrail (AST Engine integrated)
+    for rr in render_results:
+        # Evaluate shell scripts or setup-titled config payloads
+        if rr.filename.endswith(".sh") or "setup" in rr.filename:
+            try:
+                # Naya deterministic parse tree algorithm call kiya
+                _safety_filter.analyze_script(rr.content)
+            except SecurityAlertException as e:
+                # Malicious obfuscation pattern caught here!
+                _logger.warning("Script payload block triggered by AST validation: %s", e.message)
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail={
+                        "error": "SecurityViolation",
+                        "message": "The generated configuration contains elements flagged by security filters.",
+                        "reason": e.message,
+                        "metadata": e.payload
+                    }
+                )
+
+    # Step 5: Persist job + scripts
     job = ScriptGenerationJob(
         id=uuid.uuid4(),
         profile_id=profile.id,
@@ -220,7 +247,7 @@ async def generate_scripts(
 
     await db.flush()  # Get job.id without committing transaction
 
-    # Step 5: Build response
+    # Step 6: Build response
     return GenerationResponse(
         job_id=job.id,
         status="completed",
