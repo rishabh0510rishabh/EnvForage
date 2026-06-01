@@ -200,25 +200,33 @@ async def generate_scripts(
     )
     render_results = _renderer.render_all(request.output_formats, ctx)
 
-    # Step 4: Security Intercept Guardrail (AST Engine integrated)
-    for rr in render_results:
-        # Evaluate shell scripts or setup-titled config payloads
-        if rr.filename.endswith(".sh") or "setup" in rr.filename:
-            try:
-                # Naya deterministic parse tree algorithm call kiya
-                _safety_filter.analyze_script(rr.content)
-            except SecurityAlertError as e:
-                # Malicious obfuscation pattern caught here!
-                _logger.warning("Script payload block triggered by AST validation: %s", e.message)
-                raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST,
-                    detail={
-                        "error": "SecurityViolation",
-                        "message": "The generated configuration contains elements flagged by security filters.",
-                        "reason": e.message,
-                        "metadata": e.payload
-                    }
-                )
+   # Step 4: Security Intercept Guardrail (AST Engine integrated)
+        for rr in render_results:
+            # Check for shell scripts using extensions or shebangs
+            shell_shebangs = (
+                "#!/bin/sh",
+                "#!/usr/bin/env sh",
+                "#!/bin/bash",
+                "#!/usr/bin/env bash",
+            )
+            is_shell_script = rr.filename.endswith(".sh") or rr.content.startswith(shell_shebangs)
+
+            if is_shell_script:
+                try:
+                    # Naya deterministic parse tree algorithm call kiya
+                    _safety_filter.analyze_script(rr.content)
+                except SecurityAlertError as e:
+                    # Malicious obfuscation pattern caught here!
+                    _logger.warning("Script payload block triggered by AST validation: %s", e.message)
+                    raise HTTPException(
+                        status_code=status.HTTP_400_BAD_REQUEST,
+                        detail={
+                            "error": "SecurityViolation",
+                            "message": "The generated configuration contains elements flagged by security filters.",
+                            "reason": e.message,
+                            "metadata": e.payload
+                        }
+                    )
 
     # Step 5: Persist job + scripts
     job = ScriptGenerationJob(
