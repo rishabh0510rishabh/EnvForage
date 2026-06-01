@@ -62,13 +62,17 @@ class Settings(BaseSettings):
             if not origin:
                 raise ValueError("Empty or trailing comma origins are not allowed.")
             if origin == "*":
-                continue
+                raise ValueError("Wildcard '*' is not allowed in ALLOWED_ORIGINS.")
 
             parsed = urllib.parse.urlparse(origin)
             if not parsed.scheme or parsed.scheme not in ("http", "https"):
                 raise ValueError(f"Invalid origin '{origin}': Must start with 'http://' or 'https://'.")
             if not parsed.netloc:
                 raise ValueError(f"Invalid origin '{origin}': Missing host/domain.")
+            if parsed.query or parsed.fragment:
+                raise ValueError(f"Invalid origin '{origin}': Query/fragment components are not allowed.")
+            if parsed.username or parsed.password:
+                raise ValueError(f"Invalid origin '{origin}': Userinfo components are not allowed.")
             if parsed.path and parsed.path != "/":
                 raise ValueError(f"Invalid origin '{origin}': Must not contain a path component ('{parsed.path}').")
             if origin.endswith("/"):
@@ -106,13 +110,9 @@ class Settings(BaseSettings):
             # 1. Existing secret key check
             if self.secret_key == DEV_SECRET_KEY:
                 raise ValueError("Production environment requires a strong SECRET_KEY.")
-            
-            # 2. Check for wildcard configuration in production
-            if "*" in self.allowed_origins_list:
-                raise ValueError("Wildcard '*' CORS origin is strictly forbidden in production environments.")
-            
-            # 3. Check for unintended fallback to localhost default in production
-            if self.allowed_origins == "http://localhost:3000":
+
+            # 2. Check for unintended fallback to localhost default in production (normalized check)
+            if "http://localhost:3000" in self.allowed_origins_list:
                 raise ValueError(
                     "Security Risk: ALLOWED_ORIGINS cannot default to 'http://localhost:3000' in production. "
                     "Please explicitly set your production ALLOWED_ORIGINS environment variable."
