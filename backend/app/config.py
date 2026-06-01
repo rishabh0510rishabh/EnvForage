@@ -7,12 +7,13 @@ All configuration is sourced from environment variables or a local `.env` file.
 shares the same env-loading bootstrap before `Settings` is read.
 """
 
+import urllib.parse
 from functools import lru_cache
 from pathlib import Path
 from typing import Literal
 
 from dotenv import load_dotenv
-from pydantic import model_validator
+from pydantic import field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 load_dotenv()
@@ -51,7 +52,28 @@ class Settings(BaseSettings):
 
     @property
     def allowed_origins_list(self) -> list[str]:
-        return [o.strip() for o in self.allowed_origins.split(",")]
+        return [o.strip() for o in self.allowed_origins.split(",") if o.strip()]
+
+    @field_validator("allowed_origins", mode="after")
+    @classmethod
+    def validate_origins(cls, v: str) -> str:
+        origins = [o.strip() for o in v.split(",")]
+        for origin in origins:
+            if not origin:
+                raise ValueError("Empty or trailing comma origins are not allowed.")
+            if origin == "*":
+                continue
+
+            parsed = urllib.parse.urlparse(origin)
+            if not parsed.scheme or parsed.scheme not in ("http", "https"):
+                raise ValueError(f"Invalid origin '{origin}': Must start with 'http://' or 'https://'.")
+            if not parsed.netloc:
+                raise ValueError(f"Invalid origin '{origin}': Missing host/domain.")
+            if parsed.path and parsed.path != "/":
+                raise ValueError(f"Invalid origin '{origin}': Must not contain a path component ('{parsed.path}').")
+            if origin.endswith("/"):
+                raise ValueError(f"Invalid origin '{origin}': Must not have a trailing slash.")
+        return v
 
     # ── AI / LLM ─────────────────────────────────────────────
     envforge_llm_provider: Literal["openai", "openrouter", "ollama", "mock"] = "mock"
@@ -76,12 +98,25 @@ class Settings(BaseSettings):
     admin_api_key: str = ""
 
     @model_validator(mode="after")
-    def validate_secret_key(self) -> "Settings":
+    def validate_production_safeguards(self) -> "Settings":
         """
-        Validate that the default development secret key is not used in production.
+        Validate security baselines when running in a production ecosystem.
         """
-        if self.environment == "production" and self.secret_key == DEV_SECRET_KEY:
-            raise ValueError("Production environment requires a strong SECRET_KEY.")
+        if self.environment == "production":
+            # 1. Existing secret key check
+            if self.secret_key == DEV_SECRET_KEY:
+                raise ValueError("Production environment requires a strong SECRET_KEY.")
+            
+            # 2. Check for wildcard configuration in production
+            if "*" in self.allowed_origins_list:
+                raise ValueError("Wildcard '*' CORS origin is strictly forbidden in production environments.")
+            
+            # 3. Check for unintended fallback to localhost default in production
+            if self.allowed_origins == "http://localhost:3000":
+                raise ValueError(
+                    "Security Risk: ALLOWED_ORIGINS cannot default to 'http://localhost:3000' in production. "
+                    "Please explicitly set your production ALLOWED_ORIGINS environment variable."
+                )
         return self
 
 
