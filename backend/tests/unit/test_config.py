@@ -25,7 +25,7 @@ def test_valid_cors_origins():
 
 def test_invalid_cors_origin_formats():
     """Verify that malformed origins raise Pydantic validation errors."""
-    with pytest.raises(ValidationError, match="Wildcard '\\*' not allowed in allowed_origins"):
+    with pytest.raises(ValidationError, match=r"Wildcard '\*' not allowed in allowed_origins"):
         Settings(allowed_origins="*")
 
     with pytest.raises(ValidationError, match="Must not have a trailing slash"):
@@ -62,7 +62,7 @@ def test_production_rejects_dev_secret():
 
 def test_production_cors_safeguards():
     """Verify production safeguards block default localhost configurations."""
-    with pytest.raises(ValidationError, match="ALLOWED_ORIGINS cannot default to 'http://localhost:3000'"):
+    with pytest.raises(ValidationError, match="Security Risk: ALLOWED_ORIGINS cannot default to"):
         Settings(
             environment="production",
             allowed_origins=" http://localhost:3000 ",
