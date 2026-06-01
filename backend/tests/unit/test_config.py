@@ -9,9 +9,8 @@ from pydantic import ValidationError
 
 from app.config import DEV_SECRET_KEY, Settings
 
-
 def test_valid_cors_origins():
-    """Ensure properly formatted origins pass validation seamlessly."""
+    """Ensure valid formatted origins pass validation seamlessly."""
     config = Settings(
         environment="development",
         allowed_origins="http://localhost:3000,https://example.com,https://app.example.com"
@@ -75,4 +74,3 @@ def test_production_cors_safeguards():
         secret_key="prod-safe-key-123"
     )
     assert prod_config.allowed_origins_list == ["https://myproductionapp.com"]
-    
