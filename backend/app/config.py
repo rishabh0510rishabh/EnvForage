@@ -1,10 +1,7 @@
 """
-EnvForge application settings.
+EnvForge application settings config module.
 
-All configuration is sourced from environment variables or a local `.env` file.
-`load_dotenv()` is invoked here so any code path that imports `app.config`
-(FastAPI, Alembic migrations, the seed service, ad-hoc `python -m ...` scripts)
-shares the same env-loading bootstrap before `Settings` is read.
+Sourced from environment variables or a local `.env` file via Pydantic.
 """
 
 import urllib.parse
@@ -22,6 +19,8 @@ DEV_SECRET_KEY = "dev-secret-key-change-in-production"
 
 
 class Settings(BaseSettings):
+    """Application settings schema containing comprehensive format and security validations."""
+
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",
@@ -41,9 +40,6 @@ class Settings(BaseSettings):
     database_url: str = "postgresql+asyncpg://postgres:postgres@localhost:5432/envforge"
 
     # ── Redis ─────────────────────────────────────────────────
-    # If set, the rate limiter will use Redis instead of in-memory storage.
-    # Required in production for multi-worker correctness.
-    # Format: redis://:password@host:port/db  or  redis://host:port/db
     redis_url: str | None = None
     resolver_cache_ttl_seconds: int = 86400
 
@@ -52,8 +48,8 @@ class Settings(BaseSettings):
 
     @property
     def allowed_origins_list(self) -> list[str]:
-        """Split and normalize comma-separated allowed origins into a list of strings."""
-        return [o.strip() for o in self.allowed_origins.split(",") if o.strip()]
+        """Split and normalize comma-separated allowed origins into clean strings."""
+        return [o.strip().lower() for o in self.allowed_origins.split(",") if o.strip()]
 
     @field_validator("allowed_origins", mode="after")
     @classmethod
@@ -64,17 +60,19 @@ class Settings(BaseSettings):
             if not origin:
                 raise ValueError("Empty or trailing comma origins are not allowed.")
             if origin == "*":
-                raise ValueError("Wildcard '*' is not allowed in ALLOWED_ORIGINS.")
+                raise ValueError("Wildcard '*' not allowed in allowed_origins")
 
             parsed = urllib.parse.urlparse(origin)
             if not parsed.scheme or parsed.scheme not in ("http", "https"):
                 raise ValueError(f"Invalid origin '{origin}': Must start with 'http://' or 'https://'.")
             if not parsed.netloc:
                 raise ValueError(f"Invalid origin '{origin}': Missing host/domain.")
-            if parsed.query or parsed.fragment:
-                raise ValueError(f"Invalid origin '{origin}': Query/fragment components are not allowed.")
-            if parsed.username or parsed.password:
-                raise ValueError(f"Invalid origin '{origin}': Userinfo components are not allowed.")
+            if parsed.query:
+                raise ValueError(f"Invalid origin '{origin}': Must not contain query.")
+            if parsed.fragment:
+                raise ValueError(f"Invalid origin '{origin}': Must not contain fragment.")
+            if parsed.username or parsed.password or ("@" in parsed.netloc):
+                raise ValueError(f"Invalid origin '{origin}': Must not include userinfo.")
             if parsed.path and parsed.path != "/":
                 raise ValueError(f"Invalid origin '{origin}': Must not contain a path component ('{parsed.path}').")
             if origin.endswith("/"):
@@ -97,9 +95,9 @@ class Settings(BaseSettings):
     max_page_size: int = 100
 
     # ── Rate Limiting ─────────────────────────────────────────
-    rate_limit_ai_rpm: int = 10  # AI troubleshoot: requests per minute
-    rate_limit_repair_rpm: int = 20  # Repair endpoint: requests per minute
-    rate_limit_general_rpm: int = 60  # General API: requests per minute
+    rate_limit_ai_rpm: int = 10
+    rate_limit_repair_rpm: int = 20
+    rate_limit_general_rpm: int = 60
 
     # ── Admin API Key ─────────────────────────────────────────
     admin_api_key: str = ""
@@ -108,11 +106,9 @@ class Settings(BaseSettings):
     def validate_production_safeguards(self) -> "Settings":
         """Validate security baselines when running in a production ecosystem."""
         if self.environment == "production":
-            # 1. Existing secret key check
             if self.secret_key == DEV_SECRET_KEY:
-    raise ValueError("secret_key cannot be the default development key")
+                raise ValueError("secret_key cannot be the default development key")
 
-            # 2. Check for unintended fallback to localhost default in production (normalized check)
             if "http://localhost:3000" in self.allowed_origins_list:
                 raise ValueError(
                     "Security Risk: ALLOWED_ORIGINS cannot default to 'http://localhost:3000' in production. "
@@ -120,8 +116,8 @@ class Settings(BaseSettings):
                 )
         return self
 
+
 @lru_cache
 def get_settings() -> Settings:
     """Return cached settings singleton."""
     return Settings()
-

@@ -25,46 +25,43 @@ def test_valid_cors_origins():
 
 def test_invalid_cors_origin_formats():
     """Verify that malformed origins raise Pydantic validation errors."""
-    # Wildcard rejection at base parsing
-    with pytest.raises(ValidationError, match="Wildcard '\\*' is not allowed"):
+    with pytest.raises(ValidationError, match="Wildcard '\\*' not allowed in allowed_origins"):
         Settings(allowed_origins="*")
 
-    # Trailing slash
     with pytest.raises(ValidationError, match="Must not have a trailing slash"):
         Settings(allowed_origins="https://example.com/")
 
-    # URL path component
     with pytest.raises(ValidationError, match="Must not contain a path component"):
         Settings(allowed_origins="https://example.com/dashboard")
 
-    # URL query parameters
-    with pytest.raises(ValidationError, match="Query/fragment components are not allowed"):
+    with pytest.raises(ValidationError, match="Must not contain query"):
         Settings(allowed_origins="https://example.com?query=true")
 
-    # URL userinfo components
-    with pytest.raises(ValidationError, match="Userinfo components are not allowed"):
+    with pytest.raises(ValidationError, match="Must not contain fragment"):
+        Settings(allowed_origins="https://example.com#section")
+
+    with pytest.raises(ValidationError, match="Must not include userinfo"):
         Settings(allowed_origins="https://user:pass@example.com")
 
-    # Missing scheme
     with pytest.raises(ValidationError, match="Must start with 'http://' or 'https://'"):
         Settings(allowed_origins="frontend.example.com")
 
-    # Empty/trailing comma element
     with pytest.raises(ValidationError, match="Empty or trailing comma origins are not allowed"):
         Settings(allowed_origins="https://example.com,,https://api.com")
 
 
-def test_production_cors_safeguards():
-    """Verify production safeguards block default secret configurations and default origins."""
-    # Block default dev secret key in Production
-    with pytest.raises(ValidationError, match="Production environment requires a strong SECRET_KEY"):
+def test_production_rejects_dev_secret():
+    """Verify that the model validator rejects the default development secret in production."""
+    with pytest.raises(ValidationError, match="secret_key cannot be the default development key"):
         Settings(
             environment="production",
-            allowed_origins="https://myproductionapp.com",
             secret_key=DEV_SECRET_KEY,
+            allowed_origins="https://myproductionapp.com",
         )
 
-    # Block localhost default fallback in Production (even with whitespace formatting)
+
+def test_production_cors_safeguards():
+    """Verify production safeguards block default localhost configurations."""
     with pytest.raises(ValidationError, match="ALLOWED_ORIGINS cannot default to 'http://localhost:3000'"):
         Settings(
             environment="production",
@@ -72,7 +69,6 @@ def test_production_cors_safeguards():
             secret_key="prod-safe-key-123"
         )
 
-    # Valid Production settings should pass cleanly
     prod_config = Settings(
         environment="production",
         allowed_origins="https://myproductionapp.com",
