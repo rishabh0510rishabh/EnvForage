@@ -79,3 +79,4 @@ def test_production_cors_safeguards():
         secret_key="prod-safe-key-123"
     )
     assert prod_config.allowed_origins_list == ["https://myproductionapp.com"]
+    
