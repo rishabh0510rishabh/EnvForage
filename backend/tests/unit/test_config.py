@@ -1,3 +1,9 @@
+"""
+Unit tests for application configuration validation and security guidelines.
+
+Verifies CORS origin formatting rules and environment-specific constraints.
+"""
+
 import pytest
 from pydantic import ValidationError
 
@@ -49,7 +55,7 @@ def test_invalid_cors_origin_formats():
 
 
 def test_production_cors_safeguards():
-    """Verify production safeguards block default secret configurations."""
+    """Verify production safeguards block default secret configurations and default origins."""
     # Block default dev secret key in Production
     with pytest.raises(ValidationError, match="Production environment requires a strong SECRET_KEY"):
         Settings(
