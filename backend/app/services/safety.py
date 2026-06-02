@@ -1,5 +1,3 @@
-import bashlex
-
 class SecurityAlertError(Exception):
     """Custom exception jab koi malicious pattern detect ho"""
     def __init__(self, message: str, payload: dict = None):
