@@ -201,7 +201,7 @@ async def generate_scripts(
     render_results = _renderer.render_all(request.output_formats, ctx)
 
    # Step 4: Security Intercept Guardrail (AST Engine integrated)
-        for rr in render_results:
+    for rr in render_results:
             # Check for shell scripts using extensions or shebangs
             shell_shebangs = (
                 "#!/bin/sh",
