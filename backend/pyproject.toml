@@ -28,6 +28,7 @@ dependencies = [
     "passlib>=1.7.4",
     "bcrypt>=4.0.0",
     "packaging>=23.0",
+    "bashlex>=0.6",
 ]
 
 [project.optional-dependencies]
@@ -52,6 +53,7 @@ include = ["app*"]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "session"
 testpaths = ["tests"]
 addopts = "--cov=app --cov-report=term-missing"
 
@@ -71,6 +73,7 @@ ignore = ["E501"]
 python_version = "3.11"
 strict = true
 ignore_missing_imports = true
+
 [[tool.mypy.overrides]]
 module = "tests.*"
 disallow_untyped_defs = false

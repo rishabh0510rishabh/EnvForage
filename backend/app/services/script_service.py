@@ -40,6 +40,13 @@ _logger = logging.getLogger(__name__)
 
 _RESOLVER_CACHE_PREFIX = "compatibility_resolver:v1"
 
+_SHELL_SHEBANGS = (
+    "#!/bin/sh",
+    "#!/usr/bin/env sh",
+    "#!/bin/bash",
+    "#!/usr/bin/env bash",
+)
+
 
 def _resolver_cache_ttl_seconds() -> int:
     return max(get_settings().resolver_cache_ttl_seconds, 1)
@@ -156,7 +163,6 @@ async def generate_scripts(
     4. Guardrail check: Validate scripts via ASTSafetyFilter
     5. Persist job + scripts to DB
     6. Return GenerationResponse
-    7. Sync audit log databases for security alerts
     """
     # Step 1: Build constraints from profile packages
     constraints = [
@@ -195,33 +201,27 @@ async def generate_scripts(
     )
     render_results = _renderer.render_all(request.output_formats, ctx)
 
-    # Step 4: Security Intercept Guardrail (AST Engine integrated)
+    # Step 4: Security guardrail — AST safety filter
     for rr in render_results:
-        # Check for shell scripts using extensions or shebangs
-        shell_shebangs = (
-            "#!/bin/sh",
-            "#!/usr/bin/env sh",
-            "#!/bin/bash",
-            "#!/usr/bin/env bash",
+        is_shell_script = rr.filename.endswith(".sh") or rr.content.startswith(
+            _SHELL_SHEBANGS
         )
-        is_shell_script = rr.filename.endswith(".sh") or rr.content.startswith(shell_shebangs)
-
         if is_shell_script:
             try:
-                # Naya deterministic parse tree algorithm call kiya
                 _safety_filter.analyze_script(rr.content)
-            except SecurityAlertError as e:
-                # Malicious obfuscation pattern caught here!
-                _logger.warning("Script payload block triggered by AST validation: %s", e.message)
+            except SecurityAlertError as exc:
+                _logger.warning(
+                    "Script blocked by AST safety filter: %s", exc.message
+                )
                 raise HTTPException(
                     status_code=status.HTTP_400_BAD_REQUEST,
                     detail={
                         "error": "SecurityViolation",
                         "message": "The generated configuration contains elements flagged by security filters.",
-                        "reason": e.message,
-                        "metadata": e.payload
-                    }
-                )
+                        "reason": exc.message,
+                        "metadata": exc.payload,
+                    },
+                ) from exc
 
     # Step 5: Persist job + scripts
     job = ScriptGenerationJob(
@@ -248,7 +248,7 @@ async def generate_scripts(
             )
         )
 
-    await db.flush()  # Get job.id without committing transaction
+    await db.flush()
 
     # Step 6: Build response
     return GenerationResponse(
