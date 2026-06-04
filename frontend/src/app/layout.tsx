@@ -39,7 +39,23 @@ export const metadata: Metadata = {
 	title: "EnvForage | ML Environment Provisioning",
 	description:
 		"Generate intelligent, safe, and deterministic ML/AI environment setup scripts.",
-	// Per-page canonical URLs are set via individual page metadata exports.
+	openGraph: {
+		title: "EnvForage | ML Environment Provisioning",
+		description:
+			"Generate intelligent, safe, and deterministic ML/AI environment setup scripts.",
+		url: BASE_URL,
+		siteName: "EnvForage",
+		locale: "en_US",
+		type: "website",
+	twitter: {
+		card: "summary_large_image",
+		title: "EnvForage | ML Environment Provisioning",
+		description:
+			"Generate intelligent, safe, and deterministic ML/AI environment setup scripts.",
+	},
+	// NOTE: Per-page canonical URLs are set via individual page metadata exports
+	// and the <CanonicalURL /> client component mounted below in <head>.
+	// Do NOT set a root-level canonical here — it would override every page with "/".
 };
 
 export default function RootLayout({
@@ -78,8 +94,9 @@ export default function RootLayout({
             } catch {
               document.documentElement.setAttribute("data-theme", "dark");
             }
-          `}
-				</Script>
+          `,
+					}}
+				/>
 			</head>
 
 			<body

@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
@@ -9,7 +10,7 @@ import { ThemeToggle } from "../providers";
 
 export default function Navbar() {
 	const pathname = usePathname();
-	const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+	const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
 	const isActive = (path: string) => {
 		if (path === "/") {
@@ -38,10 +39,7 @@ export default function Navbar() {
 				boxShadow: "0 4px 30px rgba(0, 0, 0, 0.03)",
 			}}
 		>
-			<div
-				className="container nav-container"
-				style={{ padding: "0.85rem 2rem" }}
-			>
+			<div className="container nav-container">
 				<div className="nav-brand">
 					<div style={{ display: "flex", alignItems: "baseline", gap: "1rem" }}>
 						<Link
@@ -102,14 +100,13 @@ export default function Navbar() {
 						})}
 					</nav>
 				</div>
-
 				<div className="nav-actions">
 					<ThemeToggle />
 					<a
-						href="#"
+						href="https://discord.gg/N2GKNRzDV"
 						target="_blank"
 						rel="noreferrer"
-						className="nav-hide"
+						className="hide-on-mobile"
 						style={{
 							display: "flex",
 							alignItems: "center",
@@ -126,7 +123,7 @@ export default function Navbar() {
 						href="https://github.com/rishabh0510rishabh/EnvForage"
 						target="_blank"
 						rel="noreferrer"
-						className="nav-hide"
+						className="hide-on-mobile"
 						style={{
 							display: "flex",
 							alignItems: "center",
@@ -141,16 +138,15 @@ export default function Navbar() {
 					</a>
 					<button
 						className="mobile-menu-btn"
-						onClick={() => setMobileMenuOpen((prev) => !prev)}
-						aria-label="Toggle navigation menu"
-						aria-expanded={mobileMenuOpen}
+						onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+						aria-label="Toggle mobile menu"
 					>
-						{mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
+						{isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
 					</button>
 				</div>
 			</div>
 
-			{mobileMenuOpen && (
+			{isMobileMenuOpen && (
 				<div className="mobile-menu-overlay">
 					{navLinks.map((link) => {
 						const active = isActive(link.path);
@@ -158,60 +154,37 @@ export default function Navbar() {
 							<Link
 								key={link.path}
 								href={link.path}
-								onClick={() => setMobileMenuOpen(false)}
+								onClick={() => setIsMobileMenuOpen(false)}
 								style={{
 									color: active
 										? "var(--brand-primary)"
 										: "var(--text-secondary)",
-									fontSize: "1rem",
+									fontSize: "1.125rem",
 									fontWeight: active ? 600 : 500,
-									padding: "0.25rem 0",
+									textDecoration: "none",
 								}}
-								className="nav-link"
 							>
 								{link.name}
 							</Link>
 						);
 					})}
-					<div
-						style={{
-							display: "flex",
-							gap: "1.5rem",
-							paddingTop: "0.75rem",
-							borderTop: "1px solid var(--border-subtle)",
-						}}
+					<hr style={{ borderColor: "var(--border-subtle)", margin: "0.5rem 0" }} />
+					<a
+						href="https://discord.gg/N2GKNRzDV"
+						target="_blank"
+						rel="noreferrer"
+						style={{ color: "var(--text-secondary)", fontSize: "1.125rem", fontWeight: 500, textDecoration: "none" }}
 					>
-						<a
-							href="#"
-							target="_blank"
-							rel="noreferrer"
-							style={{
-								display: "flex",
-								alignItems: "center",
-								gap: "0.5rem",
-								fontSize: "0.925rem",
-								fontWeight: 600,
-								color: "var(--text-secondary)",
-							}}
-						>
-							<span style={{ color: "#5865F2" }}>💬</span> Discord
-						</a>
-						<a
-							href="https://github.com/rishabh0510rishabh/EnvForage"
-							target="_blank"
-							rel="noreferrer"
-							style={{
-								display: "flex",
-								alignItems: "center",
-								gap: "0.5rem",
-								fontSize: "0.925rem",
-								fontWeight: 600,
-								color: "var(--text-secondary)",
-							}}
-						>
-							<span style={{ color: "var(--brand-secondary)" }}>★</span> GitHub
-						</a>
-					</div>
+						<span style={{ color: "#5865F2", marginRight: "0.5rem" }}>💬</span> Discord
+					</a>
+					<a
+						href="https://github.com/rishabh0510rishabh/EnvForage"
+						target="_blank"
+						rel="noreferrer"
+						style={{ color: "var(--text-secondary)", fontSize: "1.125rem", fontWeight: 500, textDecoration: "none" }}
+					>
+						<span style={{ color: "var(--brand-secondary)", marginRight: "0.5rem" }}>★</span> GitHub
+					</a>
 				</div>
 			)}
 		</header>
