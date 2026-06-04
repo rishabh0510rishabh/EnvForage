@@ -34,6 +34,9 @@ const BASE_URL = (() => {
 	return raw;
 })();
 
+// NOTE: Per-page canonical URLs are set via individual page metadata exports
+// and the <CanonicalURL /> client component mounted below in <head>.
+// Do NOT set a root-level canonical here — it would override every page with "/".
 export const metadata: Metadata = {
 	metadataBase: new URL(BASE_URL),
 	title: "EnvForage | ML Environment Provisioning",
@@ -47,6 +50,7 @@ export const metadata: Metadata = {
 		siteName: "EnvForage",
 		locale: "en_US",
 		type: "website",
+	},
 	twitter: {
 		card: "summary_large_image",
 		title: "EnvForage | ML Environment Provisioning",

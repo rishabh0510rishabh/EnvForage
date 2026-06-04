@@ -7,8 +7,6 @@ from app.database import get_db
 from app.main import app
 from app.models.profile import EnvironmentProfile
 
-pytestmark = pytest.mark.asyncio
-
 # Must match the ADMIN_API_KEY set in conftest.py os.environ.setdefault
 ADMIN_HEADERS = {"X-Admin-API-Key": "test-admin-key-for-ci"}
 

@@ -7,6 +7,7 @@ Usage:
 """
 
 import asyncio
+import logging
 from pathlib import Path
 
 import yaml
@@ -20,6 +21,7 @@ from app.schemas.seed_profile import ProfileSeedSchema
 from app.services.sync_service import seed_compatibility_matrices
 
 SEEDS_DIR = Path(__file__).parent.parent.parent / "seeds"
+logger = logging.getLogger(__name__)
 
 
 def _format_validation_errors(exc: ValidationError) -> str:
@@ -42,33 +44,33 @@ async def seed_profiles(db: AsyncSession) -> None:
     """Insert or skip environment profiles from profiles.yaml."""
     profiles_file = SEEDS_DIR / "profiles.yaml"
     if not profiles_file.exists():
-        print(f"[seed] profiles.yaml not found at {profiles_file}")
+        logger.warning("profiles.yaml not found at %s", profiles_file)
         return
 
     try:
         raw_text = profiles_file.read_text(encoding="utf-8")
         data = yaml.safe_load(raw_text)
     except (OSError, UnicodeDecodeError) as exc:
-        print(f"[seed] Failed to read profiles.yaml: {exc}")
+        logger.error("Failed to read profiles.yaml: %s", exc)
         return
     except yaml.YAMLError as exc:
-        print(f"[seed] Failed to parse profiles.yaml: {exc}")
+        logger.error("Failed to parse profiles.yaml: %s", exc)
         return
 
     if data is None:
-        print("[seed] profiles.yaml is empty")
+        logger.warning("profiles.yaml is empty")
         return
 
     if not isinstance(data, dict):
-        print(
-            f"[seed] Invalid profiles.yaml: expected mapping at root, "
-            f"got {type(data).__name__}"
+        logger.error(
+            "Invalid profiles.yaml: expected mapping at root, got %s",
+            type(data).__name__,
         )
         return
 
     profiles_data = data.get("profiles")
     if not isinstance(profiles_data, list):
-        print("[seed] Invalid profiles.yaml: 'profiles' must be a list")
+        logger.error("Invalid profiles.yaml: 'profiles' must be a list")
         return
 
     seeded = 0
@@ -80,9 +82,10 @@ async def seed_profiles(db: AsyncSession) -> None:
         try:
             profile_data = ProfileSeedSchema.model_validate(raw_profile)
         except ValidationError as exc:
-            print(
-                f"[seed] Skipping profile '{profile_ref}': "
-                f"{_format_validation_errors(exc)}"
+            logger.warning(
+                "Skipping profile '%s': %s",
+                profile_ref,
+                _format_validation_errors(exc),
             )
             invalid += 1
             continue
@@ -131,23 +134,28 @@ async def seed_profiles(db: AsyncSession) -> None:
 
             seeded += 1
         except Exception as exc:
-            print(f"[seed] Failed to seed profile '{profile_data.slug}': {exc}")
+            logger.error("Failed to seed profile '%s': %s", profile_data.slug, exc)
             invalid += 1
 
     await db.commit()
-    print(
-        f"[seed] Profiles: {seeded} seeded, {skipped} already existed, "
-        f"{invalid} invalid (skipped)."
+    logger.info(
+        "Profiles: %d seeded, %d already existed, %d invalid (skipped).",
+        seeded,
+        skipped,
+        invalid,
     )
 
 
 async def run_all_seeds() -> None:
     async with AsyncSessionLocal() as db:
-        print("[seed] Running database seeds...")
+        logger.info("Running database seeds...")
         await seed_compatibility_matrices(db)
         await seed_profiles(db)
-        print("[seed] Done.")
+        logger.info("Done.")
 
 
 if __name__ == "__main__":
+    from app.core.logging import setup_logging
+
+    setup_logging()
     asyncio.run(run_all_seeds())

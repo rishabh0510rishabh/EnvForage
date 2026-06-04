@@ -17,9 +17,6 @@ from app.compatibility.resolver import CompatibilityResolver
 
 R = CompatibilityResolver()
 
-pytestmark = pytest.mark.asyncio
-
-
 # ── Python Matrix Tests ───────────────────────────────────────────────────────
 
 class TestDiffusersPythonMatrix:

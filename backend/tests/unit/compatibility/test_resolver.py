@@ -19,8 +19,6 @@ from app.compatibility.matrix.python import PYTHON_MATRIX
 from app.compatibility.models import PackageConstraint
 from app.compatibility.resolver import CompatibilityResolver
 
-pytestmark = pytest.mark.asyncio
-
 R = CompatibilityResolver()
 
 KNOWN_FRAMEWORK_VERSIONS = [

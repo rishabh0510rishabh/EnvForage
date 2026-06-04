@@ -8,6 +8,7 @@ import typing
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 
+import structlog
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -29,6 +30,7 @@ from app.api.v1.admin.matrix import router as admin_matrix_router
 from app.cache import get_redis_client
 from app.config import get_settings
 from app.core.handlers import register_exception_handlers
+from app.core.logging import setup_logging
 from app.database import AsyncSessionLocal
 from app.middleware.metrics import setup_metrics
 from app.middleware.payload_size import PayloadSizeLimitMiddleware
@@ -40,8 +42,12 @@ from app.services.sync_service import matrix_sync_loop
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     """Manage application startup and shutdown."""
     settings = get_settings()
-    print(
-        f"[START] EnvForge API {settings.app_version} starting [{settings.environment}]"
+    logger = structlog.get_logger(__name__)
+
+    logger.info(
+        "EnvForge API starting",
+        version=settings.app_version,
+        environment=settings.environment
     )
     # ── Background cleanup scheduler ─────────────────────────
     scheduler = AsyncIOScheduler()
@@ -54,7 +60,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
         misfire_grace_time=3600,
     )
     scheduler.start()
-    print("✅ Cleanup scheduler started (runs every 24h)")
+    logger.info("Cleanup scheduler started (runs every 24h)")
 
     sync_task = None
     if "pytest" not in sys.modules and settings.run_sync_loop:
@@ -70,7 +76,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
             pass
 
     scheduler.shutdown(wait=False)
-    print("🛑 EnvForge API shutting down")
+    logger.info("EnvForge API shutting down")
 
 
 def create_app() -> FastAPI:
@@ -88,6 +94,7 @@ def create_app() -> FastAPI:
         openapi_url="/api/openapi.json",
         lifespan=lifespan,
     )
+    setup_logging()
     register_exception_handlers(app)
     # ── CORS ─────────────────────────────────────────────────
 

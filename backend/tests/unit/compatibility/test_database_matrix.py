@@ -21,8 +21,6 @@ from app.services.sync_service import (
     sync_pypi_releases,
 )
 
-pytestmark = pytest.mark.asyncio
-
 ADMIN_HEADERS = {"X-Admin-API-Key": "test-admin-key-for-ci"}
 
 
