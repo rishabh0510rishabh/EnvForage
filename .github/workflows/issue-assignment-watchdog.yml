@@ -111,18 +111,20 @@ jobs:
               
               // Define warning comment structure
               const warningSignature = '<!-- SPAM-ASSIGNMENT-WATCHDOG-WARNING -->';
-              const warningBody = `${warningSignature}
-
-Hi @${commenter},
-
-It looks like you have requested to be assigned to **${assignmentIssues.size}** different issues in the last 7 days. The maximum allowed limit for contributors is **${maxAllowed}** concurrent requests.
-
-To keep the community fair and give everyone a chance to contribute, please avoid spamming assignment requests. Focus on finishing your existing assignments first.
-
-If you have completed your current tasks, please ask the maintainers to review them before requesting new ones.
-
----
-*Note: This is an automated warning to improve contributor experience.*`;
+              const warningBody = [
+                warningSignature,
+                "",
+                `Hi @${commenter},`,
+                "",
+                `It looks like you have requested to be assigned to **${assignmentIssues.size}** different issues in the last 7 days. The maximum allowed limit for contributors is **${maxAllowed}** concurrent requests.`,
+                "",
+                "To keep the community fair and give everyone a chance to contribute, please avoid spamming assignment requests. Focus on finishing your existing assignments first.",
+                "",
+                "If you have completed your current tasks, please ask the maintainers to review them before requesting new ones.",
+                "",
+                "---",
+                "*Note: This is an automated warning to improve contributor experience.*"
+              ].join('\\n');
               
               // Search for existing watchdog warning comment on current issue to prevent duplicate posts
               const { data: issueComments } = await github.rest.issues.listComments({

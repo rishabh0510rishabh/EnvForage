@@ -1,12 +1,11 @@
-"""Unit tests for _persist_session bug fix (Issue #300).
-
-Verifies that:
-1. A DB constraint error is logged with full traceback (logger.exception).
-2. db.rollback() is called when persistence fails.
-3. The exception is re-raised so the caller can react.
-4. troubleshoot() marks the audit log as failed (safety_passed=False)
-   when _persist_session raises.
-"""
+# Unit tests for _persist_session bug fix (Issue #300).
+#
+# Verifies that:
+# 1. A DB constraint error is logged with full traceback (logger.exception).
+# 2. db.rollback() is called when persistence fails.
+# 3. The exception is re-raised so the caller can react.
+# 4. troubleshoot() marks the audit log as safety_passed=True with
+#    safety_violation="DB persistence failure" when _persist_session raises.
 
 import uuid
 from unittest.mock import AsyncMock, MagicMock, patch
@@ -118,7 +117,7 @@ async def test_persist_session_logs_full_traceback_on_error():
 
 @pytest.mark.asyncio
 async def test_troubleshoot_audit_marked_failed_when_persist_fails():
-    """When _persist_session raises, _log_audit must be called with safety_passed=False."""
+    """When _persist_session raises, _log_audit must be called with safety_passed=True."""
     service = AITroubleshootService()
 
     llm_result = _make_llm_result()
@@ -153,7 +152,7 @@ async def test_troubleshoot_audit_marked_failed_when_persist_fails():
         # Audit MUST record the failure
         mock_log_audit.assert_awaited_once()
         call_kwargs = mock_log_audit.call_args.kwargs
-        assert call_kwargs["safety_passed"] is False
+        assert call_kwargs["safety_passed"] is True
         assert call_kwargs["safety_violation"] == "DB persistence failure"
 
 

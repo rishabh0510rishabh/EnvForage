@@ -314,11 +314,14 @@ class CompatibilityResolver:
             )
             resolved_packages.append(resolved)
 
-        # Step 4: Collect OS-specific notes
+        # Step 4: Collect compatibility warnings
         framework_names = [p.name for p in packages]
         gpu_required = cuda_required or rocm_required
         os_notes = get_os_notes(target_os, gpu_required, framework_names)
         warnings.extend(os_notes)
+        warnings.extend(
+            self._warn_on_abi_sensitive_hybrid_environment(resolved_packages)
+        )
 
         return ResolvedEnvironment(
             python_version=python_version,
@@ -593,6 +596,25 @@ class CompatibilityResolver:
             cuda_version=cuda_version,
             rocm_version=rocm_version,
         )
+
+    def _warn_on_abi_sensitive_hybrid_environment(
+        self,
+        resolved_packages: list[ResolvedPackage],
+    ) -> list[str]:
+        """Detect ABI-sensitive conda + pip hybrid package mixes."""
+        has_gpu_wheel = any(pkg.cuda_variant for pkg in resolved_packages)
+        has_non_gpu_package = any(not pkg.cuda_variant for pkg in resolved_packages)
+
+        if has_gpu_wheel and has_non_gpu_package:
+            return [
+                (
+                    "This profile mixes conda-managed packages with pip-installed "
+                    "GPU wheel packages. Hybrid conda/pip environments are ABI-sensitive; "
+                    "pip may resolve secondary dependencies and override Conda-managed binaries. "
+                    "Review pins or use a conda-first profile."
+                )
+            ]
+        return []
 
     @staticmethod
     def _resolve_gpu_variant(

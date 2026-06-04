@@ -109,6 +109,23 @@ def test_conda_template_empty_packages():
     assert "dependencies:" in result.content
 
 
+def test_conda_template_includes_warnings_comments():
+    context = make_context(
+        profile_name="warn-env",
+        python_version="3.11",
+        packages=[
+            ResolvedPackage(name="numpy", version="1.26.4", cuda_variant=None),
+            ResolvedPackage(name="torch", version="2.1.2", cuda_variant="cu118"),
+        ],
+    )
+    context.warnings = [
+        "This profile mixes conda-managed packages with pip-installed GPU wheels."
+    ]
+    renderer = TemplateRenderer()
+    result = renderer.render("environment.yml", context)
+    assert "# WARNING: This profile mixes conda-managed packages" in result.content
+
+
 def test_conda_template_cuda_variant_goes_to_pip_section():
     """Packages with CUDA variant ('+' in spec) must appear under pip: section."""
     context = make_context(

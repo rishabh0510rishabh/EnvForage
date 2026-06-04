@@ -106,6 +106,7 @@ export default function HomePage() {
 				<div className="container" style={{ maxWidth: "1200px", position: "relative", zIndex: 2 }}>
 					<motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
 						<h1
+							className="hero-title"
 							style={{
 								fontSize: "clamp(4rem, 8vw, 7.5rem)",
 								fontWeight: 900,
@@ -134,6 +135,7 @@ export default function HomePage() {
 						</h1>
 
 						<div
+							className="hero-subtitle"
 							style={{
 								fontSize: "1.25rem",
 								color: "var(--text-secondary)",
@@ -150,13 +152,9 @@ export default function HomePage() {
 								}}
 							>
 								EnvForage generates 100% deterministic, hardware-aware setup
-							</span>
-							<br />
+							</span>{" "}
 							scripts for <strong>PyTorch, CUDA</strong>, and your GPU drivers.
-							Validated
-							<br />
-							against a strict compatibility matrix and repaired by an
-							<br />
+							Validated against a strict compatibility matrix and repaired by an
 							integrated LLM — so your stack just works on the first try.
 						</div>
 

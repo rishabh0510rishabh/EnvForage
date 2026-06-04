@@ -3,6 +3,8 @@ Unit tests for the Compatibility Resolver.
 No mocks for matrix data — the matrix IS the ground truth.
 """
 
+import inspect
+
 import pytest
 from hypothesis import given, settings
 from hypothesis import strategies as st
@@ -46,6 +48,12 @@ PACKAGE_CONSTRAINTS = st.one_of(
         version_spec=VERSION_STRINGS,
     ),
 )
+
+
+async def _await_if_needed(value):
+    if inspect.isawaitable(value):
+        return await value
+    return value
 
 
 @settings(max_examples=1000, deadline=None)
@@ -223,15 +231,40 @@ async def test_non_matrix_package_uses_spec():
     assert result.packages[0].version == "3.8.4"
 
 
+@pytest.mark.asyncio
+async def test_warns_on_hybrid_conda_pip_gpu_environment():
+    result = await _await_if_needed(
+        R.resolve(
+            packages=[
+                PackageConstraint("numpy", "1.26.4"),
+                PackageConstraint("torch", "2.1.2", cuda_variant="cu118"),
+            ],
+            python_version="3.11",
+            cuda_version="11.8",
+            target_os="LINUX",
+            profile_slug="pytorch-cuda",
+            os_support=["LINUX", "WSL"],
+            cuda_required=True,
+        )
+    )
+    assert any(
+        "conda-managed packages" in warning and "ABI-sensitive" in warning
+        for warning in result.warnings
+    )
+
+
+@pytest.mark.asyncio
 async def test_to_dict_serializes():
-    result = await R.resolve(
-        packages=[PackageConstraint("torch", "2.1.0")],
-        python_version="3.11",
-        cuda_version="11.8",
-        target_os="LINUX",
-        profile_slug="pytorch-cuda",
-        os_support=["LINUX", "WSL"],
-        cuda_required=True,
+    result = await _await_if_needed(
+        R.resolve(
+            packages=[PackageConstraint("torch", "2.1.0")],
+            python_version="3.11",
+            cuda_version="11.8",
+            target_os="LINUX",
+            profile_slug="pytorch-cuda",
+            os_support=["LINUX", "WSL"],
+            cuda_required=True,
+        )
     )
     d = result.to_dict()
     assert d["python_version"] == "3.11"

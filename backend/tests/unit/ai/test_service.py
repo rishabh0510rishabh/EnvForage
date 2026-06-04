@@ -1,7 +1,7 @@
 """Unit tests for AITroubleshootService confidence gating."""
 
 import uuid
-from unittest.mock import AsyncMock, patch
+from unittest.mock import AsyncMock, Mock, patch
 
 import pytest
 
@@ -40,7 +40,9 @@ def _dummy_request():
 
 
 def _mock_db():
-    return AsyncMock()
+    db = AsyncMock()
+    db.add = Mock()
+    return db
 
 
 async def _call(scenario):

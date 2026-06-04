@@ -32,8 +32,7 @@ from app.schemas.diagnostic import (
     DiagnoseResponse,
     DiagnosticReportSchema,
 )
-from app.schemas.profile import ProfileFilters
-from app.services.profile_service import list_profiles
+from app.services.profile_service import get_all_active_profiles
 from app.templates.safety import SafetyViolationError, validate_rendered_output
 
 logger = logging.getLogger(__name__)
@@ -102,25 +101,8 @@ async def diagnose(
     db.add(db_report)
     await db.flush()
 
-    # Fetch every profile using pagination so profiles beyond the first page
-    # are not silently omitted from the compatibility analysis.
-    all_profiles = []
-    page = 1
-    while True:
-        batch, total = await list_profiles(
-            db,
-            ProfileFilters(
-                tags=None,
-                os=None,
-                cuda_required=None,
-                page=page,
-                limit=_PROFILE_PAGE_SIZE,
-            ),
-        )
-        all_profiles.extend(batch)
-        if len(all_profiles) >= total:
-            break
-        page += 1
+    # Fetch every profile directly, avoiding pagination/count overhead
+    all_profiles = await get_all_active_profiles(db, include_packages=True)
 
     if not all_profiles:
         return DiagnoseResponse(

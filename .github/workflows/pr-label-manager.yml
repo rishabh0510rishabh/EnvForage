@@ -1,7 +1,7 @@
 name: PR Label & Quality Manager
 
 on:
-  pull_request:
+  pull_request_target:
     types: [opened, edited, synchronize, reopened]
   pull_request_review:
     types: [submitted, edited, dismissed]
@@ -31,7 +31,6 @@ jobs:
             const PROGRAM_REGEX = /^(gssoc|ssoc|nsoc)/i;
             
             const DIFFICULTY_LABELS = ['level1', 'level2', 'level3'];
-            const EFFORT_LABELS = ['easy', 'medium', 'hard'];
             const TYPE_LABELS = [
               'type:bug',
               'type:feature',
@@ -65,6 +64,11 @@ jobs:
             }
 
             // --- 1. RESOLVE PULL REQUEST NUMBER ---
+            if (context.payload.sender && context.payload.sender.login === 'github-actions[bot]') {
+              console.log('Action triggered by bot. Exiting.');
+              return;
+            }
+
             if (context.eventName === 'issue_comment' && !context.payload.issue.pull_request) {
               console.log('Comment is not on a pull request. Exiting early.');
               return;
@@ -137,20 +141,29 @@ jobs:
             // --- 3. MANDATORY LABEL ENFORCEMENT & CONFLICT CHECKS ---
             const foundPrograms = currentLabels.filter(l => PROGRAM_REGEX.test(l));
             const foundDifficulty = currentLabels.filter(l => DIFFICULTY_LABELS.includes(l));
-            const foundEffort = currentLabels.filter(l => EFFORT_LABELS.includes(l));
             const foundTypes = currentLabels.filter(l => TYPE_LABELS.includes(l));
             const foundDifficulty2 = currentLabels.filter(l => DIFFICULTY2_LABELS.includes(l));
 
             const missingCategories = [];
 
             // Program labels validation
-            if (foundPrograms.length === 0) {
-              missingCategories.push('Program label (e.g. `gssoc:approved`, `SSoC26`, `NSoC\'26`)');
+            if (!currentLabels.includes('gssoc:approved')) {
+              labelsToAdd.push('gssoc:approved');
+            }
+            if (!currentLabels.includes("NSoC'26")) {
+              labelsToAdd.push("NSoC'26");
+            }
+            
+            // Cleanup any other legacy program labels that might interfere
+            for (const lbl of foundPrograms) {
+              if (lbl !== 'gssoc:approved' && lbl !== "NSoC'26") {
+                labelsToRemove.push(lbl);
+              }
             }
 
             // Difficulty labels validation (Exclusivity: only ONE allowed)
             if (foundDifficulty.length === 0) {
-              missingCategories.push('Difficulty label (e.g. `level1`, `level2`, `level3`)');
+              labelsToAdd.push('level1');
             } else if (foundDifficulty.length > 1) {
               const keep = foundDifficulty[0];
               const remove = foundDifficulty.slice(1);
@@ -158,24 +171,14 @@ jobs:
               console.log(`Difficulty violation: Keeping '${keep}', removing: ${remove.join(', ')}`);
             }
 
-            // Effort labels validation (Exclusivity: only ONE allowed)
-            if (foundEffort.length === 0) {
-              missingCategories.push('Effort label (e.g. `easy`, `medium`, `hard`)');
-            } else if (foundEffort.length > 1) {
-              const keep = foundEffort[0];
-              const remove = foundEffort.slice(1);
-              labelsToRemove.push(...remove);
-              console.log(`Effort violation: Keeping '${keep}', removing: ${remove.join(', ')}`);
-            }
-
             // Type labels validation
             if (foundTypes.length === 0) {
-              missingCategories.push('Type label (e.g. `type:bug`, `type:feature`, `type:docs`, etc.)');
+              labelsToAdd.push('type:feature');
             }
 
             // Difficulty2 labels validation (Exclusivity: only ONE allowed)
             if (foundDifficulty2.length === 0) {
-              missingCategories.push('Difficulty2 label (e.g. `level:critical`, `level:beginner`, `level:intermediate`, `level:advanced`)');
+              labelsToAdd.push('level:beginner');
             } else if (foundDifficulty2.length > 1) {
               const keep = foundDifficulty2[0];
               const remove = foundDifficulty2.slice(1);
@@ -205,8 +208,8 @@ jobs:
               });
               for (const run of checkRunsResponse.data.check_runs) {
                 const runName = run.name.toLowerCase();
-                // Filter out self-running jobs to avoid circular dependencies
-                if (runName.includes('watchdog') || runName.includes('label-manager')) {
+                // Filter out self-running jobs to avoid circular dependencies and vercel tests
+                if (runName.includes('watchdog') || runName.includes('label-manager') || runName.includes('vercel')) {
                   continue;
                 }
                 if (run.status === 'completed' && ['failure', 'timed_out', 'action_required'].includes(run.conclusion)) {
@@ -226,7 +229,7 @@ jobs:
               });
               for (const status of statusResponse.data.statuses) {
                 const contextName = status.context.toLowerCase();
-                if (contextName.includes('watchdog') || contextName.includes('label-manager')) {
+                if (contextName.includes('watchdog') || contextName.includes('label-manager') || contextName.includes('vercel')) {
                   continue;
                 }
                 if (['failure', 'error'].includes(status.state)) {
@@ -300,250 +303,25 @@ jobs:
               if (!currentLabels.includes('ready-for-review')) labelsToAdd.push('ready-for-review');
             }
 
-            // --- 7. AI & CRITICAL REVIEW PARSING (CodeRabbit, Copilot, GitHub Reviews) ---
-            const reviewsToParse = [];
-
-            // Add latest review bodies
-            const latestReviewObjByUser = {};
-            for (const r of reviews) {
-              if (r.user) {
-                latestReviewObjByUser[r.user.login] = r;
-              }
-            }
-
-            for (const reviewer in latestReviewObjByUser) {
-              const r = latestReviewObjByUser[reviewer];
-              // If reviewer's latest state is APPROVED, skip parsing their older bodies
-              if (r.state === 'APPROVED') {
-                continue;
-              }
-              if (r.body) {
-                reviewsToParse.push({
-                  body: r.body,
-                  author: reviewer,
-                  url: r.html_url,
-                  type: 'Review Body'
-                });
-              }
-            }
-
-            // Fetch and parse inline review comments
-            let reviewComments = [];
-            try {
-              const res = await github.rest.pulls.listReviewComments({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                pull_number: prNumber,
-                per_page: 100
-              });
-              reviewComments = res.data;
-            } catch (err) {
-              console.log(`Warning: Failed to fetch review comments: ${err.message}`);
-            }
-
-            for (const rc of reviewComments) {
-              // Ignore outdated review comments (position is null)
-              if (rc.position === null) {
-                continue;
-              }
-              if (rc.body) {
-                reviewsToParse.push({
-                  body: rc.body,
-                  author: rc.user ? rc.user.login : 'unknown',
-                  url: rc.html_url,
-                  type: 'Review Comment'
-                });
-              }
-            }
-
-            // Fetch and parse general issue comments
-            let issueComments = [];
-            try {
-              const res = await github.rest.issues.listComments({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: prNumber,
-                per_page: 100
-              });
-              issueComments = res.data;
-            } catch (err) {
-              console.log(`Warning: Failed to fetch issue comments: ${err.message}`);
-            }
-
-            for (const ic of issueComments) {
-              const body = ic.body || '';
-              // Skip the bot's own sticky comments
-              if (body && !body.includes(STICKY_SIGNATURE) && !body.includes('<!-- PR-WATCHDOG-STICKY-COMMENT -->')) {
-                reviewsToParse.push({
-                  body: body,
-                  author: ic.user ? ic.user.login : 'unknown',
-                  url: ic.html_url,
-                  type: 'General Comment'
-                });
-              }
-            }
-
-            // Group parsed comments into findings
-            const activeReviewFindings = { critical: [], high: [], medium: [] };
-            let hasCodeRabbitFeedback = false;
-            let hasCopilotFeedback = false;
-
-            for (const item of reviewsToParse) {
-              const authorLower = item.author.toLowerCase();
-              if (authorLower === 'github-actions[bot]') {
-                continue;
-              }
-
-              const isCR = authorLower.includes('coderabbit') || item.body.toLowerCase().includes('coderabbit');
-              const isCP = authorLower.includes('copilot') || item.body.toLowerCase().includes('copilot');
-
-              if (isCR) hasCodeRabbitFeedback = true;
-              if (isCP) hasCopilotFeedback = true;
-
-              const lines = item.body.split('\n');
-              for (const line of lines) {
-                const lineLower = line.toLowerCase();
-                let severity = null;
-
-                if (/\b(critical|severity:\s*critical)\b/i.test(lineLower)) {
-                  severity = 'critical';
-                } else if (/\b(high|severity:\s*high)\b/i.test(lineLower)) {
-                  severity = 'high';
-                } else if (/\b(medium|severity:\s*medium)\b/i.test(lineLower)) {
-                  severity = 'medium';
-                }
-
-                if (severity) {
-                  activeReviewFindings[severity].push({
-                    author: item.author,
-                    type: item.type,
-                    snippet: line.trim().substring(0, 120),
-                    url: item.url,
-                    isCR,
-                    isCP
-                  });
-                }
-              }
-            }
-
-            const totalFindingsCount = activeReviewFindings.critical.length + activeReviewFindings.high.length + activeReviewFindings.medium.length;
-            console.log(`Active review findings: ${totalFindingsCount} (Critical: ${activeReviewFindings.critical.length}, High: ${activeReviewFindings.high.length}, Medium: ${activeReviewFindings.medium.length})`);
-
-            if (totalFindingsCount > 0) {
-              if (!currentLabels.includes('needs-review-fixes')) labelsToAdd.push('needs-review-fixes');
-            } else {
-              if (currentLabels.includes('needs-review-fixes')) labelsToRemove.push('needs-review-fixes');
-            }
-
+            // --- 7. DELETED AI PARSING ---
+            
             // --- 8. BUILD AND UPDATE CONSOLIDATED STICKY COMMENT ---
-            const hasLabelIssues = missingCategories.length > 0;
-            const hasPRIssues = hasLabelIssues || hasMergeConflicts || hasFailingChecks || totalFindingsCount > 0;
-
+            const hasPRIssues = hasMergeConflicts || hasFailingChecks;
             let commentBody = `${STICKY_SIGNATURE}\n\n`;
-
-            if (!hasPRIssues) {
-              commentBody += `## 🎉 PR Label & Quality Watchdog: All Checks Passed!
-
-Hi @${pr.user.login}, 
-
-Great job! All required labels have been applied and all quality checks have passed.
-
-* **Mandatory Labels:** ✅ All categories present and validated
-* **Merge Conflicts:** ✅ No conflicts detected
-* **CI / Build Checks:** ✅ All checks passed
-* **Review Feedback:** ✅ No active critical, high, or medium severity concerns identified
-
-${hasCodeRabbitFeedback ? '*🤖 CodeRabbit review feedback was analyzed.*\n' : ''}${hasCopilotFeedback ? '*🤖 GitHub Copilot comments were analyzed.*\n' : ''}
----
-*Last updated: ${new Date().toUTCString()}*`;
-            } else {
-              commentBody += `## 🔍 PR Label & Quality Watchdog Report
-
-Hi @${pr.user.login},
-
-We detected some items on this Pull Request that require attention before it can be merged:
-
-`;
-
-              // Required label enforcement reporting
-              if (hasLabelIssues) {
-                commentBody += `### ⚠️ Missing Required Labels
-Please ensure this PR has at least one label from each missing category:
-`;
-                for (const cat of missingCategories) {
-                  commentBody += `- [ ] **Missing ${cat}**\n`;
-                }
-                commentBody += `\n`;
-              } else {
-                commentBody += `### ✅ Required Labels
-All mandatory label groups are present: Program, Difficulty, Effort, Type, and Difficulty2.
-\n`;
-              }
-
-              // Merge conflict reporting
+            
+            if (hasPRIssues) {
+              commentBody += `## 🔍 PR Action Required\n\nHi @${pr.user.login},\n\nWe detected some items on this Pull Request that require attention:\n\n`;
               if (hasMergeConflicts) {
-                commentBody += `### ❌ Merge Conflicts
-This branch has merge conflicts with the target branch. Please rebase or merge the target branch and resolve the conflicts.
-\n`;
-              } else {
-                commentBody += `### ✅ Merge Conflicts
-No conflicts detected.
-\n`;
+                commentBody += `### ❌ Merge Conflicts\nThis branch has merge conflicts with the target branch. Please resolve the conflicts.\n\n`;
               }
-
-              // CI status reporting
               if (hasFailingChecks) {
-                commentBody += `### ❌ Failing CI Checks
-The following check runs or commit statuses are failing:
-`;
+                commentBody += `### ❌ Failing CI Checks\nThe following check runs or commit statuses are failing (ignoring vercel):\n`;
                 for (const check of failedChecks) {
                   commentBody += `- [${check.name}](${check.url})\n`;
                 }
                 commentBody += `\n`;
-              } else {
-                commentBody += `### ✅ CI Checks
-All checks passed.
-\n`;
               }
-
-              // Review feedback reporting
-              if (totalFindingsCount > 0) {
-                commentBody += `### ❌ Review Feedback Findings
-The following issues were flagged in reviews:
-
-`;
-                if (activeReviewFindings.critical.length > 0) {
-                  commentBody += `#### 🔴 Critical Severity Issues\n`;
-                  for (const item of activeReviewFindings.critical) {
-                    commentBody += `- **@${item.author}** (${item.type}): [${item.snippet}](${item.url}) ${item.isCR ? '🤖 *CodeRabbit*' : ''} ${item.isCP ? '🤖 *Copilot*' : ''}\n`;
-                  }
-                  commentBody += `\n`;
-                }
-                
-                if (activeReviewFindings.high.length > 0) {
-                  commentBody += `#### 🟠 High Severity Issues\n`;
-                  for (const item of activeReviewFindings.high) {
-                    commentBody += `- **@${item.author}** (${item.type}): [${item.snippet}](${item.url}) ${item.isCR ? '🤖 *CodeRabbit*' : ''} ${item.isCP ? '🤖 *Copilot*' : ''}\n`;
-                  }
-                  commentBody += `\n`;
-                }
-                
-                if (activeReviewFindings.medium.length > 0) {
-                  commentBody += `#### 🟡 Medium Severity Issues\n`;
-                  for (const item of activeReviewFindings.medium) {
-                    commentBody += `- **@${item.author}** (${item.type}): [${item.snippet}](${item.url}) ${item.isCR ? '🤖 *CodeRabbit*' : ''} ${item.isCP ? '🤖 *Copilot*' : ''}\n`;
-                  }
-                  commentBody += `\n`;
-                }
-              } else {
-                commentBody += `### ✅ Review Feedback
-No critical, high, or medium severity review issues detected.
-\n`;
-              }
-
-              commentBody += `Please resolve the issues above to proceed.
-\n---
-*Last updated: ${new Date().toUTCString()}*`;
+              commentBody += `Please resolve the issues above to proceed.\n\n---\n*Last updated: ${new Date().toUTCString()}*`;
             }
 
             // Find existing watchdog comment to create or update
@@ -552,7 +330,8 @@ No critical, high, or medium severity review issues detected.
               const res = await github.rest.issues.listComments({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                issue_number: prNumber
+                issue_number: prNumber,
+                per_page: 100
               });
               issueCommentsList = res.data;
             } catch (err) {
@@ -562,13 +341,22 @@ No critical, high, or medium severity review issues detected.
             const existingSticky = issueCommentsList.find(c => c.body && c.body.includes(STICKY_SIGNATURE));
 
             if (existingSticky) {
-              console.log(`Updating existing sticky comment (ID: ${existingSticky.id}).`);
-              await safeGithubCall(() => github.rest.issues.updateComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                comment_id: existingSticky.id,
-                body: commentBody
-              }));
+              if (hasPRIssues) {
+                console.log(`Updating existing sticky comment (ID: ${existingSticky.id}).`);
+                await safeGithubCall(() => github.rest.issues.updateComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  comment_id: existingSticky.id,
+                  body: commentBody
+                }));
+              } else {
+                console.log(`Issues resolved. Deleting existing sticky comment (ID: ${existingSticky.id}).`);
+                await safeGithubCall(() => github.rest.issues.deleteComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  comment_id: existingSticky.id
+                }));
+              }
             } else if (hasPRIssues) {
               console.log('Creating new sticky comment.');
               await safeGithubCall(() => github.rest.issues.createComment({

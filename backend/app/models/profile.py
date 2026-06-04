@@ -9,6 +9,7 @@ from sqlalchemy import (
     Date,
     DateTime,
     ForeignKey,
+    Index,
     Integer,
     String,
     Text,
@@ -23,6 +24,9 @@ from app.models.script_job import ScriptGenerationJob
 
 class EnvironmentProfile(Base):
     __tablename__ = "environment_profiles"
+    __table_args__ = (
+        Index("idx_profiles_status_deleted", "status", "deleted_at"),
+    )
 
     id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True), primary_key=True, default=uuid.uuid4

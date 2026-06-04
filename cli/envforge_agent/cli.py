@@ -18,7 +18,6 @@ import asyncio
 import urllib.parse
 
 import click
-import asyncio
 import httpx
 from rich.console import Console
 from rich.panel import Panel
@@ -156,6 +155,7 @@ async def _diagnose(output: str | None, send: bool, api_url: str, quiet: bool, s
 
     if not quiet:
         _print_report_summary(report)
+        _print_recommendations(report)
 
     # ── SARIF output ────────────────────────────────────────────────────────
     if sarif:
@@ -264,6 +264,54 @@ def _print_report_summary(report: DiagnosticReport) -> None:
             )
 
     console.print(table)
+
+
+def _print_recommendations(report: DiagnosticReport) -> None:
+    """Print ML framework recommendations based on detected hardware."""
+    warnings: list[str] = []
+    profiles: list[tuple[str, str]] = []
+
+    has_gpu = len(report.gpus) > 0
+    vrams = [gpu.vram_gb for gpu in report.gpus if gpu.vram_gb is not None]
+    max_vram = max(vrams) if vrams else None
+    total_ram = report.ram.total_gb
+
+    os_name = report.os.name.lower()
+    cpu_brand = report.cpu.brand.lower()
+    is_macos = "macos" in os_name or "darwin" in os_name or "mac os" in os_name
+    is_arm_apple = "apple" in cpu_brand or "m1" in cpu_brand or "m2" in cpu_brand or "m3" in cpu_brand or "m4" in cpu_brand
+    is_apple_silicon = is_macos and is_arm_apple
+
+    if total_ram < 8:
+        warnings.append("Low system RAM (<8 GB) — heavy ML workloads may fail. Consider cpu-only profiles.")
+
+    if is_apple_silicon:
+        profiles.append(("pytorch-mps", "Apple Silicon — PyTorch MPS backend"))
+        profiles.append(("cpu-only", "Fallback for frameworks without MPS support"))
+    elif not has_gpu:
+        profiles.append(("cpu-only", "No GPU detected — PyTorch CPU, TensorFlow CPU"))
+        profiles.append(("sklearn", "Scikit-learn works well on CPU-only systems"))
+    elif max_vram is not None and max_vram < 4:
+        warnings.append(f"Low GPU VRAM ({max_vram:.1f} GB) — large models will not fit.")
+        profiles.append(("yolov8-nano", "Lightweight model for low-VRAM GPUs"))
+        profiles.append(("sklearn", "CPU-based ML avoids VRAM limitations"))
+    elif max_vram is not None and max_vram <= 8:
+        profiles.append(("pytorch-cuda", f"GPU with {max_vram:.1f} GB VRAM — PyTorch CUDA"))
+        profiles.append(("yolov8", "YOLOv8 runs well on 4–8 GB VRAM"))
+    else:
+        vram_str = f"{max_vram:.1f} GB" if max_vram else "high"
+        profiles.append(("tf-gpu", f"High-VRAM GPU ({vram_str}) — TensorFlow GPU"))
+        profiles.append(("pytorch-cuda", "PyTorch CUDA for training and research"))
+        profiles.append(("yolov8", "YOLOv8 full model variants"))
+
+    console.print("\n[bold cyan]Recommended Profiles:[/]")
+    for i, (name, reason) in enumerate(profiles, 1):
+        console.print(f"  {i}. [bold]{name}[/] — {reason}")
+
+    if warnings:
+        console.print("\n[bold yellow]Warnings:[/]")
+        for w in warnings:
+            console.print(f"  [yellow]⚠[/] {w}")
 
 
 async def _send_report(report: DiagnosticReport, api_url: str, quiet: bool) -> None:

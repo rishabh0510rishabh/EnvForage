@@ -78,7 +78,7 @@ async def list_profiles(
     filters = ProfileFilters(
         tags=tags, os=os, cuda_required=cuda_required, page=page, limit=limit
     )
-    profiles, total = await profile_service.list_profiles(db, filters)
+    profiles, total = await profile_service.list_cached_profiles(db, filters)
 
     return ProfileListResponse(
         profiles=[ProfileSummarySchema.model_validate(p) for p in profiles],
@@ -113,7 +113,7 @@ async def get_profile(
     """
     Get full details for a single environment profile including package list.
     """
-    profile = await profile_service.get_profile_by_slug(db, slug)
+    profile = await profile_service.get_cached_profile_by_slug(db, slug)
     if profile is None:
         raise EntityNotFoundError(
             resource=f"Profile '{slug}'",

@@ -19,6 +19,7 @@ from app.api.v1 import (
     compatibility,
     diagnose,
     profiles,
+    recommend,
     repair,
     scripts,
     troubleshoot,
@@ -111,6 +112,7 @@ def create_app() -> FastAPI:
     app.include_router(verify.router, prefix="/api/v1", tags=["verify"])
     app.include_router(compatibility.router, prefix="/api/v1", tags=["compatibility"])
     app.include_router(authentication.router, prefix="/api/v1", tags=["auth"])
+    app.include_router(recommend.router, prefix="/api/v1", tags=["recommendations"])
     app.include_router(admin_matrix_router, prefix="/api/v1", tags=["admin-matrix"])
 
     # ── Health check ──────────────────────────────────────────

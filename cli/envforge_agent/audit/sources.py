@@ -10,7 +10,10 @@ slot in by subclassing Source and yielding Package instances.
 """
 
 from __future__ import annotations
-import tomllib
+try:
+    import tomllib
+except ImportError:
+    import tomli as tomllib  # type: ignore[no-redef]
 import json
 import re
 import subprocess

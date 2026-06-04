@@ -457,12 +457,11 @@ def validate_rendered_output(
                     description=f"AI Auditor flagged this script: {verdict.reason}",
                     context=f"Template: {template_name}",
                 )
+        except SafetyViolationError:
+            raise
         except Exception as e:
-            logger.error(f"AI Safety check failed due to provider error: {str(e)}")
-            raise SafetyViolationError(
-                pattern="AI_SAFETY_FILTER_ERROR",
-                description=f"AI Auditor failed to complete the safety check: {str(e)}",
-                context=f"Template: {template_name}",
+            logger.warning(
+                f"AI Safety check failed due to provider error — degrading to regex-only: {str(e)}"
             )
 
     return content
