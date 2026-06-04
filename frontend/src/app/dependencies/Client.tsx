@@ -722,7 +722,7 @@ export default function DependenciesPage() {
 										marginRight: "0.5rem",
 									}}
 								>
-									💡 Drag canvas to Pan • Scroll or click buttons to Zoom
+									💡 Drag canvas to Pan • Click buttons to Zoom
 								</span>
 
 								{/* Zoom buttons */}
@@ -954,8 +954,20 @@ export default function DependenciesPage() {
 														e.stopPropagation();
 														setSelectedNodeId(node.id);
 													}}
+													onKeyDown={(e) => {
+														if (e.key === "Enter" || e.key === " ") {
+															e.preventDefault();
+															e.stopPropagation();
+															setSelectedNodeId(node.id);
+														}
+													}}
 													onMouseEnter={() => setHoveredNodeId(node.id)}
 													onMouseLeave={() => setHoveredNodeId(null)}
+													onFocus={() => setHoveredNodeId(node.id)}
+													onBlur={() => setHoveredNodeId(null)}
+													tabIndex={0}
+													role="button"
+													aria-label={`Node: ${node.label}`}
 													style={{
 														cursor: "pointer",
 														opacity,

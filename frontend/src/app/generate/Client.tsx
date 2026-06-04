@@ -44,7 +44,11 @@ function WizardContent() {
 				let active = data[0];
 				if (initialProfileSlug) {
 					const found = data.find((p) => p.slug === initialProfileSlug);
-					if (found) active = found;
+					if (found) {
+						active = found;
+					} else if (data.length > 0) {
+						setSelectedProfile(data[0].slug);
+					}
 				} else if (data.length > 0) {
 					setSelectedProfile(data[0].slug);
 				}

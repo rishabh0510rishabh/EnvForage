@@ -25,6 +25,7 @@ export default function DiagnosePage() {
 	const [error, setError] = useState<string | null>(null);
 
 	const [profiles, setProfiles] = useState<Profile[]>([]);
+	const [profilesError, setProfilesError] = useState<string | null>(null);
 	const [selectedProfile, setSelectedProfile] = useState<string>("");
 	const [verifying, setVerifying] = useState(false);
 	const [apiDone, setApiDone] = useState(false);
@@ -108,7 +109,10 @@ export default function DiagnosePage() {
 				const data = await api.getProfiles();
 				setProfiles(data);
 				if (data.length > 0) setSelectedProfile(data[0].slug);
-			} catch {}
+			} catch (err) {
+				console.error("Failed to load profiles:", err);
+				setProfilesError("Failed to load environment profiles. Please check your connection.");
+			}
 		}
 		loadProfiles();
 	}, []);
@@ -117,11 +121,16 @@ export default function DiagnosePage() {
 		setError(null);
 		try {
 			const parsed = JSON.parse(jsonInput);
-			if (!parsed.os || !parsed.cpu || !parsed.agent_version) {
+			
+			const requiredKeys = ["os", "cpu", "agent_version", "gpus", "cuda"];
+			const missingKeys = requiredKeys.filter((key) => !(key in parsed));
+			
+			if (missingKeys.length > 0) {
 				throw new Error(
-					"Invalid Diagnostic Report format. Ensure you pasted the output of `envforge diagnose`.",
+					`Invalid Diagnostic Report. Missing required fields: ${missingKeys.join(", ")}`,
 				);
 			}
+			
 			setReport(parsed as DiagnosticReport);
 			setVerifyResult(null);
 		} catch (err) {
@@ -487,6 +496,20 @@ export default function DiagnosePage() {
 					) : (
 						<div className="glass-panel" style={{ padding: "2rem" }}>
 							<h2 style={{ marginBottom: "1.5rem" }}>Verify Compatibility</h2>
+							{profilesError && (
+								<div
+									style={{
+										color: "#ef4444",
+										background: "rgba(239, 68, 68, 0.1)",
+										padding: "0.75rem",
+										borderRadius: "8px",
+										marginBottom: "1.5rem",
+										fontSize: "0.9rem",
+									}}
+								>
+									{profilesError}
+								</div>
+							)}
 							<div
 								style={{
 									display: "flex",

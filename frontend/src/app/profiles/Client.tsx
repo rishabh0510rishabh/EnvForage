@@ -43,12 +43,20 @@ export default function ProfilesPage() {
 		loadProfiles();
 	}, []);
 	useEffect(() => {
-	const saved = localStorage.getItem("favoriteProfiles");
-
-	if (saved) {
-		setFavorites(JSON.parse(saved));
-	}
-}, []);
+		const saved = localStorage.getItem("favoriteProfiles");
+		if (saved) {
+			try {
+				const parsed = JSON.parse(saved);
+				if (Array.isArray(parsed) && parsed.every((i) => typeof i === "string")) {
+					setFavorites(parsed);
+				} else {
+					setFavorites([]);
+				}
+			} catch (e) {
+				setFavorites([]);
+			}
+		}
+	}, []);
 const toggleFavorite = (slug: string) => {
 	const updated = favorites.includes(slug)
 		? favorites.filter((id) => id !== slug)
@@ -359,19 +367,22 @@ const toggleFavorite = (slug: string) => {
 										>
 											<Box size={24} />
 											<button
-	onClick={() => toggleFavorite(p.slug)}
-	style={{
-		background: "transparent",
-		border: "none",
-		cursor: "pointer",
-		marginLeft: "10px",
-	}}
->
-	<Star
-		size={20}
-		fill={favorites.includes(p.slug) ? "gold" : "none"}
-	/>
-</button>
+												onClick={() => toggleFavorite(p.slug)}
+												aria-label={favorites.includes(p.slug) ? `Remove ${p.slug} from favorites` : `Add ${p.slug} to favorites`}
+												aria-pressed={favorites.includes(p.slug)}
+												title={favorites.includes(p.slug) ? `Remove ${p.slug} from favorites` : `Add ${p.slug} to favorites`}
+												style={{
+													background: "transparent",
+													border: "none",
+													cursor: "pointer",
+													marginLeft: "10px",
+												}}
+											>
+												<Star
+													size={20}
+													fill={favorites.includes(p.slug) ? "gold" : "none"}
+												/>
+											</button>
 										</div>
 										<div style={{ display: "flex", gap: "0.5rem" }}>
 											{p.cuda_required ? (

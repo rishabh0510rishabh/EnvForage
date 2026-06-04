@@ -5,7 +5,7 @@ export async function generateMetadata(props: { params: Promise<{ slug: string }
 	const params = await props.params;
 	return {
 		alternates: {
-			canonical: `/profiles/${params.slug}`,
+			canonical: `/profiles/${encodeURIComponent(params.slug)}`,
 		},
 	};
 }

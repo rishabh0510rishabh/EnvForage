@@ -205,11 +205,23 @@ export default function TroubleshootPage() {
 	const handleRepair = async (templateId: string) => {
 		setRepairLoading(templateId);
 		try {
+			let targetCuda = "12.1";
+			let targetPython = "3.11";
+			try {
+				if (diagnosticJson.trim()) {
+					const parsed = JSON.parse(diagnosticJson);
+					targetCuda = parsed?.cuda?.version || targetCuda;
+					targetPython = parsed?.active_python?.version || targetPython;
+				}
+			} catch (e) {
+				// silently fallback to defaults
+			}
+
 			const response = await api.generateRepair({
 				template_id: templateId,
 				params: {
-					target_cuda_version: "12.1",
-					target_python_version: "3.11",
+					target_cuda_version: targetCuda,
+					target_python_version: targetPython,
 				},
 			});
 			setRepairScripts((prev) => ({ ...prev, [templateId]: response }));
@@ -673,7 +685,7 @@ export default function TroubleshootPage() {
 								}}
 							>
 								{result.suggested_fixes.map((fix, idx) => {
-									const config = severityConfig[fix.severity];
+									const config = severityConfig[fix.severity as keyof typeof severityConfig] || severityConfig.INFO;
 									const SeverityIcon = config.icon;
 									const isExpanded = expandedFix === idx;
 									const repair = fix.repair_template_id
