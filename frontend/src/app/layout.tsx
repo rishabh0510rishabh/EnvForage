@@ -98,9 +98,8 @@ export default function RootLayout({
             } catch {
               document.documentElement.setAttribute("data-theme", "dark");
             }
-          `,
-					}}
-				/>
+          `}
+				</Script>
 			</head>
 
 			<body
