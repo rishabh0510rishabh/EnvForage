@@ -471,3 +471,58 @@ a:hover {
     gap: 2rem;
   }
 }
+
+
+@media (max-width: 1024px) {
+  .nav-container {
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .nav-actions {
+    gap: 0.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .nav-container {
+    width: 100%;
+  }
+
+  .nav-brand {
+    min-width: 0;
+    flex: 1;
+  }
+
+  .mobile-menu-overlay a,
+  .nav-link {
+    display: block;
+    width: 100%;
+    padding: 0.75rem 0;
+  }
+
+  .theme-toggle-navbar {
+    flex-shrink: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .nav-container {
+    padding: 0.75rem 1rem !important;
+  }
+
+  .mobile-menu-overlay {
+    padding: 1rem;
+    gap: 1rem;
+  }
+
+  .nav-brand {
+    gap: 0.75rem;
+  }
+
+  .mobile-menu-overlay a {
+    text-align: center;
+    border-radius: 8px;
+  }
+}
+
