@@ -14,58 +14,11 @@ backend_dir = Path(__file__).resolve().parent.parent
 if str(backend_dir) not in sys.path:
     sys.path.insert(0, str(backend_dir))
 
-from app.schemas.seed_profile import ProfileSeedSchema, ProfilesYamlSchema  # noqa: E402
-
-
-def validate_logical_consistency(profile: ProfileSeedSchema) -> list[str]:
-    """Perform logical consistency checks on a profile schema."""
-    errors = []
-
-    # 1. CUDA consistency: If cuda_required is True, cuda_versions must not be empty
-    if profile.cuda_required and not profile.cuda_versions:
-        errors.append(
-            "cuda_required is True, but cuda_versions is empty or not provided."
-        )
-
-    # 2. Unique packages: package names must be unique within a profile
-    package_names = [pkg.name for pkg in profile.packages]
-    duplicate_packages = {
-        name for name in package_names if package_names.count(name) > 1
-    }
-    if duplicate_packages:
-        errors.append(
-            f"Duplicate package names found: {sorted(list(duplicate_packages))}."
-        )
-
-    # 3. Unique install orders: install_order values must be unique
-    install_orders = [pkg.install_order for pkg in profile.packages]
-    duplicate_orders = {
-        order for order in install_orders if install_orders.count(order) > 1
-    }
-    if duplicate_orders:
-        errors.append(
-            f"Duplicate install_order values found: {sorted(list(duplicate_orders))}."
-        )
-
-    # 4. CUDA variant match: package cuda_variant must match one of the profile's cuda_versions
-    for pkg in profile.packages:
-        if pkg.cuda_variant:
-            cv = pkg.cuda_variant
-            # Convert cu118 -> 11.8, cu121 -> 12.1, etc.
-            if cv.startswith("cu") and len(cv) >= 4 and cv[2:].isdigit():
-                major = cv[2:-1]
-                minor = cv[-1]
-                mapped_ver = f"{major}.{minor}"
-            else:
-                mapped_ver = cv
-
-            if not profile.cuda_versions or mapped_ver not in profile.cuda_versions:
-                errors.append(
-                    f"Package '{pkg.name}' specifies cuda_variant '{pkg.cuda_variant}' (mapped to '{mapped_ver}'), "
-                    f"which is not compatible with profile cuda_versions: {profile.cuda_versions or []}."
-                )
-
-    return errors
+from app.schemas.seed_profile import (
+    ProfileSeedSchema,
+    ProfilesYamlSchema,
+    validate_logical_consistency,
+)  # noqa: E402
 
 
 def format_pydantic_error(exc: ValidationError) -> list[str]:

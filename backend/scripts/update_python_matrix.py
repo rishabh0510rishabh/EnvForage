@@ -24,18 +24,18 @@ def fetch_pypi_python_bounds(package: str, version: str):
     """Fetch required python bounds from PyPI, using a local file cache with a 12-hour TTL."""
     import os
     import time
-    
+
     # Store cache under ~/.envforge/cache per issue #386 spec
     cache_dir = Path(os.path.expanduser("~/.envforge/cache"))
     cache_dir.mkdir(parents=True, exist_ok=True)
-    
+
     safe_pkg = "".join(c for c in package if c.isalnum() or c in ".-_")
     safe_ver = "".join(c for c in version if c.isalnum() or c in ".-_")
     cache_file = cache_dir / f"{safe_pkg}_{safe_ver}.json"
 
     data = None
     cache_valid = False
-    
+
     # Check if cache file exists and is less than 12 hours (43200 seconds) old
     if cache_file.exists():
         try:
@@ -47,7 +47,7 @@ def fetch_pypi_python_bounds(package: str, version: str):
 
     if cache_valid:
         try:
-            with open(cache_file, "r", encoding="utf-8") as f:
+            with open(cache_file, encoding="utf-8") as f:
                 data = json.load(f)
             print(f"  [Cache Hit] Loaded {package} {version} from local cache.")
         except Exception as e:
@@ -58,13 +58,15 @@ def fetch_pypi_python_bounds(package: str, version: str):
         print(f"  [Cache Miss] Fetching {url} from PyPI...")
         # Added 10s timeout to prevent hanging connections
         r = httpx.get(url, timeout=10)
-        
+
         if r.status_code != 200:
-            print(f"  [WARN] Failed to fetch {package} {version} (Status {r.status_code})")
+            print(
+                f"  [WARN] Failed to fetch {package} {version} (Status {r.status_code})"
+            )
             return None
 
         data = r.json()
-        
+
         # Save JSON to cache file
         try:
             with open(cache_file, "w", encoding="utf-8") as f:

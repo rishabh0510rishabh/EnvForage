@@ -19,15 +19,12 @@ def backend():
 
 
 class TestInMemoryBackend:
-    @pytest.mark.asyncio
     async def test_allows_within_limit(self, backend):
         for _ in range(5):
             allowed, info = await backend.is_allowed(
                 "test_key", max_requests=5, window_seconds=60
             )
             assert allowed is True
-
-    @pytest.mark.asyncio
     async def test_blocks_over_limit(self, backend):
         # Fill up the limit
         for _ in range(3):
@@ -40,8 +37,6 @@ class TestInMemoryBackend:
         assert allowed is False
         assert info["remaining"] == 0
         assert info["reset"] > 0
-
-    @pytest.mark.asyncio
     async def test_separate_keys_independent(self, backend):
         # Fill up key A
         for _ in range(2):
@@ -58,8 +53,6 @@ class TestInMemoryBackend:
             "key_b", max_requests=2, window_seconds=60
         )
         assert allowed_b is True
-
-    @pytest.mark.asyncio
     async def test_remaining_count(self, backend):
         allowed, info = await backend.is_allowed(
             "test", max_requests=5, window_seconds=60
@@ -71,8 +64,6 @@ class TestInMemoryBackend:
             "test", max_requests=5, window_seconds=60
         )
         assert info["remaining"] == 3
-
-    @pytest.mark.asyncio
     async def test_cleanup_removes_empty_keys(self, backend):
         # Add a key
         await backend.is_allowed("stale_key", max_requests=10, window_seconds=60)
@@ -82,8 +73,6 @@ class TestInMemoryBackend:
         backend._requests["stale_key"] = []
         await backend.cleanup()
         assert "stale_key" not in backend._requests
-
-    @pytest.mark.asyncio
     async def test_info_contains_expected_fields(self, backend):
         _, info = await backend.is_allowed("test", max_requests=10, window_seconds=60)
         assert "remaining" in info
@@ -153,8 +142,6 @@ class TestRateLimiterRedisFallback:
         request.url.path = path
         request.headers.get = lambda key, default=None: default
         return request
-
-    @pytest.mark.asyncio
     async def test_falls_back_on_connection_error(self):
         """ConnectionError from RedisBackend must not propagate — fallback is used."""
         mock_redis_backend = MagicMock()
@@ -165,8 +152,6 @@ class TestRateLimiterRedisFallback:
 
         # Should NOT raise — fallback handles it
         await limiter(request)
-
-    @pytest.mark.asyncio
     async def test_falls_back_on_timeout_error(self):
         """TimeoutError from RedisBackend must not propagate — fallback is used."""
         mock_redis_backend = MagicMock()
@@ -177,8 +162,6 @@ class TestRateLimiterRedisFallback:
 
         # Should NOT raise — fallback handles it
         await limiter(request)
-
-    @pytest.mark.asyncio
     async def test_reraises_non_redis_exceptions(self):
         """Non-Redis exceptions (e.g. bugs) must not be silently swallowed."""
         mock_backend = MagicMock()
@@ -189,8 +172,6 @@ class TestRateLimiterRedisFallback:
 
         with pytest.raises(ValueError, match="programming bug"):
             await limiter(request)
-
-    @pytest.mark.asyncio
     async def test_fallback_allows_request_through(self):
         """After a Redis failure the request must be allowed, not rejected with 429."""
         mock_redis_backend = MagicMock()

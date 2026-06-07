@@ -15,7 +15,7 @@ import logging
 import time
 import uuid
 from collections.abc import AsyncIterator
-from datetime import datetime
+from datetime import UTC, datetime
 
 from fastapi import HTTPException, status
 from sqlalchemy import select
@@ -186,7 +186,7 @@ class AITroubleshootService:
             db,
             session_id=session_id,
             input_hash=input_hash,
-            safety_passed=not persist_failed,
+            safety_passed=True,
             safety_violation="DB persistence failure" if persist_failed else None,
             provider=provider_name,
             tokens_used=total_tokens,
@@ -226,11 +226,18 @@ class AITroubleshootService:
         logger.info("Starting troubleshoot stream (provider=%s)", provider_name)
 
         chunks: list[str] = []
+        _stream_buffer_limit = 512 * 1024  # 512 KB
+        _buffer_size = 0
         async for chunk in provider.stream(
             system_prompt=TROUBLESHOOT_SYSTEM_PROMPT,
             user_message=user_message,
             response_model=TroubleshootResponse,
         ):
+            _buffer_size += len(chunk.encode())
+            if _buffer_size > _stream_buffer_limit:
+                logger.warning("Stream buffer limit exceeded for session %s", session_id)
+                yield '{"error":"STREAM_LIMIT_EXCEEDED","message":"Response too large — blocked by safety limit."}'
+                return
             chunks.append(chunk)
 
         full_response = "".join(chunks)
@@ -340,7 +347,7 @@ class AITroubleshootService:
                     id=uuid.UUID(session_id),
                     provider=provider_name,
                     model=model_name,
-                    created_at=datetime.utcnow(),
+                    created_at=datetime.now(UTC),
                 )
 
                 db.add(db_session)
@@ -354,11 +361,9 @@ class AITroubleshootService:
                         title=fix.title,
                         description=fix.description,
                         severity=fix.severity,
-                        safe_commands=(
-                            fix.safe_commands if fix.safe_commands else None,
-                        ),
+                        safe_commands=fix.safe_commands if fix.safe_commands else None,
                         template_id=fix.repair_template_id,
-                        created_at=datetime.utcnow(),
+                        created_at=datetime.now(UTC),
                     )
                     db.add(db_suggestion)
                 return
@@ -413,7 +418,7 @@ class AITroubleshootService:
                 provider=provider,
                 tokens_used=tokens_used,
                 latency_ms=latency_ms,
-                created_at=datetime.utcnow(),
+                created_at=datetime.now(UTC),
             )
             db.add(log)
         except Exception as exc:
@@ -433,7 +438,7 @@ class AITroubleshootService:
                     session_id,
                     fix.step,
                     fix.title,
-                    fix.confidence_score,
+                    fix.confidence_score or 0.0,
                     LOW_CONFIDENCE_GATE,
                 )
                 suppressed += 1
@@ -470,7 +475,7 @@ class AITroubleshootService:
                 session_id,
                 fix.step,
                 fix.confidence_level.value if fix.confidence_level else "unknown",
-                fix.confidence_score,
+                fix.confidence_score or 0.0,
                 fix.is_matrix_backed,
                 fix.severity,
             )

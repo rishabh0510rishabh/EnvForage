@@ -49,7 +49,6 @@ def mock_api_success() -> MagicMock:
 
 @pytest.fixture
 def mock_httpx(mock_api_success):
-    from unittest.mock import AsyncMock
     mock_client = MagicMock()
     mock_post = AsyncMock(return_value=mock_api_success)
     mock_client.post = mock_post
@@ -140,7 +139,6 @@ class TestFixAPIErrors:
     def test_fix_exits_on_connect_error(self, valid_report):
         """ConnectError should print a helpful message and exit 1."""
         import httpx
-        from unittest.mock import AsyncMock
         runner = CliRunner()
         mock_post = AsyncMock(side_effect=httpx.ConnectError("refused"))
         mock_class = MagicMock()
@@ -159,7 +157,6 @@ class TestFixAPIErrors:
     def test_fix_exits_on_http_error(self, valid_report):
         """4xx/5xx API responses should exit with code 1."""
         import httpx
-        from unittest.mock import AsyncMock
         runner = CliRunner()
 
         mock_resp = MagicMock()
@@ -185,7 +182,6 @@ class TestFixAPIErrors:
     def test_fix_exits_on_500_error(self, valid_report):
         """500 server error should exit with code 1."""
         import httpx
-        from unittest.mock import AsyncMock
         runner = CliRunner()
 
         mock_resp = MagicMock()

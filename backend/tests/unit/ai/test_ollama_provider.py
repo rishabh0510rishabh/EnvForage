@@ -31,9 +31,6 @@ def test_empty_model():
 # -----------------------------
 # COMPLETE SUCCESS TEST
 # -----------------------------
-
-
-@pytest.mark.asyncio
 async def test_complete_success():
     provider = OllamaProvider()
 
@@ -59,9 +56,6 @@ async def test_complete_success():
 # -----------------------------
 # EMPTY RESPONSE TEST
 # -----------------------------
-
-
-@pytest.mark.asyncio
 async def test_complete_empty_response():
     provider = OllamaProvider()
 
@@ -86,9 +80,6 @@ async def test_complete_empty_response():
 # -----------------------------
 # INVALID JSON TEST
 # -----------------------------
-
-
-@pytest.mark.asyncio
 async def test_complete_invalid_json():
     provider = OllamaProvider()
 
@@ -113,9 +104,6 @@ async def test_complete_invalid_json():
 # -----------------------------
 # CONNECTION ERROR TEST
 # -----------------------------
-
-
-@pytest.mark.asyncio
 async def test_complete_connection_error():
     provider = OllamaProvider()
 
@@ -136,9 +124,6 @@ async def test_complete_connection_error():
 # -----------------------------
 # TIMEOUT ERROR TEST (NEW)
 # -----------------------------
-
-
-@pytest.mark.asyncio
 async def test_complete_timeout_error():
     provider = OllamaProvider()
 
@@ -159,9 +144,6 @@ async def test_complete_timeout_error():
 # -----------------------------
 # STREAM SUCCESS TEST
 # -----------------------------
-
-
-@pytest.mark.asyncio
 async def test_stream_success():
     provider = OllamaProvider()
 
@@ -205,9 +187,6 @@ async def test_stream_success():
 # -----------------------------
 # STREAM MALFORMED JSON TEST
 # -----------------------------
-
-
-@pytest.mark.asyncio
 async def test_stream_skips_invalid_json():
     provider = OllamaProvider()
 
@@ -248,9 +227,6 @@ async def test_stream_skips_invalid_json():
 # -----------------------------
 # STREAM CONNECTION ERROR
 # -----------------------------
-
-
-@pytest.mark.asyncio
 async def test_stream_connection_error():
     provider = OllamaProvider()
 
@@ -274,9 +250,6 @@ async def test_stream_connection_error():
 # -----------------------------
 # STREAM TIMEOUT ERROR (NEW)
 # -----------------------------
-
-
-@pytest.mark.asyncio
 async def test_stream_timeout_error():
     provider = OllamaProvider()
 

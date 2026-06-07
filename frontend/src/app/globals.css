@@ -386,6 +386,9 @@ a:hover {
   .hero-title {
     font-size: clamp(2.5rem, 10vw, 4rem) !important;
   }
+  .hero-subtitle {
+    font-size: 1rem !important;
+  }
 }
 
 /* Navbar specific */
@@ -419,22 +422,28 @@ a:hover {
   padding: 0.5rem;
 }
 
-@media (max-width: 768px) {
-  .nav-brand { 
-    gap: 1rem; 
+@media (max-width: 1024px) {
+  .nav-container {
+    padding: 0.85rem 1.25rem !important;
   }
-  .nav-links-desktop { 
-    display: none; 
+  .nav-brand {
+    gap: 1rem;
   }
-  .mobile-menu-btn { 
-    display: flex; 
-    align-items: center; 
-    justify-content: center; 
+  .nav-links-desktop {
+    display: none;
+  }
+  .nav-hide {
+    display: none !important;
+  }
+  .mobile-menu-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
   .mobile-menu-overlay {
     background: var(--bg-primary);
     border-bottom: 1px solid var(--border-subtle);
-    padding: 1.5rem;
+    padding: 1.5rem 1.25rem;
     display: flex;
     flex-direction: column;
     gap: 1.25rem;

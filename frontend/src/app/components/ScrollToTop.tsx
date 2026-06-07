@@ -9,17 +9,20 @@ export default function ScrollToTop() {
 
 	// Check scroll position
 	useEffect(() => {
-		const toggleVisibility = () => {
-			if (window.scrollY > 400) {
-				setIsVisible(true);
-			} else {
-				setIsVisible(false);
-			}
-		};
+	const toggleVisibility = () => {
+		if (window.scrollY > 400) {
+			setIsVisible(true);
+		} else {
+			setIsVisible(false);
+		}
+	};
 
-		window.addEventListener("scroll", toggleVisibility);
-		return () => window.removeEventListener("scroll", toggleVisibility);
-	}, []);
+	window.addEventListener("scroll", toggleVisibility, {
+		passive: true,
+	});
+
+	return () => window.removeEventListener("scroll", toggleVisibility);
+}, []);
 
 	const scrollToTop = () => {
 		window.scrollTo({

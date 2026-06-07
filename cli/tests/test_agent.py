@@ -417,7 +417,7 @@ class TestReportBuilder:
         from envforge_agent.report import ReportBuilder
         report = ReportBuilder().build()
         assert isinstance(report, DiagnosticReport)
-        assert report.agent_version == "1.0.1"
+        assert report.agent_version == "1.0.2"
         assert report.os.name
         assert report.cpu.cores >= 1
 

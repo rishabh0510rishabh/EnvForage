@@ -19,8 +19,11 @@ import platform
 import subprocess
 import sys
 from pathlib import Path
+import logging
 
 from envforge_agent.schemas import PythonInfo
+
+logger = logging.getLogger(__name__)
 
 # Python versions to probe (3.8–3.13)
 _PROBE_VERSIONS = ["3.8", "3.9", "3.10", "3.11", "3.12","3.13"]
@@ -174,8 +177,16 @@ def _inspect_python(binary: str) -> PythonInfo | None:
             venv_path=data.get("venv_path"),
             pip_version=data.get("pip_version"),
         )
-    except (FileNotFoundError, subprocess.TimeoutExpired,
-            json.JSONDecodeError, KeyError, ValueError):
+
+    # FileNotFoundError is the subclass of OSError, so it is handled automatically
+    except (
+        OSError, subprocess.TimeoutExpired, json.JSONDecodeError,
+        KeyError, ValueError,) as exc:
+        logger.debug(
+            "Failed to inspect Python binary '%s': %s",
+            binary,
+            exc,
+        )
         return None
 
 

@@ -170,7 +170,7 @@ def _detect_cuda_via_registry() -> tuple[str | None, str | None]:
         import winreg
         key_path = r"SOFTWARE\NVIDIA Corporation\GPU Computing Toolkit\CUDA"
         with winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, key_path) as key:
-            best_version_tuple = (-1, -1)
+            best_version_tuple: tuple[int, ...] = (-1, -1)
             best_version_str = None
             best_install_dir = None
             

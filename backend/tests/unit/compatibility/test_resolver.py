@@ -3,6 +3,8 @@ Unit tests for the Compatibility Resolver.
 No mocks for matrix data — the matrix IS the ground truth.
 """
 
+import inspect
+
 import pytest
 from hypothesis import given, settings
 from hypothesis import strategies as st
@@ -46,6 +48,12 @@ PACKAGE_CONSTRAINTS = st.one_of(
 )
 
 
+async def _await_if_needed(value):
+    if inspect.isawaitable(value):
+        return await value
+    return value
+
+
 @settings(max_examples=1000, deadline=None)
 @given(
     packages=st.lists(PACKAGE_CONSTRAINTS, min_size=0, max_size=4),
@@ -56,7 +64,7 @@ PACKAGE_CONSTRAINTS = st.one_of(
     target_os=st.sampled_from(["LINUX", "WSL", "WIN"]),
     cuda_required=st.booleans(),
 )
-def test_resolve_handles_generated_version_inputs(
+async def test_resolve_handles_generated_version_inputs(
     packages,
     python_version,
     cuda_version,
@@ -65,7 +73,7 @@ def test_resolve_handles_generated_version_inputs(
 ):
     """Generated inputs either resolve or fail with a structured compatibility error."""
     try:
-        result = R.resolve(
+        result = await R.resolve(
             packages=packages,
             python_version=python_version,
             cuda_version=cuda_version,
@@ -83,8 +91,8 @@ def test_resolve_handles_generated_version_inputs(
     assert len(result.packages) == len(packages)
 
 
-def test_resolve_pytorch_cuda118_py311():
-    result = R.resolve(
+async def test_resolve_pytorch_cuda118_py311():
+    result = await R.resolve(
         packages=[PackageConstraint("torch", "2.1.2")],
         python_version="3.11",
         cuda_version="11.8",
@@ -97,8 +105,8 @@ def test_resolve_pytorch_cuda118_py311():
     assert result.packages[0].cuda_variant == "cu118"
 
 
-def test_resolve_cpu_only():
-    result = R.resolve(
+async def test_resolve_cpu_only():
+    result = await R.resolve(
         packages=[PackageConstraint("opencv-python", "4.9.0.80")],
         python_version="3.11",
         cuda_version=None,
@@ -111,8 +119,8 @@ def test_resolve_cpu_only():
     assert result.packages[0].cuda_variant is None
 
 
-def test_wsl_note_in_warnings():
-    result = R.resolve(
+async def test_wsl_note_in_warnings():
+    result = await R.resolve(
         packages=[PackageConstraint("torch", "2.1.0")],
         python_version="3.10",
         cuda_version="11.8",
@@ -124,8 +132,8 @@ def test_wsl_note_in_warnings():
     assert any("WSL" in w for w in result.warnings)
 
 
-def test_version_override():
-    result = R.resolve(
+async def test_version_override():
+    result = await R.resolve(
         packages=[PackageConstraint("torch", "2.1.2")],
         python_version="3.11",
         cuda_version="11.8",
@@ -138,9 +146,9 @@ def test_version_override():
     assert result.packages[0].version == "2.2.2"
 
 
-def test_unsupported_os_raises():
+async def test_unsupported_os_raises():
     with pytest.raises(UnsupportedOSError) as exc:
-        R.resolve(
+        await R.resolve(
             packages=[PackageConstraint("torch", "2.1.0")],
             python_version="3.11",
             cuda_version="11.8",
@@ -152,9 +160,9 @@ def test_unsupported_os_raises():
     assert exc.value.requested_os == "WIN"
 
 
-def test_unknown_cuda_raises():
+async def test_unknown_cuda_raises():
     with pytest.raises(UnknownVersionError) as exc:
-        R.resolve(
+        await R.resolve(
             packages=[PackageConstraint("torch", "2.1.0")],
             python_version="3.11",
             cuda_version="10.2",
@@ -166,9 +174,9 @@ def test_unknown_cuda_raises():
     assert exc.value.version == "10.2"
 
 
-def test_python_mismatch_raises():
+async def test_python_mismatch_raises():
     with pytest.raises(IncompatibilityError) as exc:
-        R.resolve(
+        await R.resolve(
             packages=[PackageConstraint("torch", "2.1.0")],
             python_version="3.7",
             cuda_version="11.8",
@@ -180,9 +188,9 @@ def test_python_mismatch_raises():
     assert exc.value.component == "python"
 
 
-def test_cuda_required_without_version_raises():
+async def test_cuda_required_without_version_raises():
     with pytest.raises(IncompatibilityError) as exc:
-        R.resolve(
+        await R.resolve(
             packages=[PackageConstraint("torch", "2.1.0")],
             python_version="3.11",
             cuda_version=None,
@@ -194,9 +202,9 @@ def test_cuda_required_without_version_raises():
     assert exc.value.component == "cuda"
 
 
-def test_cuda_version_mismatch_raises():
+async def test_cuda_version_mismatch_raises():
     with pytest.raises(IncompatibilityError) as exc:
-        R.resolve(
+        await R.resolve(
             packages=[PackageConstraint("torch", "2.1.0")],
             python_version="3.11",
             cuda_version="12.4",
@@ -208,8 +216,8 @@ def test_cuda_version_mismatch_raises():
     assert exc.value.component == "cuda"
 
 
-def test_non_matrix_package_uses_spec():
-    result = R.resolve(
+async def test_non_matrix_package_uses_spec():
+    result = await R.resolve(
         packages=[PackageConstraint("matplotlib", "3.8.4")],
         python_version="3.11",
         cuda_version=None,
@@ -221,15 +229,40 @@ def test_non_matrix_package_uses_spec():
     assert result.packages[0].version == "3.8.4"
 
 
-def test_to_dict_serializes():
-    result = R.resolve(
-        packages=[PackageConstraint("torch", "2.1.0")],
-        python_version="3.11",
-        cuda_version="11.8",
-        target_os="LINUX",
-        profile_slug="pytorch-cuda",
-        os_support=["LINUX", "WSL"],
-        cuda_required=True,
+@pytest.mark.asyncio
+async def test_warns_on_hybrid_conda_pip_gpu_environment():
+    result = await _await_if_needed(
+        R.resolve(
+            packages=[
+                PackageConstraint("numpy", "1.26.4"),
+                PackageConstraint("torch", "2.1.2", cuda_variant="cu118"),
+            ],
+            python_version="3.11",
+            cuda_version="11.8",
+            target_os="LINUX",
+            profile_slug="pytorch-cuda",
+            os_support=["LINUX", "WSL"],
+            cuda_required=True,
+        )
+    )
+    assert any(
+        "conda-managed packages" in warning and "ABI-sensitive" in warning
+        for warning in result.warnings
+    )
+
+
+@pytest.mark.asyncio
+async def test_to_dict_serializes():
+    result = await _await_if_needed(
+        R.resolve(
+            packages=[PackageConstraint("torch", "2.1.0")],
+            python_version="3.11",
+            cuda_version="11.8",
+            target_os="LINUX",
+            profile_slug="pytorch-cuda",
+            os_support=["LINUX", "WSL"],
+            cuda_required=True,
+        )
     )
     d = result.to_dict()
     assert d["python_version"] == "3.11"
@@ -307,8 +340,8 @@ def test_cuda_125_126_in_supported_versions():
     assert "12.6" in SUPPORTED_CUDA_VERSIONS
 
 
-def test_rocm_version_override_success():
-    result = R.resolve(
+async def test_rocm_version_override_success():
+    result = await R.resolve(
         packages=[PackageConstraint("torch", "2.0.0")],
         python_version="3.10",
         cuda_version=None,
@@ -323,9 +356,9 @@ def test_rocm_version_override_success():
     assert result.packages[0].cuda_variant == "rocm5.6.0"
 
 
-def test_rocm_version_override_failure():
+async def test_rocm_version_override_failure():
     with pytest.raises(IncompatibilityError) as exc:
-        R.resolve(
+        await R.resolve(
             packages=[PackageConstraint("torch", "2.1.0")],
             python_version="3.10",
             cuda_version=None,
@@ -339,8 +372,8 @@ def test_rocm_version_override_failure():
     assert exc.value.component == "rocm"
 
 
-def test_semver_range_resolution():
-    result = R.resolve(
+async def test_semver_range_resolution():
+    result = await R.resolve(
         packages=[PackageConstraint("torch", ">=2.0.0,<2.3.0")],
         python_version="3.11",
         cuda_version="11.8",
@@ -353,8 +386,8 @@ def test_semver_range_resolution():
     assert result.packages[0].version == "2.2.2"
 
 
-def test_wildcard_version_resolution():
-    result = R.resolve(
+async def test_wildcard_version_resolution():
+    result = await R.resolve(
         packages=[PackageConstraint("torch", "==2.1.*")],
         python_version="3.11",
         cuda_version="11.8",
@@ -367,8 +400,8 @@ def test_wildcard_version_resolution():
     assert result.packages[0].version == "2.1.2"
 
 
-def test_compatible_release_resolution():
-    result = R.resolve(
+async def test_compatible_release_resolution():
+    result = await R.resolve(
         packages=[PackageConstraint("torch", "~=2.1")],
         python_version="3.11",
         cuda_version="11.8",
@@ -381,9 +414,9 @@ def test_compatible_release_resolution():
     assert result.packages[0].version == "2.5.0"
 
 
-def test_invalid_semver_specifier():
+async def test_invalid_semver_specifier():
     with pytest.raises(IncompatibilityError):
-        R.resolve(
+        await R.resolve(
             packages=[PackageConstraint("torch", ">>>invalid<<<")],
             python_version="3.11",
             cuda_version="11.8",
@@ -394,9 +427,9 @@ def test_invalid_semver_specifier():
         )
 
 
-def test_no_matching_semver_range():
+async def test_no_matching_semver_range():
     with pytest.raises(IncompatibilityError):
-        R.resolve(
+        await R.resolve(
             packages=[PackageConstraint("torch", ">=99.0.0")],
             python_version="3.11",
             cuda_version="11.8",

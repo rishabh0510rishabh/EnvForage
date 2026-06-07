@@ -17,7 +17,6 @@ from app.compatibility.resolver import CompatibilityResolver
 
 R = CompatibilityResolver()
 
-
 # ── Python Matrix Tests ───────────────────────────────────────────────────────
 
 class TestDiffusersPythonMatrix:
@@ -115,9 +114,9 @@ class TestDiffusersCUDASupport:
 class TestDiffusersResolver:
     """Tests for resolving the stable-diffusion profile via CompatibilityResolver."""
 
-    def test_resolve_diffusers_cuda118_py311(self):
+    async def test_resolve_diffusers_cuda118_py311(self):
         """Resolve diffusers 0.27.2 with CUDA 11.8 + Python 3.11."""
-        result = R.resolve(
+        result = await R.resolve(
             packages=[
                 PackageConstraint("torch", "2.5.0", cuda_variant="cu118"),
                 PackageConstraint("diffusers", "0.27.2"),
@@ -148,9 +147,9 @@ class TestDiffusersResolver:
         assert diff_pkg.cuda_variant is None
         assert diff_pkg.version == "0.27.2"
 
-    def test_resolve_diffusers_cuda121_py312(self):
+    async def test_resolve_diffusers_cuda121_py312(self):
         """Resolve diffusers with CUDA 12.1 + Python 3.12."""
-        result = R.resolve(
+        result = await R.resolve(
             packages=[
                 PackageConstraint("torch", "2.5.0", cuda_variant="cu121"),
                 PackageConstraint("diffusers", "0.27.2"),
@@ -165,10 +164,10 @@ class TestDiffusersResolver:
         assert result.python_version == "3.12"
         assert result.cuda_version == "12.1"
 
-    def test_resolve_diffusers_unsupported_os_raises(self):
+    async def test_resolve_diffusers_unsupported_os_raises(self):
         """stable-diffusion profile does not support Windows natively."""
         with pytest.raises(Exception):  # UnsupportedOSError
-            R.resolve(
+            await R.resolve(
                 packages=[PackageConstraint("diffusers", "0.27.2")],
                 python_version="3.11",
                 cuda_version="11.8",
@@ -178,10 +177,10 @@ class TestDiffusersResolver:
                 cuda_required=True,
             )
 
-    def test_resolve_diffusers_no_cuda_raises(self):
+    async def test_resolve_diffusers_no_cuda_raises(self):
         """stable-diffusion profile requires CUDA — omitting it should fail."""
         with pytest.raises(IncompatibilityError) as exc:
-            R.resolve(
+            await R.resolve(
                 packages=[PackageConstraint("diffusers", "0.27.2")],
                 python_version="3.11",
                 cuda_version=None,
@@ -192,10 +191,10 @@ class TestDiffusersResolver:
             )
         assert exc.value.component == "cuda"
 
-    def test_resolve_diffusers_python_mismatch_raises(self):
+    async def test_resolve_diffusers_python_mismatch_raises(self):
         """diffusers 0.21.0 doesn't support Python 3.12 — should fail."""
         with pytest.raises(IncompatibilityError) as exc:
-            R.resolve(
+            await R.resolve(
                 packages=[PackageConstraint("diffusers", "0.21.0")],
                 python_version="3.12",
                 cuda_version="11.8",

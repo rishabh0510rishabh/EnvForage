@@ -8,8 +8,11 @@
 #
 # Install with:
 #   conda env create -f environment.yml
-# ==============================================================================
-
+# =============================================================================={% if warnings %}#
+# ── EnvForge Warnings ─────────────────────────────────────────────────────────
+{% for warning in warnings %}# WARNING: {{ warning }}
+{% endfor %}#
+{% endif %}
 name: {{ profile.name }}
 channels:
 {% if conda_channels is defined and conda_channels %}

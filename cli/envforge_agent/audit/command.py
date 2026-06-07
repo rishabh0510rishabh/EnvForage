@@ -58,7 +58,14 @@ def _resolve_source(spec: str) -> Source:
     is_flag=True,
     help="Exit with code 1 if any drift is detected. For CI gating.",
 )
-def audit_command(source_a: str, source_b: str, as_json: bool, as_sarif: bool, strict: bool) -> None:
+@click.option(
+    "--quiet",
+    "-q",
+    is_flag=True,
+    default=False,
+    help="Suppress all logging and standard output.",
+)
+def audit_command(source_a: str, source_b: str, as_json: bool, as_sarif: bool, strict: bool, quiet: bool) -> None:
     """Compare two environments and report drift.
 
     SOURCE_A and SOURCE_B can each be either:
@@ -93,7 +100,7 @@ def audit_command(source_a: str, source_b: str, as_json: bool, as_sarif: bool, s
         click.echo(format_json(result))
     elif as_sarif:
         click.echo(format_sarif(result))
-    else:
+    elif not quiet:
         format_text(result, console)
     
     if strict and result.has_drift():

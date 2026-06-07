@@ -1,0 +1,15 @@
+# Architecture Overview
+
+EnvForage is built on a distributed architecture designed for speed and reliability.
+
+## 1. The Matrix Engine (Backend)
+
+Written in FastAPI, the backend hosts our proprietary compatibility matrix. It uses dependency tree resolution to cross-reference PyTorch/TensorFlow versions against driver versions.
+
+## 2. The Agent (CLI)
+
+A lightweight Click/Typer Python CLI that gathers hardware signatures and communicates via REST to the Matrix Engine.
+
+## 3. The Dashboard (Frontend)
+
+A Next.js 15 application providing visualization of diagnostic data, visual setup wizards, and AI troubleshooting interfaces.

@@ -1,14 +1,16 @@
 """
 Compatibility Matrix API endpoints.
-Exposes CUDA, ROCm, and Python compatibility matrices as read-only REST endpoints.
-Resolves Issue #85.
+Exposes CUDA, ROCm, and Python compatibility matrices as REST endpoints.
+Dynamically fetches from the database if available, falling back to static constants.
 """
 
 from dataclasses import asdict
 from typing import Any
 
 from fastapi import APIRouter, HTTPException, Path
+from sqlalchemy import select
 
+from app.api.deps import DB
 from app.compatibility.matrix.cuda import (
     CUDA_MATRIX,
     FRAMEWORK_CUDA_SUPPORT,
@@ -19,6 +21,15 @@ from app.compatibility.matrix.rocm import (
     FRAMEWORK_ROCM_SUPPORT,
     ROCM_MATRIX,
     SUPPORTED_ROCM_VERSIONS,
+)
+from app.models.matrix import (
+    CUDAMatrixEntry as CUDAMatrixDBModel,
+)
+from app.models.matrix import (
+    PythonMatrixEntry as PythonMatrixDBModel,
+)
+from app.models.matrix import (
+    RocmMatrixEntry as RocmMatrixDBModel,
 )
 
 router = APIRouter(prefix="/compatibility", tags=["Compatibility"])
@@ -36,32 +47,77 @@ router = APIRouter(prefix="/compatibility", tags=["Compatibility"])
         200: {"description": "Compatibility summary retrieved successfully"},
     },
 )
-async def get_compatibility_summary() -> dict[str, Any]:
+async def get_compatibility_summary(db: DB) -> dict[str, Any]:
     """
     Returns a high-level summary of all available compatibility matrices.
     Useful for frontend dropdowns and dynamic table headers.
     """
+    # 1. CUDA Summary
+    cuda_entries = None
+    try:
+        cuda_res = await db.execute(select(CUDAMatrixDBModel))
+        cuda_entries = cuda_res.scalars().all()
+    except Exception:
+        pass
+
+    if cuda_entries:
+        cuda_versions = sorted({e.cuda_version for e in cuda_entries})
+        cuda_count = len(cuda_entries)
+    else:
+        cuda_versions = SUPPORTED_CUDA_VERSIONS
+        cuda_count = len(CUDA_MATRIX)
+
+    # 2. ROCm Summary
+    rocm_entries = None
+    try:
+        rocm_res = await db.execute(select(RocmMatrixDBModel))
+        rocm_entries = rocm_res.scalars().all()
+    except Exception:
+        pass
+
+    if rocm_entries:
+        rocm_versions = sorted({e.rocm_version for e in rocm_entries})
+        rocm_count = len(rocm_entries)
+    else:
+        rocm_versions = SUPPORTED_ROCM_VERSIONS
+        rocm_count = len(ROCM_MATRIX)
+
+    # 3. Python/Framework Summary
+    python_entries = None
+    try:
+        python_res = await db.execute(select(PythonMatrixDBModel))
+        python_entries = python_res.scalars().all()
+    except Exception:
+        pass
+
+    if python_entries:
+        frameworks = sorted({e.framework for e in python_entries})
+        python_count = len(python_entries)
+    else:
+        frameworks = sorted(PYTHON_MATRIX.keys())
+        python_count = sum(len(v) for v in PYTHON_MATRIX.values())
+
     return {
         "matrices": {
             "cuda": {
                 "description": "CUDA version → NVIDIA driver + cuDNN + supported GPU architectures",
                 "endpoint": "/api/v1/compatibility/cuda",
-                "supported_versions": SUPPORTED_CUDA_VERSIONS,
-                "count": len(CUDA_MATRIX),
+                "supported_versions": cuda_versions,
+                "count": cuda_count,
             },
             "rocm": {
                 "description": "ROCm version → Linux driver + supported AMD GPU architectures",
                 "endpoint": "/api/v1/compatibility/rocm",
-                "supported_versions": SUPPORTED_ROCM_VERSIONS,
-                "count": len(ROCM_MATRIX),
+                "supported_versions": rocm_versions,
+                "count": rocm_count,
             },
             "python": {
                 "description": (
                     "Framework version → supported Python versions + CUDA/ROCm versions"
                 ),
                 "endpoint": "/api/v1/compatibility/python",
-                "supported_frameworks": sorted(PYTHON_MATRIX.keys()),
-                "count": sum(len(v) for v in PYTHON_MATRIX.values()),
+                "supported_frameworks": frameworks,
+                "count": python_count,
             },
         }
     }
@@ -81,17 +137,44 @@ async def get_compatibility_summary() -> dict[str, Any]:
         200: {"description": "CUDA compatibility matrix retrieved successfully"},
     },
 )
-async def get_cuda_matrix() -> dict[str, Any]:
+async def get_cuda_matrix(db: DB) -> dict[str, Any]:
     """
     Returns the full CUDA compatibility matrix.
     Each entry maps a CUDA version to its minimum required NVIDIA driver
     (Linux + Windows), supported cuDNN versions, and supported GPU architectures.
     """
+    cuda_entries = None
+    try:
+        res = await db.execute(select(CUDAMatrixDBModel))
+        cuda_entries = res.scalars().all()
+    except Exception:
+        pass
+
+    if cuda_entries:
+        data = {
+            e.cuda_version: {
+                "cuda_version": e.cuda_version,
+                "min_driver_linux": e.min_driver_linux,
+                "min_driver_windows": e.min_driver_windows,
+                "cudnn_versions": e.cudnn_versions,
+                "supported_archs": e.supported_archs,
+                "notes": e.notes or "",
+                "source_url": e.source_url or "",
+            }
+            for e in cuda_entries
+        }
+        supported = sorted(data.keys())
+        count = len(cuda_entries)
+    else:
+        data = {version: asdict(entry) for version, entry in CUDA_MATRIX.items()}
+        supported = SUPPORTED_CUDA_VERSIONS
+        count = len(CUDA_MATRIX)
+
     return {
         "matrix": "cuda",
-        "count": len(CUDA_MATRIX),
-        "supported_versions": SUPPORTED_CUDA_VERSIONS,
-        "data": {version: asdict(entry) for version, entry in CUDA_MATRIX.items()},
+        "count": count,
+        "supported_versions": supported,
+        "data": data,
     }
 
 
@@ -105,14 +188,31 @@ async def get_cuda_matrix() -> dict[str, Any]:
         200: {"description": "Framework CUDA support map retrieved successfully"},
     },
 )
-async def get_framework_cuda_support() -> dict[str, Any]:
+async def get_framework_cuda_support(db: DB) -> dict[str, Any]:
     """
     Returns the framework → CUDA version support map.
     Shows which CUDA versions each framework version officially supports.
     """
+    entries = None
+    try:
+        res = await db.execute(select(PythonMatrixDBModel))
+        entries = res.scalars().all()
+    except Exception:
+        pass
+
+    if entries:
+        data: dict[str, dict[str, list[str]]] = {}
+        for e in entries:
+            if e.supported_cuda:
+                if e.framework not in data:
+                    data[e.framework] = {}
+                data[e.framework][e.version] = e.supported_cuda
+    else:
+        data = FRAMEWORK_CUDA_SUPPORT
+
     return {
         "matrix": "framework_cuda_support",
-        "data": FRAMEWORK_CUDA_SUPPORT,
+        "data": data,
     }
 
 
@@ -129,6 +229,7 @@ async def get_framework_cuda_support() -> dict[str, Any]:
     },
 )
 async def get_cuda_version(
+    db: DB,
     cuda_version: str = Path(
         ...,
         description="CUDA version identifier to look up.",
@@ -139,8 +240,37 @@ async def get_cuda_version(
     Returns the compatibility entry for a specific CUDA version.
     - **cuda_version**: e.g. `11.8`, `12.1`, `12.4`
     """
-    entry = CUDA_MATRIX.get(cuda_version)
-    if entry is None:
+    try:
+        res = await db.execute(
+            select(CUDAMatrixDBModel).where(
+                CUDAMatrixDBModel.cuda_version == cuda_version
+            )
+        )
+        entry = res.scalars().first()
+        if entry:
+            return {
+                "cuda_version": entry.cuda_version,
+                "min_driver_linux": entry.min_driver_linux,
+                "min_driver_windows": entry.min_driver_windows,
+                "cudnn_versions": entry.cudnn_versions,
+                "supported_archs": entry.supported_archs,
+                "notes": entry.notes or "",
+                "source_url": entry.source_url or "",
+            }
+    except Exception:
+        pass
+
+    # Fallback to static
+    static_entry = CUDA_MATRIX.get(cuda_version)
+    if static_entry is None:
+        try:
+            res_all = await db.execute(select(CUDAMatrixDBModel.cuda_version))
+            supported = sorted(res_all.scalars().all())
+        except Exception:
+            supported = SUPPORTED_CUDA_VERSIONS
+        if not supported:
+            supported = SUPPORTED_CUDA_VERSIONS
+
         raise HTTPException(
             status_code=404,
             detail={
@@ -150,11 +280,11 @@ async def get_cuda_version(
                         f"CUDA version '{cuda_version}' is not in the "
                         "compatibility matrix."
                     ),
-                    "supported_versions": SUPPORTED_CUDA_VERSIONS,
+                    "supported_versions": supported,
                 }
             },
         )
-    return {"cuda_version": cuda_version, **asdict(entry)}
+    return {"cuda_version": cuda_version, **asdict(static_entry)}
 
 
 # ── ROCm ──────────────────────────────────────────────────────────────────────
@@ -171,17 +301,42 @@ async def get_cuda_version(
         200: {"description": "ROCm compatibility matrix retrieved successfully"},
     },
 )
-async def get_rocm_matrix() -> dict[str, Any]:
+async def get_rocm_matrix(db: DB) -> dict[str, Any]:
     """
     Returns the full ROCm compatibility matrix.
     Each entry maps a ROCm version to its minimum required Linux driver version
     and supported AMD GPU architectures.
     """
+    rocm_entries = None
+    try:
+        res = await db.execute(select(RocmMatrixDBModel))
+        rocm_entries = res.scalars().all()
+    except Exception:
+        pass
+
+    if rocm_entries:
+        data = {
+            e.rocm_version: {
+                "rocm_version": e.rocm_version,
+                "min_driver_linux": e.min_driver_linux,
+                "supported_gpus": e.supported_gpus,
+                "notes": e.notes or "",
+                "source_url": e.source_url or "",
+            }
+            for e in rocm_entries
+        }
+        supported = sorted(data.keys())
+        count = len(rocm_entries)
+    else:
+        data = {version: asdict(entry) for version, entry in ROCM_MATRIX.items()}
+        supported = SUPPORTED_ROCM_VERSIONS
+        count = len(ROCM_MATRIX)
+
     return {
         "matrix": "rocm",
-        "count": len(ROCM_MATRIX),
-        "supported_versions": SUPPORTED_ROCM_VERSIONS,
-        "data": {version: asdict(entry) for version, entry in ROCM_MATRIX.items()},
+        "count": count,
+        "supported_versions": supported,
+        "data": data,
     }
 
 
@@ -195,14 +350,31 @@ async def get_rocm_matrix() -> dict[str, Any]:
         200: {"description": "Framework ROCm support map retrieved successfully"},
     },
 )
-async def get_framework_rocm_support() -> dict[str, Any]:
+async def get_framework_rocm_support(db: DB) -> dict[str, Any]:
     """
     Returns the framework → ROCm version support map.
     Shows which ROCm versions each framework version officially supports.
     """
+    entries = None
+    try:
+        res = await db.execute(select(PythonMatrixDBModel))
+        entries = res.scalars().all()
+    except Exception:
+        pass
+
+    if entries:
+        data: dict[str, dict[str, list[str]]] = {}
+        for e in entries:
+            if e.supported_rocm:
+                if e.framework not in data:
+                    data[e.framework] = {}
+                data[e.framework][e.version] = e.supported_rocm
+    else:
+        data = FRAMEWORK_ROCM_SUPPORT
+
     return {
         "matrix": "framework_rocm_support",
-        "data": FRAMEWORK_ROCM_SUPPORT,
+        "data": data,
     }
 
 
@@ -219,6 +391,7 @@ async def get_framework_rocm_support() -> dict[str, Any]:
     },
 )
 async def get_rocm_version(
+    db: DB,
     rocm_version: str = Path(
         ...,
         description="ROCm version identifier to look up.",
@@ -229,8 +402,34 @@ async def get_rocm_version(
     Returns the compatibility entry for a specific ROCm version.
     - **rocm_version**: e.g. `5.7.0`, `6.0.0`
     """
-    entry = ROCM_MATRIX.get(rocm_version)
-    if entry is None:
+    try:
+        res = await db.execute(
+            select(RocmMatrixDBModel).where(
+                RocmMatrixDBModel.rocm_version == rocm_version
+            )
+        )
+        entry = res.scalars().first()
+        if entry:
+            return {
+                "rocm_version": entry.rocm_version,
+                "min_driver_linux": entry.min_driver_linux,
+                "supported_gpus": entry.supported_gpus,
+                "notes": entry.notes or "",
+                "source_url": entry.source_url or "",
+            }
+    except Exception:
+        pass
+
+    static_entry = ROCM_MATRIX.get(rocm_version)
+    if static_entry is None:
+        try:
+            res_all = await db.execute(select(RocmMatrixDBModel.rocm_version))
+            supported = sorted(res_all.scalars().all())
+        except Exception:
+            supported = SUPPORTED_ROCM_VERSIONS
+        if not supported:
+            supported = SUPPORTED_ROCM_VERSIONS
+
         raise HTTPException(
             status_code=404,
             detail={
@@ -240,11 +439,11 @@ async def get_rocm_version(
                         f"ROCm version '{rocm_version}' is not in the "
                         "compatibility matrix."
                     ),
-                    "supported_versions": SUPPORTED_ROCM_VERSIONS,
+                    "supported_versions": supported,
                 }
             },
         )
-    return {"rocm_version": rocm_version, **asdict(entry)}
+    return {"rocm_version": rocm_version, **asdict(static_entry)}
 
 
 # ── Python ────────────────────────────────────────────────────────────────────
@@ -261,19 +460,47 @@ async def get_rocm_version(
         200: {"description": "Python compatibility matrix retrieved successfully"},
     },
 )
-async def get_python_matrix() -> dict[str, Any]:
+async def get_python_matrix(db: DB) -> dict[str, Any]:
     """
     Returns the full Python compatibility matrix.
     Each framework maps to a list of versioned entries showing supported
     Python versions, CUDA versions, and ROCm versions.
     """
-    return {
-        "matrix": "python",
-        "supported_frameworks": sorted(PYTHON_MATRIX.keys()),
-        "data": {
+    entries = None
+    try:
+        res = await db.execute(select(PythonMatrixDBModel))
+        entries = res.scalars().all()
+    except Exception:
+        pass
+
+    if entries:
+        frameworks = sorted({e.framework for e in entries})
+        data: dict[str, list[dict[str, Any]]] = {}
+        for e in entries:
+            if e.framework not in data:
+                data[e.framework] = []
+            data[e.framework].append(
+                {
+                    "framework": e.framework,
+                    "version": e.version,
+                    "min_python": e.min_python,
+                    "max_python": e.max_python,
+                    "supported_cuda": e.supported_cuda,
+                    "supported_rocm": e.supported_rocm,
+                    "supported_python": e.supported_python,
+                }
+            )
+    else:
+        frameworks = sorted(PYTHON_MATRIX.keys())
+        data = {
             framework: [asdict(entry) for entry in entries]
             for framework, entries in PYTHON_MATRIX.items()
-        },
+        }
+
+    return {
+        "matrix": "python",
+        "supported_frameworks": frameworks,
+        "data": data,
     }
 
 
@@ -287,6 +514,7 @@ async def get_python_matrix() -> dict[str, Any]:
     },
 )
 async def get_python_framework(
+    db: DB,
     framework: str = Path(
         ...,
         description="Framework name to look up.",
@@ -297,8 +525,43 @@ async def get_python_framework(
     Returns all versioned Python compatibility entries for a given framework.
     - **framework**: e.g. `torch`, `tensorflow`, `ultralytics`
     """
-    entries = PYTHON_MATRIX.get(framework)
-    if entries is None:
+    try:
+        res = await db.execute(
+            select(PythonMatrixDBModel).where(
+                PythonMatrixDBModel.framework == framework
+            )
+        )
+        entries = res.scalars().all()
+        if entries:
+            return {
+                "framework": framework,
+                "count": len(entries),
+                "data": [
+                    {
+                        "framework": e.framework,
+                        "version": e.version,
+                        "min_python": e.min_python,
+                        "max_python": e.max_python,
+                        "supported_cuda": e.supported_cuda,
+                        "supported_rocm": e.supported_rocm,
+                        "supported_python": e.supported_python,
+                    }
+                    for e in entries
+                ],
+            }
+    except Exception:
+        pass
+
+    static_entries = PYTHON_MATRIX.get(framework)
+    if static_entries is None:
+        try:
+            res_all = await db.execute(select(PythonMatrixDBModel.framework).distinct())
+            supported = sorted(res_all.scalars().all())
+        except Exception:
+            supported = sorted(PYTHON_MATRIX.keys())
+        if not supported:
+            supported = sorted(PYTHON_MATRIX.keys())
+
         raise HTTPException(
             status_code=404,
             detail={
@@ -308,14 +571,14 @@ async def get_python_framework(
                         f"Framework '{framework}' is not in the Python "
                         "compatibility matrix."
                     ),
-                    "supported_frameworks": sorted(PYTHON_MATRIX.keys()),
+                    "supported_frameworks": supported,
                 }
             },
         )
     return {
         "framework": framework,
-        "count": len(entries),
-        "data": [asdict(entry) for entry in entries],
+        "count": len(static_entries),
+        "data": [asdict(entry) for entry in static_entries],
     }
 
 
@@ -332,6 +595,7 @@ async def get_python_framework(
     },
 )
 async def get_python_framework_version(
+    db: DB,
     framework: str = Path(
         ...,
         description="Framework name to look up.",
@@ -348,8 +612,37 @@ async def get_python_framework_version(
     - **framework**: e.g. `torch`, `tensorflow`
     - **version**: e.g. `2.1.0`, `2.15.0`
     """
-    entries = PYTHON_MATRIX.get(framework)
-    if entries is None:
+    try:
+        res = await db.execute(
+            select(PythonMatrixDBModel).where(
+                (PythonMatrixDBModel.framework == framework)
+                & (PythonMatrixDBModel.version == version)
+            )
+        )
+        db_entry = res.scalars().first()
+        if db_entry:
+            return {
+                "framework": framework,
+                "version": version,
+                "min_python": db_entry.min_python,
+                "max_python": db_entry.max_python,
+                "supported_cuda": db_entry.supported_cuda,
+                "supported_rocm": db_entry.supported_rocm,
+                "supported_python": db_entry.supported_python,
+            }
+    except Exception:
+        pass
+
+    static_entries = PYTHON_MATRIX.get(framework)
+    if static_entries is None:
+        try:
+            res_all = await db.execute(select(PythonMatrixDBModel.framework).distinct())
+            supported = sorted(res_all.scalars().all())
+        except Exception:
+            supported = sorted(PYTHON_MATRIX.keys())
+        if not supported:
+            supported = sorted(PYTHON_MATRIX.keys())
+
         raise HTTPException(
             status_code=404,
             detail={
@@ -359,13 +652,27 @@ async def get_python_framework_version(
                         f"Framework '{framework}' is not in the Python "
                         "compatibility matrix."
                     ),
-                    "supported_frameworks": sorted(PYTHON_MATRIX.keys()),
+                    "supported_frameworks": supported,
                 }
             },
         )
-    for entry in entries:
-        if entry.version == version:
-            return {"framework": framework, "version": version, **asdict(entry)}
+
+    for static_entry in static_entries:
+        if static_entry.version == version:
+            return {"framework": framework, "version": version, **asdict(static_entry)}
+
+    try:
+        res_ver = await db.execute(
+            select(PythonMatrixDBModel.version).where(
+                PythonMatrixDBModel.framework == framework
+            )
+        )
+        avail = sorted(res_ver.scalars().all())
+    except Exception:
+        avail = [e.version for e in static_entries]
+    if not avail:
+        avail = [e.version for e in static_entries]
+
     raise HTTPException(
         status_code=404,
         detail={
@@ -374,7 +681,7 @@ async def get_python_framework_version(
                 "message": (
                     f"Version '{version}' not found for framework '{framework}'."
                 ),
-                "available_versions": [e.version for e in entries],
+                "available_versions": avail,
             }
         },
     )

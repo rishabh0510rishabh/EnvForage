@@ -11,6 +11,7 @@ from pydantic import BaseModel, Field
 class PackageSpecSchema(BaseModel):
     package_name: str = Field(
         ...,
+        pattern=r"^[A-Za-z0-9](?:[A-Za-z0-9._-]*[A-Za-z0-9])?$",
         description="Name of the package to install.",
         examples=["torch"],
     )
@@ -122,6 +123,60 @@ class ProfileCreateSchema(BaseModel):
                         "install_order": 1,
                     }
                 ],
+            }
+        }
+    }
+
+
+class ProfileUpdateSchema(BaseModel):
+    """Schema for partially updating an existing profile (all fields optional)."""
+
+    name: str | None = Field(
+        None,
+        max_length=128,
+        description="Human-readable name of the environment profile.",
+        examples=["PyTorch CUDA 12.1"],
+    )
+    description: str | None = Field(
+        None,
+        description="Optional summary describing the profile purpose.",
+        examples=["GPU-ready PyTorch environment for CUDA 12.1."],
+    )
+    tags: list[str] | None = Field(
+        None,
+        description="Tags used to categorize and filter the profile.",
+        examples=[["ml", "cuda", "pytorch"]],
+    )
+    os_support: list[str] | None = Field(
+        None,
+        description="Supported operating systems for this profile.",
+        examples=[["LINUX", "WSL"]],
+    )
+    cuda_required: bool | None = Field(
+        None,
+        description="Whether this profile requires CUDA support.",
+        examples=[True],
+    )
+    python_versions: list[str] | None = Field(
+        None,
+        description="Supported Python versions for this profile.",
+        examples=[["3.10", "3.11"]],
+    )
+    cuda_versions: list[str] | None = Field(
+        None,
+        description="Supported CUDA versions for this profile, if applicable.",
+        examples=[["12.1"]],
+    )
+    packages: list[PackageSpecSchema] | None = Field(
+        None,
+        description="Ordered list of packages required by this profile. Replaces all existing packages when provided.",
+    )
+
+    model_config = {
+        "json_schema_extra": {
+            "example": {
+                "name": "PyTorch CUDA 12.1 (Updated)",
+                "tags": ["ml", "cuda", "pytorch", "updated"],
             }
         }
     }

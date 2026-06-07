@@ -1,12 +1,16 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+
+import { Menu, X } from "lucide-react";
 import packageJson from "../../../package.json";
 import { ThemeToggle } from "../providers";
 
 export default function Navbar() {
 	const pathname = usePathname();
+	const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
 	const isActive = (path: string) => {
 		if (path === "/") {
@@ -32,19 +36,11 @@ export default function Navbar() {
 				right: 0,
 				width: "100%",
 				zIndex: 100,
-				padding: "0.85rem 0",
 				boxShadow: "0 4px 30px rgba(0, 0, 0, 0.03)",
 			}}
 		>
-			<div
-				className="container"
-				style={{
-					display: "flex",
-					justifyContent: "space-between",
-					alignItems: "center",
-				}}
-			>
-				<div style={{ display: "flex", alignItems: "center", gap: "2.5rem" }}>
+			<div className="container nav-container">
+				<div className="nav-brand">
 					<div style={{ display: "flex", alignItems: "baseline", gap: "1rem" }}>
 						<Link
 							href="/"
@@ -58,6 +54,7 @@ export default function Navbar() {
 							Env<span className="text-gradient">Forage</span>
 						</Link>
 						<span
+							className="nav-hide"
 							style={{
 								color: "var(--text-muted)",
 								fontSize: "0.85rem",
@@ -67,14 +64,7 @@ export default function Navbar() {
 							MLOps • v{packageJson.version}
 						</span>
 					</div>
-					<nav
-						style={{
-							display: "flex",
-							gap: "1.75rem",
-							fontSize: "0.925rem",
-							fontWeight: 500,
-						}}
-					>
+					<nav className="nav-links-desktop">
 						{navLinks.map((link) => {
 							const active = isActive(link.path);
 							return (
@@ -110,12 +100,13 @@ export default function Navbar() {
 						})}
 					</nav>
 				</div>
-				<div style={{ display: "flex", gap: "0.75rem", alignItems: "center" }}>
+				<div className="nav-actions">
 					<ThemeToggle />
 					<a
-						href="#"
+						href="https://discord.gg/N2GKNRzDV"
 						target="_blank"
 						rel="noreferrer"
+						className="hide-on-mobile"
 						style={{
 							display: "flex",
 							alignItems: "center",
@@ -132,6 +123,7 @@ export default function Navbar() {
 						href="https://github.com/rishabh0510rishabh/EnvForage"
 						target="_blank"
 						rel="noreferrer"
+						className="hide-on-mobile"
 						style={{
 							display: "flex",
 							alignItems: "center",
@@ -144,8 +136,57 @@ export default function Navbar() {
 					>
 						<span style={{ color: "var(--brand-secondary)" }}>★</span> GitHub
 					</a>
+					<button
+						className="mobile-menu-btn"
+						onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+						aria-label="Toggle mobile menu"
+					>
+						{isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+					</button>
 				</div>
 			</div>
+
+			{isMobileMenuOpen && (
+				<div className="mobile-menu-overlay">
+					{navLinks.map((link) => {
+						const active = isActive(link.path);
+						return (
+							<Link
+								key={link.path}
+								href={link.path}
+								onClick={() => setIsMobileMenuOpen(false)}
+								style={{
+									color: active
+										? "var(--brand-primary)"
+										: "var(--text-secondary)",
+									fontSize: "1.125rem",
+									fontWeight: active ? 600 : 500,
+									textDecoration: "none",
+								}}
+							>
+								{link.name}
+							</Link>
+						);
+					})}
+					<hr style={{ borderColor: "var(--border-subtle)", margin: "0.5rem 0" }} />
+					<a
+						href="https://discord.gg/N2GKNRzDV"
+						target="_blank"
+						rel="noreferrer"
+						style={{ color: "var(--text-secondary)", fontSize: "1.125rem", fontWeight: 500, textDecoration: "none" }}
+					>
+						<span style={{ color: "#5865F2", marginRight: "0.5rem" }}>💬</span> Discord
+					</a>
+					<a
+						href="https://github.com/rishabh0510rishabh/EnvForage"
+						target="_blank"
+						rel="noreferrer"
+						style={{ color: "var(--text-secondary)", fontSize: "1.125rem", fontWeight: 500, textDecoration: "none" }}
+					>
+						<span style={{ color: "var(--brand-secondary)", marginRight: "0.5rem" }}>★</span> GitHub
+					</a>
+				</div>
+			)}
 		</header>
 	);
 }

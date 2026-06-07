@@ -1,0 +1,29 @@
+# API Schema
+
+The EnvForage REST API allows you to programmatically resolve compatibility matrices.
+
+## Resolve Dependencies
+
+`POST /api/v1/compatibility/resolve`
+
+**Payload:**
+```json
+{
+  "os": "linux",
+  "gpu_vendor": "nvidia",
+  "driver_version": "535",
+  "framework": "pytorch"
+}
+```
+
+**Response:**
+```json
+{
+  "python_version": "3.10",
+  "cuda_version": "12.1",
+  "packages": [
+    "torch==2.1.0+cu121",
+    "torchvision==0.16.0+cu121"
+  ]
+}
+```

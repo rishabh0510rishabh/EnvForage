@@ -50,6 +50,12 @@ async def troubleshoot(
             try:
                 async for chunk in _service.stream_troubleshoot(request, db):
                     yield f"data: {chunk}\n\n"
+            except LLMProviderError as exc:
+                logger.error("LLM provider error in stream: %s", exc)
+                yield (
+                    f'data: {{"error":"PROVIDER_ERROR",'
+                    f'"message":"{exc.reason}"}}\n\n'
+                )
             except Exception:
                 logger.exception("Error in troubleshoot stream generator")
                 yield (

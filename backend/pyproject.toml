@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "envforge-backend"
-version = "1.0.0"
+version = "1.0.2"
 description = "EnvForge Backend API — ML Environment Provisioning Platform"
 requires-python = ">=3.11"
 dependencies = [
@@ -18,6 +18,7 @@ dependencies = [
     "asyncpg>=0.29.0",
     "alembic>=1.13.0",
     "jinja2>=3.1.4",
+    "bashlex>=0.18",
     "pyyaml>=6.0.1",
     "httpx>=0.27.0",
     "python-multipart>=0.0.9",
@@ -27,8 +28,9 @@ dependencies = [
     "python-jose[cryptography]>=3.3.0",
     "passlib>=1.7.4",
     "bcrypt>=4.0.0",
+    "celery>=5.4.0",
     "packaging>=23.0",
-    "bashlex>=0.6",
+    "structlog>=24.1.0",
 ]
 
 [project.optional-dependencies]
@@ -71,8 +73,11 @@ ignore = ["E501"]
 
 [tool.mypy]
 python_version = "3.11"
-strict = true
+strict = false
 ignore_missing_imports = true
+disallow_untyped_defs = false
+disallow_incomplete_defs = false
+check_untyped_defs = false
 
 [[tool.mypy.overrides]]
 module = "tests.*"

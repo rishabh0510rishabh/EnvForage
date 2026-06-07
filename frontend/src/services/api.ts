@@ -17,6 +17,38 @@ const getApiBaseUrl = () => {
 };
 
 const API_BASE_URL = getApiBaseUrl();
+const delay = (ms: number) =>
+	new Promise((resolve) => setTimeout(resolve, ms));
+
+async function fetchWithRetry(
+	url: string,
+	options: RequestInit = {},
+	retries = 3,
+	backoff = 1000,
+): Promise<Response> {
+	try {
+		const response = await fetch(url, options);
+
+		if (!response.ok && response.status >= 500 && retries > 0) {
+			throw new Error(`Server error: ${response.status}`);
+		}
+
+		return response;
+	} catch (error) {
+		if (retries <= 0) {
+			throw error;
+		}
+
+		await delay(backoff);
+
+		return fetchWithRetry(
+			url,
+			options,
+			retries - 1,
+			backoff * 2,
+		);
+	}
+}
 
 export const api = {
 	getProfiles: async (
@@ -32,16 +64,19 @@ export const api = {
 		}
 
 		const url = `${API_BASE_URL}/profiles${params.toString() ? `?${params.toString()}` : ""}`;
-		const response = await fetch(url, { cache: "no-store" });
+		const response = await fetchWithRetry(url, { cache: "no-store" });
 		if (!response.ok) throw new Error("Failed to fetch profiles");
 		const data = await response.json();
 		return data.profiles || [];
 	},
 
 	getProfile: async (slug: string): Promise<Profile> => {
-		const response = await fetch(`${API_BASE_URL}/profiles/${slug}`, {
-			cache: "no-store",
-		});
+		const response = await fetchWithRetry(
+			`${API_BASE_URL}/profiles/${slug}`,
+			{
+				cache: "no-store",
+			},
+		);
 		if (!response.ok) throw new Error(`Failed to fetch profile: ${slug}`);
 		return response.json();
 	},
@@ -158,9 +193,12 @@ export const api = {
 	},
 
 	getRepairTemplates: async (): Promise<RepairTemplateListResponse> => {
-		const response = await fetch(`${API_BASE_URL}/repair/templates`, {
-			cache: "no-store",
-		});
+		const response = await fetchWithRetry(
+			`${API_BASE_URL}/repair/templates`,
+			{
+				cache: "no-store",
+			},
+		);
 		if (!response.ok) throw new Error("Failed to fetch repair templates");
 		return response.json();
 	},

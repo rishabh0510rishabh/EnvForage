@@ -135,7 +135,7 @@ class InMemoryBackend(RateLimitBackend):
         now = time.monotonic()
         empty_keys = [
             key
-            for key, timestamps in self._requests.items()
+            for key, timestamps in list(self._requests.items())
             if not timestamps or max(timestamps) < now - 300
         ]
         for key in empty_keys:
@@ -363,3 +363,13 @@ repair_rate_limit = RateLimiter(max_requests=20, window_seconds=60)
 
 # General API: 60 requests per minute
 general_rate_limit = RateLimiter(max_requests=60, window_seconds=60)
+
+# Auth endpoints (/signup, /signin).
+# Reads max_requests from settings.rate_limit_auth_rpm (default 20 rpm) so
+# operators can tune the limit without a code change.  Uses a separate
+# limiter instance so auth traffic never competes with general-API quota.
+_auth_settings = get_settings()
+auth_rate_limit = RateLimiter(
+    max_requests=_auth_settings.rate_limit_auth_rpm,
+    window_seconds=60,
+)

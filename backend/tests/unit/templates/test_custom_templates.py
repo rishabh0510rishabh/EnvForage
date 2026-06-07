@@ -3,7 +3,7 @@
 from unittest.mock import MagicMock, patch
 
 import pytest
-from jinja2.sandbox import SecurityError
+from jinja2.sandbox import SecurityError  # type: ignore[attr-defined]
 
 from app.compatibility.models import ResolvedEnvironment
 from app.config import Settings
@@ -93,3 +93,59 @@ def test_custom_templates_subject_to_sandbox_hardening(tmp_path):
     assert "access to attribute" in str(exc_info.value) or "is blocked" in str(
         exc_info.value
     )
+
+
+def test_custom_template_dir_traversal_validation():
+    """Verify that Settings rejects custom_template_dir paths outside safe boundaries."""
+    import os
+    from pathlib import Path
+
+    # 1. Test relative path containing directory traversal sequence escaping project root
+    with pytest.raises(ValueError) as exc_info:
+        Settings(custom_template_dir=Path("../../../../../etc"))
+    assert "outside the safe boundary" in str(exc_info.value)
+
+    # 2. Test absolute path outside project root and system temp directory
+    if os.name == "nt":
+        bad_path = Path("C:/unauthorized_custom_templates_dir_non_existent")
+    else:
+        bad_path = Path("/unauthorized_custom_templates_dir_non_existent")
+
+    with pytest.raises(ValueError) as exc_info:
+        Settings(custom_template_dir=bad_path)
+    assert "outside the safe boundary" in str(exc_info.value)
+
+
+def test_engine_custom_template_dir_validation():
+    """Verify that template engine rejects unsafe custom template paths."""
+    import os
+    from pathlib import Path
+
+    from app.templates.engine import _get_jinja_env
+
+    # 1. Test relative path containing directory traversal sequence escaping project root
+    with pytest.raises(ValueError) as exc_info:
+        _get_jinja_env(Path("../../../../../etc"))
+    assert "outside the safe boundary" in str(exc_info.value)
+
+    # 2. Test absolute path outside project root and system temp directory
+    if os.name == "nt":
+        bad_path = Path("C:/unauthorized_custom_templates_dir_non_existent")
+    else:
+        bad_path = Path("/unauthorized_custom_templates_dir_non_existent")
+
+    with pytest.raises(ValueError) as exc_info:
+        _get_jinja_env(bad_path)
+    assert "outside the safe boundary" in str(exc_info.value)
+
+
+def test_custom_template_dir_valid_path():
+    """Verify that a valid custom_template_dir path within the project root is accepted and resolved."""
+    from pathlib import Path
+
+    # Resolve the project root: test_custom_templates.py is 5 levels down from the repository root
+    project_root = Path(__file__).resolve().parent.parent.parent.parent.parent
+    valid_dir = project_root / "backend" / "app" / "templates" / "jinja"
+
+    settings = Settings(custom_template_dir=valid_dir)
+    assert settings.custom_template_dir == valid_dir.resolve()

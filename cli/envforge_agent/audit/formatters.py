@@ -65,7 +65,7 @@ def format_text(result: AuditResult, console: Console) -> None:
 
     console.print(table)
 
-    counts = {}
+    counts: dict[str, int] = {}
     for entry in result.differences:
         counts[entry.severity] = counts.get(entry.severity, 0) + 1
 

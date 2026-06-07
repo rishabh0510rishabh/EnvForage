@@ -6,10 +6,13 @@ from app.models.diagnostic import (
     VerificationCheck,
     VerificationResult,
 )
+from app.models.matrix import CUDAMatrixEntry, PythonMatrixEntry, RocmMatrixEntry
 from app.models.profile import EnvironmentProfile, ProfilePackage
 from app.models.script_job import GeneratedScript, ScriptGenerationJob
+from app.models.user import User
 
 __all__ = [
+    "User",
     "EnvironmentProfile",
     "ProfilePackage",
     "ScriptGenerationJob",
@@ -20,4 +23,7 @@ __all__ = [
     "AISession",
     "AISuggestion",
     "AIAuditLog",
+    "CUDAMatrixEntry",
+    "RocmMatrixEntry",
+    "PythonMatrixEntry",
 ]

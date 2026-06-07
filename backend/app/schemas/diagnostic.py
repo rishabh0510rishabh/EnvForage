@@ -6,16 +6,19 @@ from pydantic import BaseModel, Field
 class OSInfo(BaseModel):
     name: str = Field(
         ...,
+        max_length=128,
         description="Operating system name.",
         examples=["Ubuntu 22.04"],
     )
     version: str = Field(
         ...,
+        max_length=32,
         description="Operating system version.",
         examples=["22.04"],
     )
     architecture: str = Field(
         ...,
+        max_length=32,
         description="CPU architecture of the operating system.",
         examples=["x86_64"],
     )
@@ -29,6 +32,7 @@ class OSInfo(BaseModel):
 class CPUInfo(BaseModel):
     brand: str = Field(
         ...,
+        max_length=256,
         description="CPU model or brand name.",
         examples=["AMD Ryzen 7 7840HS"],
     )
@@ -60,6 +64,7 @@ class RAMInfo(BaseModel):
 class GPUInfo(BaseModel):
     name: str = Field(
         ...,
+        max_length=128,
         description="GPU model name.",
         examples=["NVIDIA RTX 4060 Laptop GPU"],
     )
@@ -70,6 +75,7 @@ class GPUInfo(BaseModel):
     )
     driver_version: str | None = Field(
         None,
+        max_length=32,
         description="Installed GPU driver version.",
         examples=["555.85"],
     )
@@ -119,11 +125,13 @@ class ROCMInfo(BaseModel):
 class PythonInfo(BaseModel):
     version: str = Field(
         ...,
+        max_length=8,
         description="Installed Python version.",
         examples=["3.11.4"],
     )
     path: str = Field(
         ...,
+        max_length=512,
         description="Filesystem path to the Python executable.",
         examples=["/usr/bin/python3"],
     )
@@ -160,7 +168,8 @@ class DiagnosticReportSchema(BaseModel):
     ram: RAMInfo
     gpus: list[GPUInfo] = Field(
         default_factory=list,
-        description="Detected GPUs on the system.",
+        max_length=32,
+        description="Detected GPUs on the system. Capped at 32 entries to prevent memory exhaustion.",
     )
     cuda: CUDAInfo = Field(
         default_factory=lambda: CUDAInfo(
@@ -181,7 +190,8 @@ class DiagnosticReportSchema(BaseModel):
     )
     python_installations: list[PythonInfo] = Field(
         default_factory=list,
-        description="All detected Python installations.",
+        max_length=64,
+        description="All detected Python installations. Capped at 64 entries to prevent memory exhaustion.",
     )
     active_python: PythonInfo | None = Field(
         None,
@@ -296,3 +306,17 @@ class DiagnoseResponse(BaseModel):
         description="General compatibility recommendations.",
         examples=[["Upgrade NVIDIA driver to latest stable release"]],
     )
+
+
+class TaskResponse(BaseModel):
+    """Response when a task is offloaded to Celery."""
+    task_id: str = Field(..., description="Celery task ID for polling.")
+    status: str = Field(..., description="Current status of the task.")
+
+
+class DiagnoseTaskStatus(BaseModel):
+    """Response for GET /diagnose/status/{task_id}."""
+    task_id: str
+    status: str
+    result: DiagnoseResponse | None = None
+    error: str | None = None

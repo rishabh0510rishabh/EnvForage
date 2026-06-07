@@ -2,7 +2,7 @@
 
 import re
 import uuid
-from datetime import datetime
+from datetime import UTC, datetime
 from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -113,7 +113,7 @@ async def verify_environment(
         report_id=payload.report_id,
         profile_id=payload.profile_id,
         overall_status=overall_status,
-        created_at=datetime.utcnow(),
+        created_at=datetime.now(UTC),
     )
     db.add(db_result)
 

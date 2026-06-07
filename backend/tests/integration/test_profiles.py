@@ -7,8 +7,6 @@ from app.database import get_db
 from app.main import app
 from app.models.profile import EnvironmentProfile
 
-pytestmark = pytest.mark.asyncio
-
 # Must match the ADMIN_API_KEY set in conftest.py os.environ.setdefault
 ADMIN_HEADERS = {"X-Admin-API-Key": "test-admin-key-for-ci"}
 
@@ -214,3 +212,27 @@ async def test_delete_profile_with_wrong_admin_key_returns_401(client):
     response = await client.delete("/api/v1/profiles/any-slug", headers=wrong_headers)
     assert response.status_code == 401
     assert response.json()["detail"]["error"]["code"] == "INVALID_ADMIN_KEY"
+
+async def test_create_profile_with_invalid_package_name_returns_422(client):
+    profile_data = {
+        "slug": "invalid-package-test",
+        "name": "Invalid Package Test",
+        "os_support": ["LINUX"],
+        "python_versions": ["3.11"],
+        "packages": [
+            {
+                "package_name": "-torch",
+                "version_spec": "==2.3.0",
+                "is_optional": False,
+                "install_order": 1,
+            }
+        ],
+    }
+
+    response = await client.post(
+        "/api/v1/profiles",
+        json=profile_data,
+        headers=ADMIN_HEADERS,
+    )
+
+    assert response.status_code == 422
