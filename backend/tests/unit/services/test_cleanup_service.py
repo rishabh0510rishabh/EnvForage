@@ -1,5 +1,6 @@
-import pytest
 from unittest.mock import AsyncMock, MagicMock, patch
+
+import pytest
 
 
 def _make_db(rowcount: int = 3):
@@ -52,7 +53,7 @@ async def test_failure_reraises_exception():
 
 
 async def test_rollback_called_on_failure():
-    from app.services import cleanup_service 
+    from app.services import cleanup_service
 
     db = _make_db()
     db.execute = AsyncMock(side_effect=Exception("error"))
@@ -60,4 +61,4 @@ async def test_rollback_called_on_failure():
         with pytest.raises(Exception):
             await cleanup_service.run_cleanup()
 
-    db.rollback.assert_awaited_once()  
+    db.rollback.assert_awaited_once()

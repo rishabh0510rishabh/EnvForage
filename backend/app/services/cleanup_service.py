@@ -4,8 +4,8 @@ import logging
 import time
 from datetime import UTC, datetime, timedelta
 from typing import Any
-from prometheus_client import Counter, Gauge
 
+from prometheus_client import Counter, Gauge
 from sqlalchemy import delete
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -22,7 +22,7 @@ GENERATED_SCRIPTS_RETENTION_DAYS = 7
 CLEANUP_RUNS_TOTAL = Counter(
     "cleanup_runs_total",
     "Total number of cleanup task executions",
-    ["status"], 
+    ["status"],
 )
 
 CLEANUP_LAST_RUN_TIMESTAMP = Gauge(
@@ -34,7 +34,6 @@ CLEANUP_LAST_RUN_SUCCESS = Gauge(
     "cleanup_last_run_success",
     "1 if the last cleanup run succeeded, 0 if it failed",
 )
-
 
 
 async def delete_expired_records(db: AsyncSession) -> dict[str, Any]:
@@ -69,7 +68,7 @@ async def delete_expired_records(db: AsyncSession) -> dict[str, Any]:
 async def run_cleanup() -> None:
     """Entry point for the scheduler — manages its own DB session."""
     logger.info("Running scheduled database cleanup...")
-    CLEANUP_LAST_RUN_TIMESTAMP.set(time.time()) 
+    CLEANUP_LAST_RUN_TIMESTAMP.set(time.time())
     async with AsyncSessionLocal() as db:
         try:
             result = await delete_expired_records(db)
@@ -79,6 +78,6 @@ async def run_cleanup() -> None:
         except Exception as e:
             logger.error(f"Cleanup task failed: {e}", exc_info=True)
             await db.rollback()
-            CLEANUP_RUNS_TOTAL.labels(status="failure").inc() 
+            CLEANUP_RUNS_TOTAL.labels(status="failure").inc()
             CLEANUP_LAST_RUN_SUCCESS.set(0)
-            raise   
+            raise
