@@ -123,8 +123,8 @@ async def test_engine():
                 try:
                     item = json.loads(item_str)
                 except Exception as e:
-                import logging
-                logging.error(f"Test fixture error: {e}")
+                    import logging
+                    logging.error(f"Test fixture error: {e}")
                     item = item_str
 
                 if isinstance(item, list):

@@ -256,8 +256,8 @@ async def create_profile(
     try:
         await db.commit()
     except Exception as e:
-            import logging
-            logging.error(f"Profile service error: {e}")
+        import logging
+        logging.error(f"Profile service error: {e}")
         await db.rollback()
         raise
 
@@ -285,8 +285,8 @@ async def delete_profile(
     try:
         await db.commit()
     except Exception as e:
-    import logging
-    logging.error(f"Profile error 1: {e}")
+        import logging
+        logging.error(f"Profile error 1: {e}")
         await db.rollback()
         raise
 
@@ -328,8 +328,8 @@ async def update_profile(
     try:
         await db.commit()
     except Exception as e:
-    import logging
-    logging.error(f"Profile error 2: {e}")
+        import logging
+        logging.error(f"Profile error 2: {e}")
         await db.rollback()
         raise
 

@@ -92,8 +92,8 @@ def run_diagnose_task(
     try:
         profiles = asyncio.run(_fetch_profiles())
     except Exception as e:
-            import logging
-            logging.error(f"Worker component error: {e}")
+        import logging
+        logging.error(f"Worker component error: {e}")
         logger.exception("Failed to fetch profiles for run_diagnose_task")
         raise
 
