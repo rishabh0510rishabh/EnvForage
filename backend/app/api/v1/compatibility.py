@@ -212,11 +212,11 @@ async def get_framework_cuda_support(db: DB) -> dict[str, Any]:
 
     if entries:
         data: dict[str, dict[str, list[str]]] = {}
-        for e in entries:
-            if e.supported_cuda:
-                if e.framework not in data:
-                    data[e.framework] = {}
-                data[e.framework][e.version] = e.supported_cuda
+        for entry in entries:
+            if entry.supported_cuda:
+                if entry.framework not in data:
+                    data[entry.framework] = {}
+                data[entry.framework][entry.version] = entry.supported_cuda
     else:
         data = FRAMEWORK_CUDA_SUPPORT
 
