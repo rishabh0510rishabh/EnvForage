@@ -1,5 +1,6 @@
 """AST-based safety filter for shell script validation."""
 
+# ruff: noqa: I001
 import os
 from pathlib import Path
 
