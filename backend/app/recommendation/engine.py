@@ -36,70 +36,92 @@ def recommend_profiles(report: DiagnosticReportSchema) -> dict[str, Any]:
         )
 
     if is_apple_silicon:
-        profiles.append({
-            "name": "pytorch-mps",
-            "reason": "Apple Silicon detected — PyTorch MPS backend provides GPU acceleration",
-            "rank": 1,
-        })
-        profiles.append({
-            "name": "cpu-only",
-            "reason": "Fallback for frameworks without MPS support",
-            "rank": 2,
-        })
+        profiles.append(
+            {
+                "name": "pytorch-mps",
+                "reason": "Apple Silicon detected — PyTorch MPS backend provides GPU acceleration",
+                "rank": 1,
+            }
+        )
+        profiles.append(
+            {
+                "name": "cpu-only",
+                "reason": "Fallback for frameworks without MPS support",
+                "rank": 2,
+            }
+        )
     elif not has_gpu:
-        profiles.append({
-            "name": "cpu-only",
-            "reason": "No GPU detected — use CPU-based frameworks (PyTorch CPU, TensorFlow CPU)",
-            "rank": 1,
-        })
-        profiles.append({
-            "name": "sklearn",
-            "reason": "Scikit-learn works well on CPU-only systems",
-            "rank": 2,
-        })
+        profiles.append(
+            {
+                "name": "cpu-only",
+                "reason": "No GPU detected — use CPU-based frameworks (PyTorch CPU, TensorFlow CPU)",
+                "rank": 1,
+            }
+        )
+        profiles.append(
+            {
+                "name": "sklearn",
+                "reason": "Scikit-learn works well on CPU-only systems",
+                "rank": 2,
+            }
+        )
     elif max_vram is not None and max_vram < 4:
         warnings.append(
             f"Low GPU VRAM ({max_vram:.1f} GB). Large models will not fit. "
             "Recommending lightweight GPU profiles."
         )
-        profiles.append({
-            "name": "yolov8-nano",
-            "reason": "Lightweight model optimized for low-VRAM GPUs (<4 GB)",
-            "rank": 1,
-        })
-        profiles.append({
-            "name": "sklearn",
-            "reason": "CPU-based ML — avoids VRAM limitations",
-            "rank": 2,
-        })
+        profiles.append(
+            {
+                "name": "yolov8-nano",
+                "reason": "Lightweight model optimized for low-VRAM GPUs (<4 GB)",
+                "rank": 1,
+            }
+        )
+        profiles.append(
+            {
+                "name": "sklearn",
+                "reason": "CPU-based ML — avoids VRAM limitations",
+                "rank": 2,
+            }
+        )
     elif max_vram is not None and max_vram <= 8:
-        profiles.append({
-            "name": "pytorch-cuda",
-            "reason": f"GPU with {max_vram:.1f} GB VRAM — suitable for PyTorch CUDA workloads",
-            "rank": 1,
-        })
-        profiles.append({
-            "name": "yolov8",
-            "reason": "YOLOv8 runs well on 4–8 GB VRAM GPUs",
-            "rank": 2,
-        })
+        profiles.append(
+            {
+                "name": "pytorch-cuda",
+                "reason": f"GPU with {max_vram:.1f} GB VRAM — suitable for PyTorch CUDA workloads",
+                "rank": 1,
+            }
+        )
+        profiles.append(
+            {
+                "name": "yolov8",
+                "reason": "YOLOv8 runs well on 4–8 GB VRAM GPUs",
+                "rank": 2,
+            }
+        )
     else:
         vram_label = f"{max_vram:.1f} GB" if max_vram is not None else "unknown"
-        profiles.append({
-            "name": "tf-gpu",
-            "reason": f"High-VRAM GPU ({vram_label}) — TensorFlow GPU for large models",
-            "rank": 1,
-        })
-        profiles.append({
-            "name": "pytorch-cuda",
-            "reason": "PyTorch CUDA — excellent for high-VRAM training and research",
-            "rank": 2,
-        })
-        profiles.append({
-            "name": "yolov8",
-            "reason": "YOLOv8 with full model variants on high-VRAM GPU",
-            "rank": 3,
-        })
+        profiles.append(
+            {
+                "name": "tf-gpu",
+                "reason": f"High-VRAM GPU ({vram_label}) — TensorFlow GPU for large models",
+                "rank": 1,
+            }
+        )
+        profiles.append(
+            {
+                "name": "pytorch-cuda",
+                "reason": "PyTorch CUDA — excellent for high-VRAM training and research",
+                "rank": 2,
+            }
+        )
+        profiles.append(
+            {
+                "name": "yolov8",
+                "reason": "YOLOv8 with full model variants on high-VRAM GPU",
+                "rank": 3,
+            }
+        )
 
     return {
         "recommended_profiles": profiles,
@@ -118,5 +140,11 @@ def _is_apple_silicon(report: DiagnosticReportSchema) -> bool:
     os_name = report.os.name.lower()
     cpu_brand = report.cpu.brand.lower()
     is_macos = "macos" in os_name or "darwin" in os_name or "mac os" in os_name
-    is_arm_apple = "apple" in cpu_brand or "m1" in cpu_brand or "m2" in cpu_brand or "m3" in cpu_brand or "m4" in cpu_brand
+    is_arm_apple = (
+        "apple" in cpu_brand
+        or "m1" in cpu_brand
+        or "m2" in cpu_brand
+        or "m3" in cpu_brand
+        or "m4" in cpu_brand
+    )
     return is_macos and is_arm_apple

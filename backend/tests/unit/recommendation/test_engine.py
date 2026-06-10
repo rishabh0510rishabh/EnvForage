@@ -4,7 +4,9 @@ from app.recommendation.engine import recommend_profiles
 from app.schemas.diagnostic import DiagnosticReportSchema
 
 
-def _make_report(*, gpus=None, ram_gb=16.0, os_name="Ubuntu 22.04", cpu_brand="Intel i7"):
+def _make_report(
+    *, gpus=None, ram_gb=16.0, os_name="Ubuntu 22.04", cpu_brand="Intel i7"
+):
     return DiagnosticReportSchema(
         os={"name": os_name, "version": "22.04", "architecture": "x86_64"},
         cpu={"brand": cpu_brand, "cores": 8, "threads": 16},

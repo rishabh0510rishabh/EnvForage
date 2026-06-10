@@ -10,6 +10,8 @@ from app.ai.providers.openai import OpenAIProvider
 
 class DummyModel(BaseModel):
     response: str
+
+
 async def test_openai_stream_rate_limit_short_circuit():
     """Verify that OpenAIProvider.stream handles 429s, retries, and short-circuits on the final attempt."""
     provider = OpenAIProvider(api_key="test_key")
@@ -42,6 +44,8 @@ async def test_openai_stream_rate_limit_short_circuit():
         assert mock_stream_call.call_count == 3
         assert mock_sleep.call_count == 2
         mock_sleep.assert_has_calls([call(1), call(1)])
+
+
 async def test_openai_stream_network_error_retry_and_exhaustion():
     """Verify that OpenAIProvider.stream retries on httpx.HTTPError and exhausts all retries."""
     provider = OpenAIProvider(api_key="test_key")

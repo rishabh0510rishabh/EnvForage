@@ -88,6 +88,8 @@ def _resolved(version: str = "2.1.0") -> ResolvedEnvironment:
 
 async def _fake_redis_client(redis: FakeRedis) -> FakeRedis:
     return redis
+
+
 async def test_generate_scripts_returns_cached_resolved_environment(monkeypatch):
     cached = _resolved(version="2.1.0")
     redis = FakeRedis(json.dumps(cached.to_dict()))
@@ -108,6 +110,8 @@ async def test_generate_scripts_returns_cached_resolved_environment(monkeypatch)
     assert response.scripts[0].content == "torch==2.1.0"
     assert len(redis.get_calls) == 1
     assert redis.set_calls == []
+
+
 async def test_generate_scripts_caches_resolved_environment_on_miss(monkeypatch):
     redis = FakeRedis()
 

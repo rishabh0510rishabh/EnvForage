@@ -19,9 +19,7 @@ class UserRepository:
 
     async def user_exists(self, email: str) -> bool:
         """Check if user with given email exists."""
-        result = await self.db.execute(
-            select(User).where(User.email == email).limit(1)
-        )
+        result = await self.db.execute(select(User).where(User.email == email).limit(1))
         return result.scalar_one_or_none() is not None
 
     async def create_user(
@@ -41,5 +39,7 @@ class UserRepository:
         )
         self.db.add(user)
         await self.db.flush()  # write to DB within the open transaction
-        await self.db.refresh(user)  # populate server-generated defaults (id, created_at)
+        await self.db.refresh(
+            user
+        )  # populate server-generated defaults (id, created_at)
         return user

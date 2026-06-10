@@ -26,21 +26,21 @@ SEVERITY_STYLES = {
 }
 
 SEVERITY_ORDER = {
-    "major": 0, "minor": 1, "patch": 2, "added": 3, "removed": 4, "other": 5,
+    "major": 0,
+    "minor": 1,
+    "patch": 2,
+    "added": 3,
+    "removed": 4,
+    "other": 5,
 }
 
 
 def format_text(result: AuditResult, console: Console) -> None:
     """Print the audit result as a Rich-styled table on the given console."""
-    console.print(
-        f"\n[bold]Audit:[/] {result.source_a} -> {result.source_b}\n"
-    )
+    console.print(f"\n[bold]Audit:[/] {result.source_a} -> {result.source_b}\n")
 
     if not result.has_drift():
-        console.print(
-            f"[bold green]No drift detected[/] "
-            f"({result.common_count} packages match)"
-        )
+        console.print(f"[bold green]No drift detected[/] ({result.common_count} packages match)")
         return
 
     table = Table(box=box.ROUNDED, show_header=True, header_style="bold")
@@ -70,15 +70,15 @@ def format_text(result: AuditResult, console: Console) -> None:
         counts[entry.severity] = counts.get(entry.severity, 0) + 1
 
     summary = ", ".join(
-        f"{counts[sev]} {sev}"
-        for sev in sorted(counts, key=lambda s: SEVERITY_ORDER.get(s, 99))
+        f"{counts[sev]} {sev}" for sev in sorted(counts, key=lambda s: SEVERITY_ORDER.get(s, 99))
     )
     console.print(
         f"\n[bold]Summary:[/] {len(result.differences)} differences "
         f"({summary}); {result.common_count} matching packages."
     )
     console.print(f"[bold]Drift score:[/] {result.drift_score}")
-    
+
+
 # Mapping from envforge severity to SARIF level
 # SARIF levels: error, warning, note, none
 SEVERITY_TO_SARIF_LEVEL = {
@@ -138,9 +138,7 @@ def format_sarif(result: AuditResult) -> str:
             "id": f"drift-{sev}",
             "name": f"Drift{sev.capitalize()}",
             "shortDescription": {"text": f"{sev.capitalize()} version drift"},
-            "defaultConfiguration": {
-                "level": SEVERITY_TO_SARIF_LEVEL.get(sev, "note")
-            },
+            "defaultConfiguration": {"level": SEVERITY_TO_SARIF_LEVEL.get(sev, "note")},
         }
         for sev in severities_present
     ]
@@ -157,13 +155,7 @@ def format_sarif(result: AuditResult) -> str:
                     f"({entry.severity})"
                 )
             },
-            "locations": [
-                {
-                    "physicalLocation": {
-                        "artifactLocation": {"uri": result.source_b}
-                    }
-                }
-            ],
+            "locations": [{"physicalLocation": {"artifactLocation": {"uri": result.source_b}}}],
             "properties": {
                 "package": entry.package,
                 "versionA": entry.a_version,
@@ -190,9 +182,7 @@ def format_sarif(result: AuditResult) -> str:
                 "invocations": [
                     {
                         "executionSuccessful": True,
-                        "endTimeUtc": datetime.now(timezone.utc).strftime(
-                            "%Y-%m-%dT%H:%M:%SZ"
-                        ),
+                        "endTimeUtc": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
                     }
                 ],
                 "results": results,

@@ -235,7 +235,9 @@ class AITroubleshootService:
         ):
             _buffer_size += len(chunk.encode())
             if _buffer_size > _stream_buffer_limit:
-                logger.warning("Stream buffer limit exceeded for session %s", session_id)
+                logger.warning(
+                    "Stream buffer limit exceeded for session %s", session_id
+                )
                 yield '{"error":"STREAM_LIMIT_EXCEEDED","message":"Response too large — blocked by safety limit."}'
                 return
             chunks.append(chunk)

@@ -16,11 +16,7 @@ def test_update_available(mock_echo, mock_client_class) -> None:
 
     mock_response = MagicMock()
     mock_response.status_code = 200
-    mock_response.json.return_value = {
-        "info": {
-            "version": "99.9.9"
-        }
-    }
+    mock_response.json.return_value = {"info": {"version": "99.9.9"}}
     mock_client.get.return_value = mock_response
 
     check_for_updates()
@@ -35,16 +31,13 @@ def test_update_available(mock_echo, mock_client_class) -> None:
 @patch("click.echo")
 def test_no_update_available(mock_echo, mock_client_class) -> None:
     from envforge_agent import __version__
+
     mock_client = MagicMock()
     mock_client_class.return_value.__enter__.return_value = mock_client
 
     mock_response = MagicMock()
     mock_response.status_code = 200
-    mock_response.json.return_value = {
-        "info": {
-            "version": __version__
-        }
-    }
+    mock_response.json.return_value = {"info": {"version": __version__}}
     mock_client.get.return_value = mock_response
 
     check_for_updates()

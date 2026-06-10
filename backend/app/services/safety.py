@@ -28,9 +28,7 @@ class ASTSafetyFilter:
     def _check_command_node(self, node) -> None:
         """Validate an individual command node."""
         cmd_parts = [
-            self._normalize_word(part)
-            for part in node.parts
-            if part.kind == "word"
+            self._normalize_word(part) for part in node.parts if part.kind == "word"
         ]
 
         if not cmd_parts:

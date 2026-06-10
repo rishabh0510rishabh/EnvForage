@@ -7,6 +7,7 @@ Sources:
   - hipcc --version
   - rocminfo
 """
+
 from __future__ import annotations
 
 import re
@@ -44,12 +45,7 @@ def _detect_version_file() -> str | None:
 def _detect_via_hipcc() -> str | None:
     """Run hipcc --version and parse the output."""
     try:
-        result = subprocess.run(
-            ["hipcc", "--version"],
-            capture_output=True,
-            text=True,
-            timeout=5
-        )
+        result = subprocess.run(["hipcc", "--version"], capture_output=True, text=True, timeout=5)
         if result.returncode == 0:
             # Output format usually contains: ROCm version: 5.6.0
             match = re.search(r"ROCm version:\s+([\d\.]+)", result.stdout)
@@ -63,12 +59,7 @@ def _detect_via_hipcc() -> str | None:
 def _detect_gcn_arch() -> str | None:
     """Run rocminfo to find the GCN architecture (e.g., gfx1030)."""
     try:
-        result = subprocess.run(
-            ["rocminfo"],
-            capture_output=True,
-            text=True,
-            timeout=5
-        )
+        result = subprocess.run(["rocminfo"], capture_output=True, text=True, timeout=5)
         if result.returncode == 0:
             # Look for lines like: Name: gfx1030
             match = re.search(r"Name:\s+(gfx\w+)", result.stdout)

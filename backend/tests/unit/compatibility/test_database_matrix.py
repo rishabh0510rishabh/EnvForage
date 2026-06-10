@@ -115,9 +115,6 @@ async def test_resolver_with_db_and_fallback(db_session):
     assert res_error_fallback.packages[0].version == "2.1.2"
 
 
-
-
-
 async def test_admin_matrix_crud_cuda(client, db_session):
     """Test CRUD operations on admin CUDA compatibility matrix."""
     cuda_data = {

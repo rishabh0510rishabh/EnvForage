@@ -10,6 +10,7 @@ slot in by subclassing Source and yielding Package instances.
 """
 
 from __future__ import annotations
+
 try:
     import tomllib
 except ImportError:
@@ -75,9 +76,7 @@ class LocalEnvironment(Source):
         try:
             entries = json.loads(result.stdout)
         except json.JSONDecodeError as exc:
-            raise RuntimeError(
-                "`pip list` returned malformed JSON output."
-            ) from exc
+            raise RuntimeError("`pip list` returned malformed JSON output.") from exc
 
         for entry in entries:
             yield Package(name=entry["name"], version=entry["version"])

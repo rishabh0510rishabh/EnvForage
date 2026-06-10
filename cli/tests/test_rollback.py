@@ -1,6 +1,7 @@
 """
 Integration tests for the `envforge rollback` CLI command.
 """
+
 from __future__ import annotations
 
 import os

@@ -27,9 +27,11 @@ class TestSafetyPassedNotMisused:
 
         mock_provider = AsyncMock()
         mock_provider.model = "gpt-4"
-        mock_provider.last_token_usage = {"total_tokens": 100,
-                                          "prompt_tokens": 60,
-                                          "completion_tokens": 40}
+        mock_provider.last_token_usage = {
+            "total_tokens": 100,
+            "prompt_tokens": 60,
+            "completion_tokens": 40,
+        }
         mock_provider.complete.return_value = MagicMock(
             suggested_fixes=[],
             session_id=None,
@@ -42,19 +44,31 @@ class TestSafetyPassedNotMisused:
 
         audit_calls = []
 
-        async def capture_log_audit(db, *, session_id, input_hash,
-                                    safety_passed, safety_violation,
-                                    provider, tokens_used, latency_ms):
-            audit_calls.append({
-                "safety_passed": safety_passed,
-                "safety_violation": safety_violation,
-            })
+        async def capture_log_audit(
+            db,
+            *,
+            session_id,
+            input_hash,
+            safety_passed,
+            safety_violation,
+            provider,
+            tokens_used,
+            latency_ms,
+        ):
+            audit_calls.append(
+                {
+                    "safety_passed": safety_passed,
+                    "safety_violation": safety_violation,
+                }
+            )
 
         with patch.object(service, "_validate_response_safety"):
-            with patch.object(service, "_persist_session",
-                              side_effect=Exception("DB connection refused")):
-                with patch.object(service, "_log_audit",
-                                  side_effect=capture_log_audit):
+            with patch.object(
+                service,
+                "_persist_session",
+                side_effect=Exception("DB connection refused"),
+            ):
+                with patch.object(service, "_log_audit", side_effect=capture_log_audit):
                     with patch("app.ai.service.record_ai_token_usage"):
                         mock_db = AsyncMock()
                         mock_request = MagicMock()
@@ -94,19 +108,29 @@ class TestSafetyPassedNotMisused:
         service = AITroubleshootService(provider=mock_provider)
         audit_calls = []
 
-        async def capture_log_audit(db, *, session_id, input_hash,
-                                    safety_passed, safety_violation,
-                                    provider, tokens_used, latency_ms):
-            audit_calls.append({
-                "safety_passed": safety_passed,
-                "safety_violation": safety_violation,
-            })
+        async def capture_log_audit(
+            db,
+            *,
+            session_id,
+            input_hash,
+            safety_passed,
+            safety_violation,
+            provider,
+            tokens_used,
+            latency_ms,
+        ):
+            audit_calls.append(
+                {
+                    "safety_passed": safety_passed,
+                    "safety_violation": safety_violation,
+                }
+            )
 
         with patch.object(service, "_validate_response_safety"):
-            with patch.object(service, "_persist_session",
-                              side_effect=Exception("DB down")):
-                with patch.object(service, "_log_audit",
-                                  side_effect=capture_log_audit):
+            with patch.object(
+                service, "_persist_session", side_effect=Exception("DB down")
+            ):
+                with patch.object(service, "_log_audit", side_effect=capture_log_audit):
                     with patch("app.ai.service.record_ai_token_usage"):
                         mock_db = AsyncMock()
                         mock_request = MagicMock()
@@ -119,8 +143,10 @@ class TestSafetyPassedNotMisused:
         final_audit = audit_calls[0]
         # safety_violation should mention DB, not be a real safety violation
         if final_audit["safety_violation"] is not None:
-            assert "DB" in final_audit["safety_violation"] or \
-                   "persistence" in final_audit["safety_violation"].lower(), (
+            assert (
+                "DB" in final_audit["safety_violation"]
+                or "persistence" in final_audit["safety_violation"].lower()
+            ), (
                 "safety_violation must clearly indicate DB failure, not an AI safety issue"
             )
 
@@ -131,9 +157,11 @@ class TestSafetyPassedNotMisused:
 
         mock_provider = AsyncMock()
         mock_provider.model = "gpt-4"
-        mock_provider.last_token_usage = {"total_tokens": 200,
-                                          "prompt_tokens": 100,
-                                          "completion_tokens": 100}
+        mock_provider.last_token_usage = {
+            "total_tokens": 200,
+            "prompt_tokens": 100,
+            "completion_tokens": 100,
+        }
         mock_provider.complete.return_value = MagicMock(
             suggested_fixes=[],
             session_id=None,
@@ -145,18 +173,27 @@ class TestSafetyPassedNotMisused:
         service = AITroubleshootService(provider=mock_provider)
         audit_calls = []
 
-        async def capture_log_audit(db, *, session_id, input_hash,
-                                    safety_passed, safety_violation,
-                                    provider, tokens_used, latency_ms):
-            audit_calls.append({
-                "safety_passed": safety_passed,
-                "safety_violation": safety_violation,
-            })
+        async def capture_log_audit(
+            db,
+            *,
+            session_id,
+            input_hash,
+            safety_passed,
+            safety_violation,
+            provider,
+            tokens_used,
+            latency_ms,
+        ):
+            audit_calls.append(
+                {
+                    "safety_passed": safety_passed,
+                    "safety_violation": safety_violation,
+                }
+            )
 
         with patch.object(service, "_validate_response_safety"):
             with patch.object(service, "_persist_session", new_callable=AsyncMock):
-                with patch.object(service, "_log_audit",
-                                  side_effect=capture_log_audit):
+                with patch.object(service, "_log_audit", side_effect=capture_log_audit):
                     with patch("app.ai.service.record_ai_token_usage"):
                         mock_db = AsyncMock()
                         mock_request = MagicMock()
@@ -183,18 +220,32 @@ class TestSafetyPassedNotMisused:
         service = AITroubleshootService(provider=mock_provider)
         audit_calls = []
 
-        async def capture_log_audit(db, *, session_id, input_hash,
-                                    safety_passed, safety_violation,
-                                    provider, tokens_used, latency_ms):
-            audit_calls.append({
-                "safety_passed": safety_passed,
-                "safety_violation": safety_violation,
-            })
+        async def capture_log_audit(
+            db,
+            *,
+            session_id,
+            input_hash,
+            safety_passed,
+            safety_violation,
+            provider,
+            tokens_used,
+            latency_ms,
+        ):
+            audit_calls.append(
+                {
+                    "safety_passed": safety_passed,
+                    "safety_violation": safety_violation,
+                }
+            )
 
-        with patch.object(service, "_validate_response_safety",
-                          side_effect=SafetyViolationError(pattern="rm -rf", description="rm -rf detected")):
-            with patch.object(service, "_log_audit",
-                              side_effect=capture_log_audit):
+        with patch.object(
+            service,
+            "_validate_response_safety",
+            side_effect=SafetyViolationError(
+                pattern="rm -rf", description="rm -rf detected"
+            ),
+        ):
+            with patch.object(service, "_log_audit", side_effect=capture_log_audit):
                 with patch("app.ai.service.record_ai_token_usage"):
                     mock_db = AsyncMock()
                     mock_request = MagicMock()

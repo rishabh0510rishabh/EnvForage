@@ -135,4 +135,3 @@ async def require_admin(
             },
             headers={"WWW-Authenticate": "ApiKey"},
         )
-

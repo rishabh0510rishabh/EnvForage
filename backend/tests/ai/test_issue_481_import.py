@@ -15,6 +15,7 @@ class TestRecordAITokenUsageImport:
         """record_ai_token_usage must be importable from app.middleware.metrics."""
         try:
             from app.middleware.metrics import record_ai_token_usage
+
             assert callable(record_ai_token_usage)
         except ImportError:
             pytest.fail(
@@ -26,6 +27,7 @@ class TestRecordAITokenUsageImport:
         """service.py must import record_ai_token_usage at module level."""
         try:
             import app.ai.service as service_module
+
             assert hasattr(service_module, "record_ai_token_usage"), (
                 "record_ai_token_usage not found in service module namespace. "
                 "Add: from app.middleware.metrics import record_ai_token_usage"
@@ -40,7 +42,9 @@ class TestRecordAITokenUsageImport:
         from app.ai.service import AITroubleshootService
 
         mock_provider = AsyncMock()
-        mock_provider.complete.side_effect = LLMProviderError(provider="MockProvider", reason="timeout")
+        mock_provider.complete.side_effect = LLMProviderError(
+            provider="MockProvider", reason="timeout"
+        )
         mock_provider.model = "gpt-4"
 
         service = AITroubleshootService(provider=mock_provider)
@@ -74,8 +78,13 @@ class TestRecordAITokenUsageImport:
 
         service = AITroubleshootService(provider=mock_provider)
 
-        with patch.object(service, "_validate_response_safety",
-                          side_effect=SafetyViolationError(pattern="unsafe", description="unsafe content")):
+        with patch.object(
+            service,
+            "_validate_response_safety",
+            side_effect=SafetyViolationError(
+                pattern="unsafe", description="unsafe content"
+            ),
+        ):
             with patch("app.ai.service.record_ai_token_usage") as mock_record:
                 mock_db = AsyncMock()
                 mock_request = MagicMock()
@@ -99,13 +108,17 @@ class TestRecordAITokenUsageImport:
 
         mock_provider = AsyncMock()
         mock_provider.model = "gpt-4"
-        mock_provider.last_token_usage = {"total_tokens": 500,
-                                          "prompt_tokens": 300,
-                                          "completion_tokens": 200}
+        mock_provider.last_token_usage = {
+            "total_tokens": 500,
+            "prompt_tokens": 300,
+            "completion_tokens": 200,
+        }
         mock_provider.complete.return_value = MagicMock(
-            suggested_fixes=[], session_id=None,
-            suppressed_fix_count=0, confidence=0.0,
-            repair_script_available=False
+            suggested_fixes=[],
+            session_id=None,
+            suppressed_fix_count=0,
+            confidence=0.0,
+            repair_script_available=False,
         )
 
         service = AITroubleshootService(provider=mock_provider)

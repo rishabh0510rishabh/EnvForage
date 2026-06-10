@@ -12,6 +12,7 @@ Strategy:
   4. Detect active_python from sys.executable
   5. Determine is_venv from sys.prefix vs sys.base_prefix
 """
+
 from __future__ import annotations
 
 import json
@@ -26,7 +27,7 @@ from envforge_agent.schemas import PythonInfo
 logger = logging.getLogger(__name__)
 
 # Python versions to probe (3.8–3.13)
-_PROBE_VERSIONS = ["3.8", "3.9", "3.10", "3.11", "3.12","3.13"]
+_PROBE_VERSIONS = ["3.8", "3.9", "3.10", "3.11", "3.12", "3.13"]
 
 # Inspector script run inside each discovered Python to get its full info
 _INSPECTOR = """
@@ -88,6 +89,7 @@ def detect_python() -> tuple[list[PythonInfo], PythonInfo | None]:
     installations: list[PythonInfo] = []
 
     import concurrent.futures
+
     with concurrent.futures.ThreadPoolExecutor() as executor:
         # Submit all candidates to inspect in parallel
         results = list(executor.map(_inspect_python, candidates))
@@ -180,8 +182,12 @@ def _inspect_python(binary: str) -> PythonInfo | None:
 
     # FileNotFoundError is the subclass of OSError, so it is handled automatically
     except (
-        OSError, subprocess.TimeoutExpired, json.JSONDecodeError,
-        KeyError, ValueError,) as exc:
+        OSError,
+        subprocess.TimeoutExpired,
+        json.JSONDecodeError,
+        KeyError,
+        ValueError,
+    ) as exc:
         logger.debug(
             "Failed to inspect Python binary '%s': %s",
             binary,

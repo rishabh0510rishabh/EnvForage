@@ -4,6 +4,7 @@ OS detection module.
 Detects: OS name, version, architecture, and WSL version.
 Handles: Linux, Windows, WSL2.
 """
+
 from __future__ import annotations
 
 import platform
@@ -31,9 +32,11 @@ def detect_os() -> OSInfo:
 
 # ── Windows ───────────────────────────────────────────────────────────────────
 
+
 def _detect_windows(arch: str) -> OSInfo:
     try:
         import winreg
+
         key = winreg.OpenKey(
             winreg.HKEY_LOCAL_MACHINE,
             r"SOFTWARE\Microsoft\Windows NT\CurrentVersion",
@@ -42,7 +45,7 @@ def _detect_windows(arch: str) -> OSInfo:
         build_number = winreg.QueryValueEx(key, "CurrentBuildNumber")[0]
         display_version = winreg.QueryValueEx(key, "DisplayVersion")[0]
         version = f"{display_version} (Build {build_number})"
-        
+
         name = product_name
         # On Windows 11, ProductName registry key might still report "Windows 10 ..."
         # for backwards compatibility. We correct this by checking build number or platform.release().
@@ -63,6 +66,7 @@ def _detect_windows(arch: str) -> OSInfo:
 
 
 # ── Linux / WSL ───────────────────────────────────────────────────────────────
+
 
 def _detect_linux(arch: str) -> OSInfo:
     name, version = _read_os_release()

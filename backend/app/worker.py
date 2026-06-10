@@ -30,7 +30,11 @@ celery_app.conf.update(
 
 
 @celery_app.task(name="run_diagnose_task")  # type: ignore
-def run_diagnose_task(report_id: str, report_data: dict[str, Any], target_os: Literal['LINUX', 'WIN', 'WSL']) -> dict[str, Any]:
+def run_diagnose_task(
+    report_id: str,
+    report_data: dict[str, Any],
+    target_os: Literal["LINUX", "WIN", "WSL"],
+) -> dict[str, Any]:
     """
     Celery task that resolves an environment's dependencies against all profiles
     and returns a structured DiagnoseResponse as a dict.
@@ -42,6 +46,7 @@ def run_diagnose_task(report_id: str, report_data: dict[str, Any], target_os: Li
     recommendations: list[str] = []
 
     import logging
+
     logger = logging.getLogger(__name__)
 
     active_python = report_data.get("active_python")
@@ -53,8 +58,12 @@ def run_diagnose_task(report_id: str, report_data: dict[str, Any], target_os: Li
         raise ValueError(f"Invalid Python version format: {active_python['version']}")
     active_python_version = f"{parts[0]}.{parts[1]}"
 
-    cuda_version = report_data.get("cuda", {}).get("version") if report_data.get("cuda") else None
-    rocm_version = report_data.get("rocm", {}).get("version") if report_data.get("rocm") else None
+    cuda_version = (
+        report_data.get("cuda", {}).get("version") if report_data.get("cuda") else None
+    )
+    rocm_version = (
+        report_data.get("rocm", {}).get("version") if report_data.get("rocm") else None
+    )
 
     # We will fetch profiles from DB directly here in the worker
     import asyncio
@@ -70,7 +79,9 @@ def run_diagnose_task(report_id: str, report_data: dict[str, Any], target_os: Li
             while True:
                 batch, total = await list_profiles(
                     db,
-                    ProfileFilters(tags=None, os=None, cuda_required=None, page=page, limit=100),
+                    ProfileFilters(
+                        tags=None, os=None, cuda_required=None, page=page, limit=100
+                    ),
                 )
                 all_profiles.extend(batch)
                 if len(all_profiles) >= total:

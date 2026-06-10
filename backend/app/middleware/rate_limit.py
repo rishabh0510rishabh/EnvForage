@@ -300,17 +300,23 @@ class RateLimiter:
 
         try:
             allowed, info = await self.backend.is_allowed(
-                key, self.max_requests, self.window_seconds,
+                key,
+                self.max_requests,
+                self.window_seconds,
             )
         except Exception as exc:
             if isinstance(exc, (RedisConnError, RedisTimeout)):
                 logger.warning(
                     "Redis connection error during rate limit check for %s on %s "
                     "— falling back to in-memory backend. Error: %s",
-                    client_ip, request.url.path, exc,
+                    client_ip,
+                    request.url.path,
+                    exc,
                 )
                 allowed, info = await _fallback_backend.is_allowed(
-                    key, self.max_requests, self.window_seconds,
+                    key,
+                    self.max_requests,
+                    self.window_seconds,
                 )
             else:
                 # Non-Redis exception (programming bug, etc.) — re-raise so it

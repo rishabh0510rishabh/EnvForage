@@ -34,6 +34,7 @@ def test_git_check_passes_when_git_exists(mock_which) -> None:
     assert result.is_valid
     assert result.errors == []
 
+
 @patch("shutil.which")
 def test_docker_check_fails_when_docker_missing(mock_which) -> None:
     mock_which.return_value = None

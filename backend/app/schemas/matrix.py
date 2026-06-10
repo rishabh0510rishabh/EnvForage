@@ -71,9 +71,7 @@ class RocmMatrixResponse(RocmMatrixCreate):
 
 
 class PythonMatrixCreate(BaseModel):
-    framework: str = Field(
-        ..., description="Framework name, e.g. torch", max_length=64
-    )
+    framework: str = Field(..., description="Framework name, e.g. torch", max_length=64)
     version: str = Field(
         ..., description="Framework version, e.g. 2.1.0", max_length=64
     )

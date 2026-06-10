@@ -2,6 +2,7 @@
 Unit tests for cli/envforge_agent/detectors/os_detector.py
 Issue #152: Add unit tests for CLI OS Detector
 """
+
 from __future__ import annotations
 
 import unittest
@@ -134,13 +135,19 @@ class TestDetectWindows(unittest.TestCase):
             "envforge_agent.detectors.os_detector.platform.system",
             return_value="Windows",
         ):
-            with patch.dict("sys.modules", {"winreg": MagicMock(
-                OpenKey=MagicMock(return_value=mock_key),
-                QueryValueEx=MagicMock(side_effect=query_value),
-                HKEY_LOCAL_MACHINE=MagicMock(),
-            )}):
+            with patch.dict(
+                "sys.modules",
+                {
+                    "winreg": MagicMock(
+                        OpenKey=MagicMock(return_value=mock_key),
+                        QueryValueEx=MagicMock(side_effect=query_value),
+                        HKEY_LOCAL_MACHINE=MagicMock(),
+                    )
+                },
+            ):
                 import importlib
                 import envforge_agent.detectors.os_detector as mod
+
                 importlib.reload(mod)
                 result = mod._detect_windows("AMD64")
 
@@ -165,8 +172,10 @@ class TestDetectOs(unittest.TestCase):
                 with patch(
                     "envforge_agent.detectors.os_detector._detect_linux",
                     return_value=MagicMock(
-                        name="Ubuntu 22.04", version="22.04",
-                        architecture="x86_64", wsl_version=None
+                        name="Ubuntu 22.04",
+                        version="22.04",
+                        architecture="x86_64",
+                        wsl_version=None,
                     ),
                 ):
                     result = detect_os()
@@ -178,8 +187,10 @@ class TestDetectOs(unittest.TestCase):
                 with patch(
                     "envforge_agent.detectors.os_detector._detect_windows",
                     return_value=MagicMock(
-                        name="Windows 10 Pro", version="22H2",
-                        architecture="AMD64", wsl_version=None
+                        name="Windows 10 Pro",
+                        version="22H2",
+                        architecture="AMD64",
+                        wsl_version=None,
                     ),
                 ):
                     result = detect_os()

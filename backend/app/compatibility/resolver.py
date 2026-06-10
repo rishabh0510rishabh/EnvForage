@@ -51,6 +51,7 @@ from app.models.matrix import (
 
 logger = logging.getLogger(__name__)
 
+
 async def clear_compatibility_cache() -> None:
     """Clear all Redis compatibility matrix caches."""
 

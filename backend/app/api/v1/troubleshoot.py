@@ -53,8 +53,7 @@ async def troubleshoot(
             except LLMProviderError as exc:
                 logger.error("LLM provider error in stream: %s", exc)
                 yield (
-                    f'data: {{"error":"PROVIDER_ERROR",'
-                    f'"message":"{exc.reason}"}}\n\n'
+                    f'data: {{"error":"PROVIDER_ERROR","message":"{exc.reason}"}}\n\n'
                 )
             except Exception:
                 logger.exception("Error in troubleshoot stream generator")

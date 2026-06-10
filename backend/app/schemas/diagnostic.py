@@ -310,12 +310,14 @@ class DiagnoseResponse(BaseModel):
 
 class TaskResponse(BaseModel):
     """Response when a task is offloaded to Celery."""
+
     task_id: str = Field(..., description="Celery task ID for polling.")
     status: str = Field(..., description="Current status of the task.")
 
 
 class DiagnoseTaskStatus(BaseModel):
     """Response for GET /diagnose/status/{task_id}."""
+
     task_id: str
     status: str
     result: DiagnoseResponse | None = None

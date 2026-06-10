@@ -18,7 +18,9 @@ class TestConfidenceGating:
         service = AITroubleshootService()
         fixes = [
             MagicMock(confidence_score=0.9, step=1, title="Fix A", severity="CRITICAL"),
-            MagicMock(confidence_score=0.1, step=2, title="Fix B", severity="WARNING"),  # below gate
+            MagicMock(
+                confidence_score=0.1, step=2, title="Fix B", severity="WARNING"
+            ),  # below gate
             MagicMock(confidence_score=0.8, step=3, title="Fix C", severity="INFO"),
         ]
         accepted, suppressed = service._gate_fixes(fixes, "test-session")
@@ -41,7 +43,7 @@ class TestConfidenceGating:
         service = AITroubleshootService()
         fixes = [
             MagicMock(confidence_score=1.0, severity="CRITICAL"),  # weight 3
-            MagicMock(confidence_score=0.0, severity="INFO"),       # weight 1
+            MagicMock(confidence_score=0.0, severity="INFO"),  # weight 1
         ]
         result = service._recalculate_overall_confidence(fixes)
         # (1.0*3 + 0.0*1) / (3+1) = 0.75
@@ -61,7 +63,9 @@ class TestPersistSessionRetryLogic:
         with patch("app.ai.service.AISession") as mock_session:
             mock_session.side_effect = Exception("DB error")
 
-            with patch("app.ai.service.asyncio.sleep", new_callable=AsyncMock) as mock_sleep:
+            with patch(
+                "app.ai.service.asyncio.sleep", new_callable=AsyncMock
+            ) as mock_sleep:
                 with pytest.raises(Exception):
                     await service._persist_session(
                         mock_db,
@@ -84,6 +88,7 @@ class TestPersistSessionRetryLogic:
         call_count = 0
 
         with patch("app.ai.service.AISession") as mock_session:
+
             def side_effect(*args, **kwargs):
                 nonlocal call_count
                 call_count += 1
@@ -112,9 +117,12 @@ class TestAuditLogPaths:
     @pytest.mark.asyncio
     async def test_audit_log_written_on_llm_error(self):
         from app.ai.providers.base import LLMProviderError
+
         mock_provider = AsyncMock()
         mock_provider.model = "gpt-4"
-        mock_provider.complete.side_effect = LLMProviderError(provider="MockProvider", reason="timeout")
+        mock_provider.complete.side_effect = LLMProviderError(
+            provider="MockProvider", reason="timeout"
+        )
 
         service = AITroubleshootService(provider=mock_provider)
         audit_calls = []
@@ -144,8 +152,10 @@ class TestAuditLogPaths:
         mock_provider.model = "gpt-4"
         mock_provider.last_token_usage = {}
         mock_provider.complete.return_value = MagicMock(
-            suggested_fixes=[], session_id=None,
-            suppressed_fix_count=0, confidence=0.0,
+            suggested_fixes=[],
+            session_id=None,
+            suppressed_fix_count=0,
+            confidence=0.0,
             repair_script_available=False,
         )
         service = AITroubleshootService(provider=mock_provider)

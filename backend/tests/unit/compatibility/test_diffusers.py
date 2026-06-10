@@ -2,6 +2,7 @@
 Unit tests for the Hugging Face Diffusers environment profile.
 Tests the Python compatibility matrix, CUDA support map, and resolver integration.
 """
+
 import pytest
 
 from app.compatibility.errors import IncompatibilityError
@@ -18,6 +19,7 @@ from app.compatibility.resolver import CompatibilityResolver
 R = CompatibilityResolver()
 
 # ── Python Matrix Tests ───────────────────────────────────────────────────────
+
 
 class TestDiffusersPythonMatrix:
     """Tests for diffusers entries in the Python compatibility matrix."""
@@ -72,13 +74,12 @@ class TestDiffusersPythonMatrix:
 
     def test_latest_compatible_diffusers_py312(self):
         """Latest diffusers compatible with Python 3.12 should be 0.27.2."""
-        latest = get_latest_compatible_version(
-            "diffusers", python_version="3.12"
-        )
+        latest = get_latest_compatible_version("diffusers", python_version="3.12")
         assert latest == "0.27.2"
 
 
 # ── CUDA Framework Support Tests ──────────────────────────────────────────────
+
 
 class TestDiffusersCUDASupport:
     """Tests for diffusers entries in FRAMEWORK_CUDA_SUPPORT."""
@@ -110,6 +111,7 @@ class TestDiffusersCUDASupport:
 
 
 # ── Resolver Integration Tests ────────────────────────────────────────────────
+
 
 class TestDiffusersResolver:
     """Tests for resolving the stable-diffusion profile via CompatibilityResolver."""

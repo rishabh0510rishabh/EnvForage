@@ -48,27 +48,39 @@ async def _call(scenario):
     with patch("app.ai.service.get_provider", return_value=mock_provider):
         service = AITroubleshootService()
         return await service.troubleshoot(_dummy_request(), db=_mock_db())
+
+
 async def test_gate_suppresses_below_threshold():
     response = await _call("gate")
     assert response.suppressed_fix_count == 1
     assert len(response.suggested_fixes) == 0
+
+
 async def test_gate_passes_above_threshold():
     response = await _call("high")
     assert response.suppressed_fix_count == 0
     assert len(response.suggested_fixes) == 2
     for fix in response.suggested_fixes:
         assert fix.confidence_score >= LOW_CONFIDENCE_GATE
+
+
 async def test_mixed_scenario_partial_pass():
     response = await _call("mixed")
     assert response.suppressed_fix_count == 0
     assert len(response.suggested_fixes) == 3
+
+
 async def test_overall_confidence_weighted_average():
     response = await _call("mixed")
     expected = round((0.91 * 3 + 0.58 * 2 + 0.32 * 1) / 6, 4)
     assert abs(response.confidence - expected) < 0.001
+
+
 async def test_overall_confidence_zero_when_no_fixes():
     response = await _call("gate")
     assert response.confidence == 0.0
+
+
 async def test_session_id_is_uuid():
     mock_provider = MockProvider(scenario="high")
     with patch("app.ai.service.get_provider", return_value=mock_provider):
@@ -78,6 +90,8 @@ async def test_session_id_is_uuid():
     uuid.UUID(r1.session_id)
     uuid.UUID(r2.session_id)
     assert r1.session_id != r2.session_id
+
+
 async def test_all_accepted_fixes_have_confidence_fields():
     response = await _call("mixed")
     for fix in response.suggested_fixes:
@@ -86,6 +100,8 @@ async def test_all_accepted_fixes_have_confidence_fields():
         assert isinstance(fix.is_matrix_backed, bool)
         if fix.confidence_level in (FixConfidenceLevel.MEDIUM, FixConfidenceLevel.LOW):
             assert fix.uncertainty_reason and fix.uncertainty_reason.strip()
+
+
 async def test_suppressed_count_in_response():
     response = await _call("gate")
     assert response.suppressed_fix_count == 1

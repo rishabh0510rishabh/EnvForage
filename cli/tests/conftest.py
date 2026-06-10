@@ -4,6 +4,7 @@ Shared pytest fixtures for envforge-agent CLI tests.
 Mocks check_macos_support() as a no-op so the CLI test suite
 can run on macOS developer machines without sys.exit(1).
 """
+
 from __future__ import annotations
 
 import pytest

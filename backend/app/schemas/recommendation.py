@@ -31,5 +31,7 @@ class RecommendationResponse(BaseModel):
     warnings: list[str] = Field(
         ...,
         description="Hardware warnings that may affect ML workload performance.",
-        examples=[["Low system RAM (<8 GB). Heavy ML workloads may fail or swap heavily."]],
+        examples=[
+            ["Low system RAM (<8 GB). Heavy ML workloads may fail or swap heavily."]
+        ],
     )

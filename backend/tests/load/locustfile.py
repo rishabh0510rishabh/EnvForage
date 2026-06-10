@@ -36,9 +36,7 @@ class TroubleshootUser(HttpUser):
                 },
             },
             "profile_slug": "pytorch-cuda",
-            "user_description": (
-                "CUDA 11.8 incompatible with PyTorch 2.3"
-            ),
+            "user_description": ("CUDA 11.8 incompatible with PyTorch 2.3"),
         }
 
         with self.client.post(
@@ -47,7 +45,6 @@ class TroubleshootUser(HttpUser):
             stream=True,
             catch_response=True,
         ) as response:
-
             chunk_count = 0
 
             try:

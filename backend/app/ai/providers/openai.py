@@ -205,11 +205,11 @@ class OpenAIProvider(LLMProvider):
                                 logger.warning(
                                     "OpenAI returned %d. Retrying in %s seconds... (Attempt %d/%d)",
                                     response.status_code,
-                                    base_delay ** attempt,
+                                    base_delay**attempt,
                                     attempt + 1,
                                     max_retries,
                                 )
-                                await asyncio.sleep(base_delay ** attempt)
+                                await asyncio.sleep(base_delay**attempt)
                                 continue
 
                             if response.status_code != 200:

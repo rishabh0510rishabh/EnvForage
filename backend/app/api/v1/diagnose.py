@@ -107,12 +107,19 @@ async def diagnose(
 async def diagnose_status(task_id: str) -> DiagnoseTaskStatus:
     """Check the status of a queued diagnostic analysis."""
     from app.worker import celery_app
+
     result = celery_app.AsyncResult(task_id)
     if result.ready():
         if result.successful():
-            return DiagnoseTaskStatus(task_id=task_id, status=result.status, result=DiagnoseResponse(**result.result))
+            return DiagnoseTaskStatus(
+                task_id=task_id,
+                status=result.status,
+                result=DiagnoseResponse(**result.result),
+            )
         else:
-            return DiagnoseTaskStatus(task_id=task_id, status=result.status, error=str(result.result))
+            return DiagnoseTaskStatus(
+                task_id=task_id, status=result.status, error=str(result.result)
+            )
     return DiagnoseTaskStatus(task_id=task_id, status=result.status)
 
 

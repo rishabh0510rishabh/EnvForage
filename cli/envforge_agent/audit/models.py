@@ -1,4 +1,5 @@
 """Data types for envforge audit."""
+
 from __future__ import annotations
 import re
 from dataclasses import dataclass, field
@@ -8,6 +9,7 @@ from typing import List, Optional
 def _normalize_name(name: str) -> str:
     """PEP 503 normalization: lowercase, collapse runs of _-. to single hyphen."""
     return re.sub(r"[-_.]+", "-", name).lower()
+
 
 # Weighted contribution of each severity to the overall drift score.
 # Major changes count heavily (semver-breaking); patch changes minimally.
@@ -19,6 +21,8 @@ SEVERITY_WEIGHTS = {
     "removed": 2,
     "other": 1,
 }
+
+
 @dataclass(frozen=True)
 class Package:
     """Resolved package entry: name (normalized per PEP 503) + version string.
@@ -26,6 +30,7 @@ class Package:
     Normalization ensures `Pillow` and `pillow` compare as the same package,
     and `pytest-asyncio` and `pytest_asyncio` are also unified.
     """
+
     name: str
     version: str
 
@@ -40,6 +45,7 @@ class DiffEntry:
     severity is one of: "added", "removed", "major", "minor", "patch", "other".
     "added" means the package is only in source B; "removed" only in source A.
     """
+
     package: str
     a_version: Optional[str]
     b_version: Optional[str]
@@ -49,6 +55,7 @@ class DiffEntry:
 @dataclass
 class AuditResult:
     """Outcome of comparing two sources."""
+
     source_a: str
     source_b: str
     differences: List[DiffEntry] = field(default_factory=list)
@@ -56,7 +63,7 @@ class AuditResult:
 
     def has_drift(self) -> bool:
         return len(self.differences) > 0
-    
+
     @property
     def drift_score(self) -> int:
         """Weighted single-number drift indicator (0 = perfect match).
@@ -64,6 +71,4 @@ class AuditResult:
         Heavier weight for breaking changes (major) so a single major drift
         ranks higher than several patch drifts. Useful as a CI threshold.
         """
-        return sum(
-            SEVERITY_WEIGHTS.get(d.severity, 1) for d in self.differences
-        )
+        return sum(SEVERITY_WEIGHTS.get(d.severity, 1) for d in self.differences)

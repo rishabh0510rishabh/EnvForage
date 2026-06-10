@@ -5,6 +5,7 @@ Detects NVIDIA GPUs via nvidia-smi.
 Handles: Linux, Windows, WSL2 (driver is on Windows host).
 Never raises — returns empty list if nvidia-smi is not available.
 """
+
 from __future__ import annotations
 
 import os
@@ -54,7 +55,9 @@ def detect_wsl_gpu_passthrough(timeout: int = 30) -> tuple[bool, list[str]]:
         issues.append("`nvidia-smi` failed inside WSL2. Verify NVIDIA drivers and WSL integration.")
 
     if not _check_nvidia_container_toolkit():
-        issues.append("NVIDIA container toolkit not available in WSL2. Docker GPU runtime may be broken.")
+        issues.append(
+            "NVIDIA container toolkit not available in WSL2. Docker GPU runtime may be broken."
+        )
 
     return len(issues) == 0, issues
 
@@ -127,10 +130,10 @@ def _detect_via_nvidia_smi(timeout: int = 30) -> list[GPUInfo]:
 
     if result.returncode != 0:
         logger.debug(
-             "nvidia-smi failed with return code %s. Error: %s",
-             result.returncode,
-             result.stderr.strip(),
-         )
+            "nvidia-smi failed with return code %s. Error: %s",
+            result.returncode,
+            result.stderr.strip(),
+        )
         return []
 
     gpus: list[GPUInfo] = []
@@ -193,6 +196,7 @@ def _detect_via_rocm_smi(timeout: int = 30) -> list[GPUInfo]:
         return []
 
     import json
+
     try:
         data = json.loads(result.stdout)
     except json.JSONDecodeError:

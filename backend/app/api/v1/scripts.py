@@ -45,7 +45,6 @@ def _stream_zip(buffer: io.BytesIO) -> Iterator[bytes]:
         422: {"description": "Request validation error"},
     },
 )
-
 async def generate_scripts(
     request: GenerationRequest,
     db: DB,

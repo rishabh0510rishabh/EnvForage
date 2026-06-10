@@ -6,6 +6,7 @@ Usage:
     report = ReportBuilder().build()
     print(report.to_json())
 """
+
 from __future__ import annotations
 
 from envforge_agent.detectors import (

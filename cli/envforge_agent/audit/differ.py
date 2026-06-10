@@ -5,6 +5,7 @@ Compares two Source instances and produces an AuditResult. Severity is
 classified using a semver-style heuristic; the existing compatibility engine
 will be wired in as a follow-up to refine which deltas are likely breaking.
 """
+
 from __future__ import annotations
 from typing import Dict
 
@@ -57,22 +58,24 @@ def diff(source_a: Source, source_b: Source) -> AuditResult:
         b_ver = b_packages.get(name)
 
         if a_ver is None:
-            differences.append(DiffEntry(
-                package=name, a_version=None, b_version=b_ver, severity="added"
-            ))
+            differences.append(
+                DiffEntry(package=name, a_version=None, b_version=b_ver, severity="added")
+            )
         elif b_ver is None:
-            differences.append(DiffEntry(
-                package=name, a_version=a_ver, b_version=None, severity="removed"
-            ))
+            differences.append(
+                DiffEntry(package=name, a_version=a_ver, b_version=None, severity="removed")
+            )
         elif a_ver == b_ver:
             common_count += 1
         else:
-            differences.append(DiffEntry(
-                package=name,
-                a_version=a_ver,
-                b_version=b_ver,
-                severity=_classify_version_change(a_ver, b_ver),
-            ))
+            differences.append(
+                DiffEntry(
+                    package=name,
+                    a_version=a_ver,
+                    b_version=b_ver,
+                    severity=_classify_version_change(a_ver, b_ver),
+                )
+            )
 
     return AuditResult(
         source_a=source_a.name,

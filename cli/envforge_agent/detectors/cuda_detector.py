@@ -13,6 +13,7 @@ cuDNN detection:
   1. Find cudnn.h or cudnn_version.h and parse #define macros
   2. Python: import torch; torch.backends.cudnn.version()
 """
+
 from __future__ import annotations
 
 import os
@@ -44,6 +45,7 @@ def detect_cuda(timeout: int = 30) -> CUDAInfo:
 
 
 # ── CUDA version ──────────────────────────────────────────────────────────────
+
 
 def _detect_cuda_version(timeout: int = 30) -> str | None:
     # Method 1: nvcc --version (most reliable — requires CUDA toolkit installed)
@@ -79,7 +81,9 @@ def _nvcc_version(timeout: int = 30) -> str | None:
     try:
         result = subprocess.run(
             ["nvcc", "--version"],
-            capture_output=True, text=True, timeout=timeout,
+            capture_output=True,
+            text=True,
+            timeout=timeout,
         )
         if result.returncode != 0:
             return None
@@ -137,7 +141,9 @@ def _nvidia_smi_cuda_version(timeout: int = 30) -> str | None:
     try:
         result = subprocess.run(
             ["nvidia-smi", "--query-gpu=cuda_version", "--format=csv,noheader"],
-            capture_output=True, text=True, timeout=timeout,
+            capture_output=True,
+            text=True,
+            timeout=timeout,
         )
         if result.returncode == 0:
             ver = result.stdout.strip().splitlines()[0].strip()
@@ -150,7 +156,9 @@ def _nvidia_smi_cuda_version(timeout: int = 30) -> str | None:
     try:
         result = subprocess.run(
             ["nvidia-smi"],
-            capture_output=True, text=True, timeout=10,
+            capture_output=True,
+            text=True,
+            timeout=10,
         )
         if result.returncode == 0:
             match = re.search(r"CUDA\s+Version:\s*(\d+\.\d+)", result.stdout)
@@ -168,24 +176,25 @@ def _detect_cuda_via_registry() -> tuple[str | None, str | None]:
         return None, None
     try:
         import winreg
+
         key_path = r"SOFTWARE\NVIDIA Corporation\GPU Computing Toolkit\CUDA"
         with winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, key_path) as key:
             best_version_tuple: tuple[int, ...] = (-1, -1)
             best_version_str = None
             best_install_dir = None
-            
+
             i = 0
             while True:
                 try:
                     version_name = winreg.EnumKey(key, i)
                     v_str = version_name.lstrip("v")
-                    
+
                     # Parse into tuple for reliable comparison (e.g. 12.1 > 11.8)
                     try:
                         v_tuple = tuple(int(x) for x in v_str.split("."))
                     except ValueError:
                         v_tuple = (0, 0)
-                        
+
                     if v_tuple > best_version_tuple:
                         with winreg.OpenKey(key, version_name) as subkey:
                             install_dir = winreg.QueryValueEx(subkey, "InstallDir")[0]
@@ -196,7 +205,7 @@ def _detect_cuda_via_registry() -> tuple[str | None, str | None]:
                 except OSError:
                     # No more subkeys to enumerate
                     break
-                    
+
             if best_version_str and best_install_dir:
                 return best_version_str, best_install_dir
             return None, None
@@ -205,6 +214,7 @@ def _detect_cuda_via_registry() -> tuple[str | None, str | None]:
 
 
 # ── Toolkit path ──────────────────────────────────────────────────────────────
+
 
 def _detect_toolkit_path(cuda_version: str | None) -> str | None:
     """Find the CUDA toolkit installation directory."""
@@ -244,6 +254,7 @@ def _detect_toolkit_path(cuda_version: str | None) -> str | None:
 
 
 # ── cuDNN ─────────────────────────────────────────────────────────────────────
+
 
 def _detect_cudnn(toolkit_path: str | None) -> str | None:
     """Detect cuDNN version by parsing header files."""
@@ -308,10 +319,12 @@ def _detect_cudnn_via_torch() -> str | None:
     try:
         import subprocess
         import sys
+
         result = subprocess.run(
-            [sys.executable, "-c",
-             "import torch; print(torch.backends.cudnn.version())"],
-            capture_output=True, text=True, timeout=15,
+            [sys.executable, "-c", "import torch; print(torch.backends.cudnn.version())"],
+            capture_output=True,
+            text=True,
+            timeout=15,
         )
         if result.returncode == 0:
             raw = result.stdout.strip()
@@ -328,6 +341,7 @@ def _detect_cudnn_via_torch() -> str | None:
 
 
 # ── NCCL ──────────────────────────────────────────────────────────────────────
+
 
 def _detect_nccl(toolkit_path: str | None) -> str | None:
     """Detect NCCL version via header or PyTorch."""
@@ -347,9 +361,12 @@ def _detect_nccl(toolkit_path: str | None) -> str | None:
     try:
         import subprocess
         import sys
+
         result = subprocess.run(
             [sys.executable, "-c", "import torch; print(torch.cuda.nccl.version())"],
-            capture_output=True, text=True, timeout=10,
+            capture_output=True,
+            text=True,
+            timeout=10,
         )
         if result.returncode == 0:
             raw = result.stdout.strip()

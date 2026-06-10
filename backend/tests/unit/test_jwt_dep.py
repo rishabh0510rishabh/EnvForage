@@ -91,9 +91,7 @@ async def test_get_current_user_expired_token():
     from fastapi import HTTPException
     from fastapi.security import HTTPAuthorizationCredentials
 
-    creds = HTTPAuthorizationCredentials(
-        scheme="Bearer", credentials=_expired_token()
-    )
+    creds = HTTPAuthorizationCredentials(scheme="Bearer", credentials=_expired_token())
     with pytest.raises(HTTPException) as exc_info:
         await get_current_user(creds)
     assert exc_info.value.status_code == 401
@@ -123,7 +121,9 @@ async def test_get_current_user_missing_email_claim():
     from fastapi import HTTPException
     from fastapi.security import HTTPAuthorizationCredentials
 
-    token = _make_token({"sub": "someuser", "exp": datetime.now(UTC) + timedelta(hours=1)})
+    token = _make_token(
+        {"sub": "someuser", "exp": datetime.now(UTC) + timedelta(hours=1)}
+    )
     creds = HTTPAuthorizationCredentials(scheme="Bearer", credentials=token)
     with pytest.raises(HTTPException) as exc_info:
         await get_current_user(creds)

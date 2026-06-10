@@ -1,4 +1,5 @@
 """Detectors package."""
+
 from envforge_agent.detectors.cuda_detector import detect_cuda
 from envforge_agent.detectors.gpu_detector import detect_gpus, detect_wsl_gpu_passthrough
 from envforge_agent.detectors.os_detector import detect_os

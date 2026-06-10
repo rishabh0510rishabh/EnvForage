@@ -31,9 +31,7 @@ def check_git_installed() -> ValidationResult:
     result = ValidationResult()
 
     if shutil.which("git") is None:
-        result.errors.append(
-            "Git is not installed or not available in PATH."
-        )
+        result.errors.append("Git is not installed or not available in PATH.")
 
     return result
 
@@ -42,9 +40,7 @@ def check_docker_installed() -> ValidationResult:
     result = ValidationResult()
 
     if shutil.which("docker") is None:
-        result.errors.append(
-            "Docker is not installed or not available in PATH."
-        )
+        result.errors.append("Docker is not installed or not available in PATH.")
 
     return result
 

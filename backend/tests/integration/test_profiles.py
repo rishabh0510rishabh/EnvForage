@@ -213,6 +213,7 @@ async def test_delete_profile_with_wrong_admin_key_returns_401(client):
     assert response.status_code == 401
     assert response.json()["detail"]["error"]["code"] == "INVALID_ADMIN_KEY"
 
+
 async def test_create_profile_with_invalid_package_name_returns_422(client):
     profile_data = {
         "slug": "invalid-package-test",

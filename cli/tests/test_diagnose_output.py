@@ -1,4 +1,5 @@
 """Tests for the --output flag of the envforge diagnose command."""
+
 from __future__ import annotations
 
 import json
@@ -51,9 +52,7 @@ class TestDiagnoseOutputFlag:
             mock_builder.return_value.build.return_value = mock_report
 
             runner = CliRunner()
-            result = runner.invoke(
-                cli, ["diagnose", "--output", str(output_file), "--quiet"]
-            )
+            result = runner.invoke(cli, ["diagnose", "--output", str(output_file), "--quiet"])
 
         assert result.exit_code == 0
         assert output_file.exists(), "File must still be written in quiet mode"
@@ -96,6 +95,7 @@ class TestDiagnoseOutputFlag:
         parsed = json.loads(result.output)
         assert "agent_version" in parsed
         assert "os" in parsed
+
     def test_wsl_gpu_passthrough_warning_printed(self) -> None:
         from envforge_agent.cli import cli
         from click.testing import CliRunner
@@ -104,9 +104,15 @@ class TestDiagnoseOutputFlag:
             mock_report = DiagnosticReport.model_validate(load_fixture("wsl_cuda.json"))
             mock_builder.return_value.build.return_value = mock_report
 
-            with patch("envforge_agent.cli.detect_wsl_gpu_passthrough", return_value=(False, ["Missing /dev/dxg"])):
+            with patch(
+                "envforge_agent.cli.detect_wsl_gpu_passthrough",
+                return_value=(False, ["Missing /dev/dxg"]),
+            ):
                 runner = CliRunner()
                 result = runner.invoke(cli, ["--no-color", "diagnose"])
 
         assert result.exit_code == 0
-        assert "GPU passthrough unavailable in WSL2. Falling back to CPU environment recommendation." in result.output
+        assert (
+            "GPU passthrough unavailable in WSL2. Falling back to CPU environment recommendation."
+            in result.output
+        )

@@ -47,7 +47,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     logger.info(
         "EnvForge API starting",
         version=settings.app_version,
-        environment=settings.environment
+        environment=settings.environment,
     )
     # ── Background cleanup scheduler ─────────────────────────
     scheduler = AsyncIOScheduler()

@@ -4,6 +4,7 @@ Unit tests for cli/envforge_agent/detectors/python_detector.py
 Tests error handling for invalid Python executables,
 broken symlinks, and missing binaries.
 """
+
 from __future__ import annotations
 
 import unittest

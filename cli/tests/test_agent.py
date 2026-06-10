@@ -4,6 +4,7 @@ Unit tests for envforge-agent.
 Tests use JSON fixtures to avoid any live system detection calls.
 All detector tests mock subprocess / platform — no nvidia-smi required.
 """
+
 from __future__ import annotations
 
 import sys
@@ -25,15 +26,19 @@ def load_fixture(name: str) -> dict:
 
 # ── Schema round-trip tests ───────────────────────────────────────────────────
 
+
 class TestDiagnosticReportSchema:
     """Validate that fixture JSON round-trips through the Pydantic schema."""
 
-    @pytest.mark.parametrize("fixture_file", [
-        "linux_gpu.json",
-        "wsl_cuda.json",
-        "linux_no_cuda.json",
-        "windows_gpu.json",
-    ])
+    @pytest.mark.parametrize(
+        "fixture_file",
+        [
+            "linux_gpu.json",
+            "wsl_cuda.json",
+            "linux_no_cuda.json",
+            "windows_gpu.json",
+        ],
+    )
     def test_fixture_parses_cleanly(self, fixture_file: str) -> None:
         """Every fixture must deserialize into a valid DiagnosticReport."""
         raw = (FIXTURES_DIR / fixture_file).read_text(encoding="utf-8")
@@ -95,10 +100,12 @@ class TestDiagnosticReportSchema:
 
 # ── OS Detector tests ─────────────────────────────────────────────────────────
 
+
 class TestOSDetector:
     def test_detect_os_returns_os_info(self) -> None:
         """detect_os() always returns an OSInfo — never raises."""
         from envforge_agent.detectors.os_detector import detect_os
+
         result = detect_os()
         assert result.name
         assert result.version
@@ -106,12 +113,14 @@ class TestOSDetector:
 
     def test_wsl_detection_via_env(self) -> None:
         from envforge_agent.detectors.os_detector import _detect_wsl
+
         with patch.dict("os.environ", {"WSL_DISTRO_NAME": "Ubuntu"}):
             result = _detect_wsl()
         assert result == "WSL2"
 
     def test_no_wsl_returns_none(self) -> None:
         from envforge_agent.detectors.os_detector import _detect_wsl
+
         # Patch env to remove WSL vars and /proc files to not exist
         with patch.dict("os.environ", {}, clear=True):
             with patch("builtins.open", side_effect=FileNotFoundError):
@@ -124,6 +133,7 @@ class TestOSDetector:
     @patch("platform.release")
     def test_detect_windows_10(self, mock_release, mock_query, mock_openkey) -> None:
         from envforge_agent.detectors.os_detector import _detect_windows
+
         mock_release.return_value = "10"
         mock_query.side_effect = [
             ("Windows 10 Home", 1),
@@ -141,6 +151,7 @@ class TestOSDetector:
     @patch("platform.release")
     def test_detect_windows_11_via_build(self, mock_release, mock_query, mock_openkey) -> None:
         from envforge_agent.detectors.os_detector import _detect_windows
+
         mock_release.return_value = "10"
         mock_query.side_effect = [
             ("Windows 10 Home Single Language", 1),
@@ -157,6 +168,7 @@ class TestOSDetector:
     @patch("platform.release")
     def test_detect_windows_11_via_release(self, mock_release, mock_query, mock_openkey) -> None:
         from envforge_agent.detectors.os_detector import _detect_windows
+
         mock_release.return_value = "11"
         mock_query.side_effect = [
             ("Windows 10 Pro", 1),
@@ -170,15 +182,18 @@ class TestOSDetector:
 
 # ── GPU Detector tests ────────────────────────────────────────────────────────
 
+
 class TestGPUDetector:
     def test_no_nvidia_smi_returns_empty(self) -> None:
         from envforge_agent.detectors.gpu_detector import detect_gpus
+
         with patch("subprocess.run", side_effect=FileNotFoundError):
             result = detect_gpus()
         assert result == []
 
     def test_nvidia_smi_failure_returns_empty(self) -> None:
         from envforge_agent.detectors.gpu_detector import detect_gpus
+
         mock_result = MagicMock()
         mock_result.returncode = 1
         mock_result.stdout = ""
@@ -188,6 +203,7 @@ class TestGPUDetector:
 
     def test_parses_single_gpu(self) -> None:
         from envforge_agent.detectors.gpu_detector import detect_gpus
+
         mock_result = MagicMock()
         mock_result.returncode = 0
         mock_result.stdout = "0, NVIDIA GeForce RTX 4090, 24576, 535.54.03\n"
@@ -201,6 +217,7 @@ class TestGPUDetector:
 
     def test_parses_multi_gpu(self) -> None:
         from envforge_agent.detectors.gpu_detector import detect_gpus
+
         mock_result = MagicMock()
         mock_result.returncode = 0
         mock_result.stdout = (
@@ -214,12 +231,14 @@ class TestGPUDetector:
 
     def test_vram_converted_from_mib_to_gb(self) -> None:
         from envforge_agent.detectors.gpu_detector import detect_gpus
+
         mock_result = MagicMock()
         mock_result.returncode = 0
         mock_result.stdout = "0, Test GPU, 8192, 535.0\n"  # 8192 MiB = 8.0 GB
         with patch("subprocess.run", return_value=mock_result):
             result = detect_gpus()
         assert result[0].vram_gb == pytest.approx(8.0, abs=0.01)
+
     def test_wsl_gpu_passthrough_reports_issues_when_dxg_missing(self) -> None:
         from envforge_agent.detectors.gpu_detector import detect_wsl_gpu_passthrough
 
@@ -251,11 +270,14 @@ class TestGPUDetector:
         assert ok is True
         assert issues == []
 
+
 # ── CUDA Detector tests ───────────────────────────────────────────────────────
+
 
 class TestCUDADetector:
     def test_no_cuda_returns_empty_info(self) -> None:
         from envforge_agent.detectors.cuda_detector import detect_cuda
+
         with patch("subprocess.run", side_effect=FileNotFoundError):
             with patch("builtins.open", side_effect=FileNotFoundError):
                 with patch.dict("os.environ", {}, clear=True):
@@ -265,6 +287,7 @@ class TestCUDADetector:
 
     def test_nvcc_version_parsed(self) -> None:
         from envforge_agent.detectors.cuda_detector import _nvcc_version
+
         mock_result = MagicMock()
         mock_result.returncode = 0
         mock_result.stdout = "Cuda compilation tools, release 12.1, V12.1.105"
@@ -274,12 +297,14 @@ class TestCUDADetector:
 
     def test_nvcc_not_found_returns_none(self) -> None:
         from envforge_agent.detectors.cuda_detector import _nvcc_version
+
         with patch("subprocess.run", side_effect=FileNotFoundError):
             result = _nvcc_version()
         assert result is None
 
     def test_cuda_path_env_version(self) -> None:
         from envforge_agent.detectors.cuda_detector import _cuda_path_env_version
+
         with patch.dict("os.environ", {"CUDA_PATH": r"C:\CUDA\v12.1"}):
             result = _cuda_path_env_version()
         assert result == "12.1"
@@ -287,22 +312,23 @@ class TestCUDADetector:
     @patch("subprocess.run")
     def test_nvidia_smi_cuda_version_query_success(self, mock_run: MagicMock) -> None:
         from envforge_agent.detectors.cuda_detector import _nvidia_smi_cuda_version
+
         mock_proc = MagicMock()
         mock_proc.returncode = 0
         mock_proc.stdout = "12.3\n"
         mock_run.return_value = mock_proc
-        
+
         result = _nvidia_smi_cuda_version()
         assert result == "12.3"
 
     @patch("subprocess.run")
     def test_nvidia_smi_cuda_version_fallback_success(self, mock_run: MagicMock) -> None:
         from envforge_agent.detectors.cuda_detector import _nvidia_smi_cuda_version
-        
+
         # First call (query-gpu) fails
         mock_query_fail = MagicMock()
         mock_query_fail.returncode = 1
-        
+
         # Second call (standard nvidia-smi) succeeds
         mock_fallback_ok = MagicMock()
         mock_fallback_ok.returncode = 0
@@ -312,27 +338,30 @@ class TestCUDADetector:
             "| NVIDIA-SMI 595.79                 Driver Version: 595.79         CUDA Version: 13.2     |\n"
             "+-----------------------------------------+------------------------+----------------------+\n"
         )
-        
+
         mock_run.side_effect = [mock_query_fail, mock_fallback_ok]
-        
+
         result = _nvidia_smi_cuda_version()
         assert result == "13.2"
 
     @patch("subprocess.run")
     def test_nvidia_smi_cuda_version_not_found(self, mock_run: MagicMock) -> None:
         from envforge_agent.detectors.cuda_detector import _nvidia_smi_cuda_version
+
         mock_run.side_effect = FileNotFoundError()
-        
+
         result = _nvidia_smi_cuda_version()
         assert result is None
 
 
 # ── Python Detector tests ─────────────────────────────────────────────────────
 
+
 class TestPythonDetector:
     def test_active_python_detected(self) -> None:
         """The current interpreter should always be detectable."""
         from envforge_agent.detectors.python_detector import detect_python
+
         installations, active = detect_python()
         assert active is not None
         assert active.version  # e.g. "3.11.9"
@@ -342,23 +371,29 @@ class TestPythonDetector:
     def test_installations_not_empty(self) -> None:
         """At minimum, the current interpreter is in installations."""
         from envforge_agent.detectors.python_detector import detect_python
+
         installations, _ = detect_python()
         assert len(installations) >= 1
 
     def test_inspector_parses_version(self) -> None:
         from envforge_agent.detectors.python_detector import _inspect_python
         import sys
+
         result = _inspect_python(sys.executable)
         assert result is not None
         assert result.version
         path_str = result.path
         if path_str.startswith("<USER_HOME>"):
             path_str = path_str.replace("<USER_HOME>", str(Path.home()), 1)
-        assert path_str == sys.executable or Path(path_str).resolve() == Path(sys.executable).resolve()
+        assert (
+            path_str == sys.executable or Path(path_str).resolve() == Path(sys.executable).resolve()
+        )
 
     @patch("subprocess.Popen")
     @patch("psutil.Process")
-    def test_inspect_python_timeout(self, mock_psutil_process: MagicMock, mock_popen: MagicMock) -> None:
+    def test_inspect_python_timeout(
+        self, mock_psutil_process: MagicMock, mock_popen: MagicMock
+    ) -> None:
         import subprocess
         from envforge_agent.detectors.python_detector import _inspect_python
 
@@ -367,7 +402,7 @@ class TestPythonDetector:
         # Mock communicate to raise TimeoutExpired on the first call, and succeed on the second
         mock_proc.communicate.side_effect = [
             subprocess.TimeoutExpired(cmd="mock_python", timeout=10),
-            ("", "")
+            ("", ""),
         ]
         mock_proc.pid = 12345
         mock_popen.return_value = mock_proc
@@ -393,9 +428,11 @@ class TestPythonDetector:
 
 # ── System Detector tests ─────────────────────────────────────────────────────
 
+
 class TestSystemDetector:
     def test_cpu_detected(self) -> None:
         from envforge_agent.detectors.system_detector import detect_cpu
+
         result = detect_cpu()
         assert result.brand
         assert result.cores >= 1
@@ -403,6 +440,7 @@ class TestSystemDetector:
 
     def test_ram_detected(self) -> None:
         from envforge_agent.detectors.system_detector import detect_ram
+
         result = detect_ram()
         assert result.total_gb > 0
         assert result.available_gb >= 0
@@ -411,10 +449,12 @@ class TestSystemDetector:
 
 # ── ReportBuilder integration test ───────────────────────────────────────────
 
+
 class TestReportBuilder:
     def test_build_returns_valid_report(self) -> None:
         """build() must always return a valid DiagnosticReport without raising."""
         from envforge_agent.report import ReportBuilder
+
         report = ReportBuilder().build()
         assert isinstance(report, DiagnosticReport)
         assert report.agent_version == "1.0.2"
@@ -423,6 +463,7 @@ class TestReportBuilder:
 
     def test_build_serializes_to_json(self) -> None:
         from envforge_agent.report import ReportBuilder
+
         report = ReportBuilder().build()
         json_str = report.to_json()
         parsed = json.loads(json_str)
@@ -430,11 +471,11 @@ class TestReportBuilder:
         assert "os" in parsed
         assert "gpus" in parsed
 
+
 def test_sarif_output_structure():
     """Test that to_sarif() returns valid SARIF 2.1.0 structure."""
-    from envforge_agent.schemas import (
-        DiagnosticReport, OSInfo, CPUInfo, RAMInfo, CUDAInfo
-    )
+    from envforge_agent.schemas import DiagnosticReport, OSInfo, CPUInfo, RAMInfo, CUDAInfo
+
     report = DiagnosticReport(
         os=OSInfo(name="Ubuntu", version="22.04", architecture="x86_64"),
         cpu=CPUInfo(brand="Intel i9", cores=8, threads=16),
@@ -464,9 +505,15 @@ def test_sarif_output_structure():
 def test_sarif_no_issues_when_healthy():
     """Test that a healthy environment produces no SARIF results."""
     from envforge_agent.schemas import (
-        DiagnosticReport, OSInfo, CPUInfo, RAMInfo,
-        CUDAInfo, GPUInfo, PythonInfo
+        DiagnosticReport,
+        OSInfo,
+        CPUInfo,
+        RAMInfo,
+        CUDAInfo,
+        GPUInfo,
+        PythonInfo,
     )
+
     report = DiagnosticReport(
         os=OSInfo(name="Ubuntu", version="22.04", architecture="x86_64"),
         cpu=CPUInfo(brand="Intel i9", cores=8, threads=16),
@@ -560,7 +607,3 @@ class TestVerifyCommand:
         data = json.loads(result.output)
         assert data["status"] == "FAIL"
         assert "CUDA not available" in data["message"]
-
-        
-
-            

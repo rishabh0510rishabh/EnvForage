@@ -1,5 +1,6 @@
 from envforge_agent.schemas import DiagnosticReport
 
+
 def _map_os_to_target(report: DiagnosticReport) -> str:
     """Map detected operating system to EnvForge target identifier."""
     if report.os.wsl_version:
@@ -31,7 +32,9 @@ def check_for_updates() -> None:
     from envforge_agent import __version__
 
     # Suppress update checks if quiet output is requested
-    if any(tok == "--quiet" or (tok.startswith("-") and "q" in tok.lstrip("-")) for tok in sys.argv):
+    if any(
+        tok == "--quiet" or (tok.startswith("-") and "q" in tok.lstrip("-")) for tok in sys.argv
+    ):
         return
 
     try:
@@ -65,5 +68,3 @@ def check_for_updates() -> None:
     except (httpx.HTTPError, httpx.RequestError, ValueError, KeyError):
         # Gracefully absorb all network/parsing exceptions (JSONDecodeError, ConnectError, HTTPStatusError, etc.)
         pass
-
-

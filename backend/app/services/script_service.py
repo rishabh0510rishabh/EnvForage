@@ -17,6 +17,8 @@ from app.cache import get_redis_client
 from app.compatibility.models import (
     PackageConstraint,
     ResolvedEnvironment,
+)
+from app.compatibility.models import (
     ResolvedPackage as CompatibilityResolvedPackage,
 )
 from app.compatibility.resolver import CompatibilityResolver
@@ -26,8 +28,10 @@ from app.models.script_job import GeneratedScript, ScriptGenerationJob
 from app.schemas.script import (
     GenerationRequest,
     GenerationResponse,
-    ResolvedPackage as ResponseResolvedPackage,
     ScriptPreview,
+)
+from app.schemas.script import (
+    ResolvedPackage as ResponseResolvedPackage,
 )
 from app.services.safety import ASTSafetyFilter, SecurityAlertError
 from app.templates.engine import TemplateRenderer
@@ -211,9 +215,7 @@ async def generate_scripts(
             try:
                 _safety_filter.analyze_script(rr.content)
             except SecurityAlertError as exc:
-                _logger.warning(
-                    "Script blocked by AST safety filter: %s", exc.message
-                )
+                _logger.warning("Script blocked by AST safety filter: %s", exc.message)
                 raise HTTPException(
                     status_code=status.HTTP_400_BAD_REQUEST,
                     detail={
