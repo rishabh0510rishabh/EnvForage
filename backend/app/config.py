@@ -30,6 +30,7 @@ class Settings(BaseSettings):
         case_sensitive=False,
         extra="ignore",
     )
+    redis_url: str | None = None
 
     # ── Application ───────────────────────────────────────────
     environment: Literal["development", "staging", "production"] = "development"
