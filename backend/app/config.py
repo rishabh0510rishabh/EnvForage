@@ -12,7 +12,7 @@ import tempfile
 import urllib.parse
 from functools import lru_cache
 from pathlib import Path
-from typing import Literal
+from typing import Any, Literal
 
 from dotenv import load_dotenv
 from pydantic import field_validator, model_validator
