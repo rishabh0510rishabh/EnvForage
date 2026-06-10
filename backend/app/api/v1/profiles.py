@@ -1,6 +1,7 @@
 """Profile endpoints — GET /api/v1/profiles and /api/v1/profiles/{slug}."""
 
 import logging
+from typing import Any
 
 from fastapi import APIRouter, Depends, Path, Query, status
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
@@ -17,7 +18,6 @@ from app.schemas.profile import (
     ProfileUpdateSchema,
 )
 from app.services import profile_service
-from typing import Any
 
 logger = logging.getLogger(__name__)
 
