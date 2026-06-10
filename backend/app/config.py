@@ -31,6 +31,8 @@ class Settings(BaseSettings):
         extra="ignore",
     )
     redis_url: str | None = None
+    # Rate Limiting
+    rate_limit_auth_rpm: int = 100
 
     # ── Application ───────────────────────────────────────────
     environment: Literal["development", "staging", "production"] = "development"
