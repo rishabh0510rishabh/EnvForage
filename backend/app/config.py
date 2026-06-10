@@ -33,6 +33,8 @@ class Settings(BaseSettings):
     redis_url: str | None = None
     # Rate Limiting
     rate_limit_auth_rpm: int = 100
+    # CORS Settings
+    allowed_origins_list: list[str] = ["*"]
 
     # ── Application ───────────────────────────────────────────
     environment: Literal["development", "staging", "production"] = "development"
