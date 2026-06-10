@@ -1,7 +1,7 @@
 """AST-based safety filter for shell script validation."""
 
 import os
-
+from pathlib import Path
 import bashlex
 
 
@@ -18,6 +18,7 @@ class ASTSafetyFilter:
     def __init__(self) -> None:
         self.blocked_commands: set[str] = {"rm", "mkfs", "dd", "chmod", "chown"}
         self.dangerous_flags: set[str] = {"-rf", "-r", "-f"}
+        self.wrappers: set[str] = {"sudo", "env", "command"}
 
     def _normalize_word(self, node) -> str:
         """Strip quotes and backslashes to normalise the command word."""
@@ -34,8 +35,26 @@ class ASTSafetyFilter:
         if not cmd_parts:
             return
 
-        root_cmd = cmd_parts[0]
-        args = cmd_parts[1:]
+        # Fix: Skip known wrappers (sudo, env, command) and inline env assignments (e.g. KEY=VALUE)
+        idx = 0
+        while idx < len(cmd_parts):
+            token = cmd_parts[idx]
+            if token in self.wrappers:
+                idx += 1
+            elif "=" in token and not token.startswith("-"):
+                idx += 1
+            else:
+                break
+
+        if idx >= len(cmd_parts):
+            return
+
+        # True command root extraction after bypassing wrappers
+        raw_root_cmd = cmd_parts[idx]
+        args = cmd_parts[idx + 1:]
+
+        # Handle absolute/relative binary paths (e.g., /bin/rm -> rm)
+        root_cmd = Path(raw_root_cmd).name
 
         is_blocked_cmd = root_cmd in self.blocked_commands or any(
             root_cmd.startswith(cmd + ".") for cmd in self.blocked_commands
