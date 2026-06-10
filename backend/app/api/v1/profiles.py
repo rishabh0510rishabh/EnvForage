@@ -17,6 +17,7 @@ from app.schemas.profile import (
     ProfileUpdateSchema,
 )
 from app.services import profile_service
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
