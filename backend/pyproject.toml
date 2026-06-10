@@ -66,6 +66,7 @@ target-version = ["py311"]
 [tool.ruff]
 line-length = 88
 target-version = "py311"
+ignore = ["I001", "W293"] # I001 import sorting hai, W293 whitespace hai
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "N", "W", "UP"]
@@ -85,6 +86,3 @@ module = "tests.*"
 disallow_untyped_defs = false
 disallow_incomplete_defs = false
 check_untyped_defs = false
-
-[tool.ruff]
-ignore = ["I001", "W293"] # I001 import sorting hai, W293 whitespace hai
