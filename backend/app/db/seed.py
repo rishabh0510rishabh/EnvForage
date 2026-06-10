@@ -1,33 +1,43 @@
-
 # --- Comprehensive DB Seeder ---
-import asyncio
 import logging
-from datetime import datetime, timedelta
 import random
+from datetime import datetime, timedelta
+
 try:
     from faker import Faker
 except ImportError:
     Faker = None
 
+
 # Mocks for ORM since models aren't fully defined in this snippet
 class MockSession:
-    async def execute(self, stmt): pass
-    async def commit(self): pass
-    async def rollback(self): pass
-    async def close(self): pass
+    async def execute(self, stmt):
+        pass
+
+    async def commit(self):
+        pass
+
+    async def rollback(self):
+        pass
+
+    async def close(self):
+        pass
+
 
 logger = logging.getLogger("DBSeeder")
 
+
 class DatabaseSeeder:
     """
-    A robust asynchronous database seeder utilizing Faker to generate 
+    A robust asynchronous database seeder utilizing Faker to generate
     highly realistic datasets for testing and development environments.
     Handles bulk inserts and foreign-key relationship mapping.
     """
+
     def __init__(self, session_factory):
         self.session_factory = session_factory
         if Faker is not None:
-            self.fake = Faker(['en_US'])
+            self.fake = Faker(["en_US"])
         else:
             logger.warning("Faker not installed. Falling back to basic mock data.")
             self.fake = None
@@ -55,7 +65,9 @@ class DatabaseSeeder:
                     "first_name": self.fake.first_name(),
                     "last_name": self.fake.last_name(),
                     "is_active": True,
-                    "created_at": self.fake.date_time_between(start_date='-1y', end_date='now')
+                    "created_at": self.fake.date_time_between(
+                        start_date="-1y", end_date="now"
+                    ),
                 }
             else:
                 user = {
@@ -65,10 +77,10 @@ class DatabaseSeeder:
                     "first_name": "Test",
                     "last_name": "User",
                     "is_active": True,
-                    "created_at": datetime.utcnow()
+                    "created_at": datetime.utcnow(),
                 }
             users.append(user)
-            
+
         # Example Bulk Insert
         # await session.execute(insert(User).values(users))
         return users
@@ -86,7 +98,8 @@ class DatabaseSeeder:
                         "title": self.fake.catch_phrase(),
                         "content": self.fake.text(max_nb_chars=500),
                         "published": random.choice([True, False]),
-                        "created_at": user["created_at"] + timedelta(days=random.randint(1, 30))
+                        "created_at": user["created_at"]
+                        + timedelta(days=random.randint(1, 30)),
                     }
                 else:
                     post = {
@@ -95,10 +108,10 @@ class DatabaseSeeder:
                         "title": self._generate_mock_string("Post"),
                         "content": "Mock content...",
                         "published": True,
-                        "created_at": datetime.utcnow()
+                        "created_at": datetime.utcnow(),
                     }
                 posts.append(post)
-                
+
         # Example Bulk Insert
         # await session.execute(insert(Post).values(posts))
         return posts

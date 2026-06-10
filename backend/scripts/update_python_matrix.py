@@ -1,16 +1,17 @@
 import json
 import logging
+
 logging.basicConfig(level=logging.INFO)
-import sys
-from pathlib import Path
+import sys  # noqa: E402
+from pathlib import Path  # noqa: E402
 
 # Add backend to path so we can import app
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-import httpx
-from packaging.specifiers import SpecifierSet
+import httpx  # noqa: E402
+from packaging.specifiers import SpecifierSet  # noqa: E402
 
-from app.compatibility.matrix.python import PYTHON_MATRIX
+from app.compatibility.matrix.python import PYTHON_MATRIX  # noqa: E402
 
 MATRIX_JSON_PATH = (
     Path(__file__).resolve().parent.parent

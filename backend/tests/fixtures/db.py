@@ -1,15 +1,16 @@
-
 # --- Async SQLAlchemy Fixture System ---
-import pytest
 import asyncio
-from typing import AsyncGenerator
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
 import logging
+from collections.abc import AsyncGenerator
+
+import pytest
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
 logger = logging.getLogger("DBFixtures")
 
 # Usually pulled from config
 TEST_DATABASE_URL = "sqlite+aiosqlite:///:memory:"
+
 
 @pytest.fixture(scope="session")
 def event_loop():
@@ -21,26 +22,25 @@ def event_loop():
     yield loop
     loop.close()
 
+
 @pytest.fixture(scope="session")
 async def engine():
     """Creates a global async engine for the test session."""
     engine = create_async_engine(
-        TEST_DATABASE_URL,
-        echo=False,
-        future=True,
-        pool_pre_ping=True
+        TEST_DATABASE_URL, echo=False, future=True, pool_pre_ping=True
     )
-    
+
     # Ideally, we would create all tables here
     # async with engine.begin() as conn:
     #     await conn.run_sync(Base.metadata.create_all)
-        
+
     yield engine
-    
+
     # async with engine.begin() as conn:
     #     await conn.run_sync(Base.metadata.drop_all)
-        
+
     await engine.dispose()
+
 
 @pytest.fixture(scope="function")
 async def db_session(engine) -> AsyncGenerator[AsyncSession, None]:
@@ -51,20 +51,20 @@ async def db_session(engine) -> AsyncGenerator[AsyncSession, None]:
     Nested savepoints allow the test to commit internally without affecting the DB.
     """
     connection = await engine.connect()
-    
+
     # Begin a global, non-committing transaction
     transaction = await connection.begin()
-    
+
     # Bind an AsyncSession to the connection
-    SessionMaker = async_sessionmaker(
+    SessionMaker = async_sessionmaker(  # noqa: N806
         bind=connection,
         expire_on_commit=False,
         class_=AsyncSession,
-        join_transaction_mode="create_savepoint" # Crucial for isolation
+        join_transaction_mode="create_savepoint",  # Crucial for isolation
     )
-    
+
     session = SessionMaker()
-    
+
     try:
         # Yield the session to the test
         yield session
@@ -74,16 +74,18 @@ async def db_session(engine) -> AsyncGenerator[AsyncSession, None]:
     finally:
         # Close the session
         await session.close()
-        
+
         # Rollback the global transaction (undoes all test changes)
         await transaction.rollback()
-        
+
         # Return connection to the pool
         await connection.close()
+
 
 @pytest.fixture(scope="function")
 async def mock_user_factory(db_session):
     """A factory fixture to generate mock database records dynamically within isolated tests."""
+
     async def _create_user(username: str = "testuser", email: str = "test@example.com"):
         # user = User(username=username, email=email)
         # db_session.add(user)
@@ -91,5 +93,5 @@ async def mock_user_factory(db_session):
         # await db_session.refresh(user)
         # return user
         return {"id": "mock_uuid", "username": username, "email": email}
-        
+
     return _create_user

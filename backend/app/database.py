@@ -34,13 +34,15 @@ def _make_engine() -> AsyncEngine:
         pool_size=10,
         max_overflow=20,
         pool_recycle=1800,
-                connect_args={
+        connect_args={
             # asyncpg client-side timeout in seconds
             "command_timeout": settings.database_command_timeout_seconds,
             "prepared_statement_cache_size": 0,
             "statement_cache_size": 0,
         },
     )
+
+
 engine = _make_engine()
 
 AsyncSessionLocal = async_sessionmaker(

@@ -81,6 +81,7 @@ def new_result_processor(self, dialect, coltype):
                 return json.loads(value)
             except Exception as e:
                 import logging
+
                 logging.error(f"Test fixture error: {e}")
                 return value
 
@@ -124,6 +125,7 @@ async def test_engine():
                     item = json.loads(item_str)
                 except Exception as e:
                     import logging
+
                     logging.error(f"Test fixture error: {e}")
                     item = item_str
 
@@ -132,6 +134,7 @@ async def test_engine():
                 return item in arr
             except Exception as e:
                 import logging
+
                 logging.error(f"Test fixture error: {e}")
                 return False
 

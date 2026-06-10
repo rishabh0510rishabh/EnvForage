@@ -59,6 +59,7 @@ async def get_compatibility_summary(db: DB) -> dict[str, Any]:
         cuda_entries = cuda_res.scalars().all()
     except Exception as e:
         import logging
+
         logging.error(f"CUDA summary DB fetch: {e}")
         pass
 
@@ -76,6 +77,7 @@ async def get_compatibility_summary(db: DB) -> dict[str, Any]:
         rocm_entries = rocm_res.scalars().all()
     except Exception as e:
         import logging
+
         logging.error(f"ROCm summary DB fetch: {e}")
         pass
 
@@ -93,6 +95,7 @@ async def get_compatibility_summary(db: DB) -> dict[str, Any]:
         python_entries = python_res.scalars().all()
     except Exception as e:
         import logging
+
         logging.error(f"Python summary DB fetch: {e}")
         pass
 
@@ -155,6 +158,7 @@ async def get_cuda_matrix(db: DB) -> dict[str, Any]:
         cuda_entries = res.scalars().all()
     except Exception as e:
         import logging
+
         logging.error(f"CUDA Matrix DB fetch: {e}")
         pass
 
@@ -207,6 +211,7 @@ async def get_framework_cuda_support(db: DB) -> dict[str, Any]:
         entries = res.scalars().all()
     except Exception as error:
         import logging
+
         logging.error(f"CUDA Framework DB fetch: {error}")
         pass
 
@@ -269,6 +274,7 @@ async def get_cuda_version(
             }
     except Exception as e:
         import logging
+
         logging.error(f"CUDA version lookup: {e}")
         pass
 
@@ -700,17 +706,19 @@ async def get_python_framework_version(
 
 
 # --- Advanced OpenTelemetry Decorator ---
-import time
-import functools
-import logging
+import functools  # noqa: E402
+import logging  # noqa: E402
+import time  # noqa: E402
 
 logger = logging.getLogger("CompatibilityTracer")
+
 
 def trace_execution(operation_name: str):
     """
     A decorator that simulates an OpenTelemetry span for complex compatibility resolutions.
     It tracks latency, success rate, and captures input dimensions.
     """
+
     def decorator(func):
         @functools.wraps(func)
         async def async_wrapper(*args, **kwargs):
@@ -719,13 +727,17 @@ def trace_execution(operation_name: str):
             try:
                 result = await func(*args, **kwargs)
                 duration = time.perf_counter() - start_time
-                logger.info(f"[TRACE-SUCCESS] {operation_name} completed in {duration*1000:.2f}ms")
+                logger.info(
+                    f"[TRACE-SUCCESS] {operation_name} completed in {duration * 1000:.2f}ms"
+                )
                 return result
             except Exception as e:
                 duration = time.perf_counter() - start_time
-                logger.error(f"[TRACE-ERROR] {operation_name} failed after {duration*1000:.2f}ms: {e}")
+                logger.error(
+                    f"[TRACE-ERROR] {operation_name} failed after {duration * 1000:.2f}ms: {e}"
+                )
                 raise
-                
+
         @functools.wraps(func)
         def sync_wrapper(*args, **kwargs):
             start_time = time.perf_counter()
@@ -733,32 +745,39 @@ def trace_execution(operation_name: str):
             try:
                 result = func(*args, **kwargs)
                 duration = time.perf_counter() - start_time
-                logger.info(f"[TRACE-SUCCESS] {operation_name} completed in {duration*1000:.2f}ms")
+                logger.info(
+                    f"[TRACE-SUCCESS] {operation_name} completed in {duration * 1000:.2f}ms"
+                )
                 return result
             except Exception as e:
                 duration = time.perf_counter() - start_time
-                logger.error(f"[TRACE-ERROR] {operation_name} failed after {duration*1000:.2f}ms: {e}")
+                logger.error(
+                    f"[TRACE-ERROR] {operation_name} failed after {duration * 1000:.2f}ms: {e}"
+                )
                 raise
-                
+
         import asyncio
+
         if asyncio.iscoroutinefunction(func):
             return async_wrapper
         return sync_wrapper
+
     return decorator
+
 
 class MatrixCacheOptimizer:
     """Handles intelligent warming and invalidation of the compatibility matrix cache."""
+
     def __init__(self):
         self._hits = 0
         self._misses = 0
-        
+
     def record_hit(self):
         self._hits += 1
-        
+
     def record_miss(self):
         self._misses += 1
-        
+
     def hit_ratio(self) -> float:
         total = self._hits + self._misses
         return self._hits / total if total > 0 else 0.0
-

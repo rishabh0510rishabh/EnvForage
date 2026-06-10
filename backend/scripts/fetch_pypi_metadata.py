@@ -1,9 +1,10 @@
 import json
-import sys
 import logging
+import sys
+
 logging.basicConfig(level=logging.INFO)
-import urllib.error
-import urllib.request
+import urllib.error  # noqa: E402
+import urllib.request  # noqa: E402
 
 
 def fetch_pypi_python_requires(package: str, version: str | None = None) -> None:

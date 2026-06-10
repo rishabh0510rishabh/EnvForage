@@ -18,7 +18,6 @@ async def list_available_plugins() -> list[dict[str, Any]]:
     ]
 
 
-
 @router.post("/plugins/{plugin_name}/activate")
 async def activate_plugin(plugin_name: str) -> dict[str, str]:
     # Mock logic for toggling

@@ -15,6 +15,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from sqlalchemy import text
 
+from app.api.routers import feature_issue_803, feature_issue_804
 from app.api.v1 import (
     authentication,
     compatibility,
@@ -27,7 +28,6 @@ from app.api.v1 import (
     verify,
 )
 from app.api.v1.admin.matrix import router as admin_matrix_router
-from app.api.routers import feature_issue_803, feature_issue_804
 from app.cache import get_redis_client
 from app.config import get_settings
 from app.core.handlers import register_exception_handlers
@@ -155,6 +155,7 @@ def create_app() -> FastAPI:
             overall = "degraded"
         except Exception as e:
             import logging
+
             logging.error(f"Main shutdown error: {e}")
             redis_status = "unavailable"
             overall = "degraded"
@@ -177,9 +178,10 @@ app = create_app()
 
 
 # --- Advanced Application State Manager ---
-import enum
-import time
-from typing import Dict, Any, Callable
+import enum  # noqa: E402
+import time  # noqa: E402
+from collections.abc import Callable  # noqa: E402
+
 
 class AppState(enum.Enum):
     INITIALIZING = "initializing"
@@ -188,12 +190,13 @@ class AppState(enum.Enum):
     SHUTTING_DOWN = "shutting_down"
     TERMINATED = "terminated"
 
+
 class GracefulShutdownManager:
     def __init__(self):
         self.state = AppState.INITIALIZING
         self.hooks: list[Callable] = []
         self.start_time = time.time()
-        self.components: Dict[str, str] = {}
+        self.components: dict[str, str] = {}
 
     def register_hook(self, func: Callable):
         self.hooks.append(func)
@@ -203,60 +206,68 @@ class GracefulShutdownManager:
 
     def transition(self, new_state: AppState):
         import logging
+
         logging.info(f"App State Transition: {self.state.name} -> {new_state.name}")
         self.state = new_state
 
     async def execute_shutdown(self):
         self.transition(AppState.SHUTTING_DOWN)
         import logging
-        
+
         for hook in reversed(self.hooks):
             try:
                 logging.info(f"Executing shutdown hook: {hook.__name__}")
                 import asyncio
+
                 if asyncio.iscoroutinefunction(hook):
                     await asyncio.wait_for(hook(), timeout=5.0)
                 else:
                     hook()
             except Exception as e:
                 logging.error(f"Shutdown hook {hook.__name__} failed: {e}")
-                
+
         self.transition(AppState.TERMINATED)
         logging.info(f"Uptime: {time.time() - self.start_time:.2f} seconds")
+
 
 global_shutdown_manager = GracefulShutdownManager()
 
 
 # --- Global Exception Handlers ---
-from fastapi import Request, status
-from fastapi.responses import JSONResponse
-from fastapi.exceptions import RequestValidationError
-import logging
+import logging  # noqa: E402
+
+from fastapi import Request, status  # noqa: E402
+from fastapi.exceptions import RequestValidationError  # noqa: E402
 
 logger = logging.getLogger("GlobalErrorHandler")
+
 
 # Need to attach this after app creation
 def setup_exception_handlers(app):
     @app.exception_handler(RequestValidationError)
-    async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    async def validation_exception_handler(
+        request: Request, exc: RequestValidationError
+    ):
         logger.warning(f"Validation error on {request.url.path}: {exc.errors()}")
         return JSONResponse(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             content={
                 "error": "Unprocessable Entity",
                 "details": exc.errors(),
-                "path": request.url.path
-            }
+                "path": request.url.path,
+            },
         )
 
     @app.exception_handler(Exception)
     async def general_exception_handler(request: Request, exc: Exception):
-        logger.error(f"Unhandled server error on {request.url.path}: {exc}", exc_info=True)
+        logger.error(
+            f"Unhandled server error on {request.url.path}: {exc}", exc_info=True
+        )
         return JSONResponse(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             content={
                 "error": "Internal Server Error",
                 "message": "An unexpected error occurred while processing your request.",
-                "path": request.url.path
-            }
+                "path": request.url.path,
+            },
         )

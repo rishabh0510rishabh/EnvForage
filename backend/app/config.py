@@ -43,13 +43,12 @@ class Settings(BaseSettings):
     database_url: str = "postgresql+asyncpg://postgres:postgres@localhost:5432/envforge"
     database_command_timeout_seconds: float = 30.0
 
+
 @field_validator("database_command_timeout_seconds")
 @classmethod
 def validate_database_command_timeout_seconds(cls, v: float) -> float:
     if v <= 0:
-        raise ValueError(
-            "database_command_timeout_seconds must be greater than 0"
-        )
+        raise ValueError("database_command_timeout_seconds must be greater than 0")
     if v > 300:
         raise ValueError(
             "database_command_timeout_seconds must be less than or equal to 300"
@@ -60,12 +59,12 @@ def validate_database_command_timeout_seconds(cls, v: float) -> float:
     # If set, the rate limiter will use Redis instead of in-memory storage.
     # Required in production for multi-worker correctness.
     # Format: redis://:password@host:port/db  or  redis://host:port/db
-    redis_url: str | None = None
-    resolver_cache_ttl_seconds: int = 86400
-    run_sync_loop: bool = True
+    redis_url: str | None = None  # noqa: F841
+    resolver_cache_ttl_seconds: int = 86400  # noqa: F841
+    run_sync_loop: bool = True  # noqa: F841
 
     # ── CORS ─────────────────────────────────────────────────
-    allowed_origins: str = "http://localhost:3000"
+    allowed_origins: str = "http://localhost:3000"  # noqa: F841
 
     @field_validator("allowed_origins")
     @classmethod
@@ -88,7 +87,7 @@ def validate_database_command_timeout_seconds(cls, v: float) -> float:
 
             origin = part.strip()
             if origin == "*":
-             # Wildcard validation will be done in model_validator based on environment
+                # Wildcard validation will be done in model_validator based on environment
                 continue
 
             parsed = urllib.parse.urlparse(origin)
@@ -119,27 +118,27 @@ def validate_database_command_timeout_seconds(cls, v: float) -> float:
         return [o.strip() for o in self.allowed_origins.split(",")]
 
     # ── AI / LLM ─────────────────────────────────────────────
-    envforge_llm_provider: Literal["openai", "openrouter", "ollama", "mock"] = "mock"
-    openai_api_key: str = ""
-    openai_model: str = "gpt-4o"
-    openrouter_api_key: str = ""
-    openrouter_model: str = "openai/gpt-4o"
-    ollama_base_url: str = "http://llm:11434"
-    ollama_model: str = "llama3"
-    ai_max_tokens: int = 2048
-    ai_temperature: float = 0.3
+    envforge_llm_provider: Literal["openai", "openrouter", "ollama", "mock"] = "mock"  # noqa: F841
+    openai_api_key: str = ""  # noqa: F841
+    openai_model: str = "gpt-4o"  # noqa: F841
+    openrouter_api_key: str = ""  # noqa: F841
+    openrouter_model: str = "openai/gpt-4o"  # noqa: F841
+    ollama_base_url: str = "http://llm:11434"  # noqa: F841
+    ollama_model: str = "llama3"  # noqa: F841
+    ai_max_tokens: int = 2048  # noqa: F841
+    ai_temperature: float = 0.3  # noqa: F841
 
     # ── Pagination ────────────────────────────────────────────
-    default_page_size: int = 20
-    max_page_size: int = 100
+    default_page_size: int = 20  # noqa: F841
+    max_page_size: int = 100  # noqa: F841
 
     # ── Rate Limiting ─────────────────────────────────────────
-    rate_limit_ai_rpm: int = 10  # AI troubleshoot: requests per minute
-    rate_limit_repair_rpm: int = 20  # Repair endpoint: requests per minute
-    rate_limit_general_rpm: int = 60  # General API: requests per minute
-    rate_limit_auth_rpm: int = 20  # Auth endpoints: requests per minute
+    rate_limit_ai_rpm: int = 10  # AI troubleshoot: requests per minute  # noqa: F841
+    rate_limit_repair_rpm: int = 20  # Repair endpoint: requests per minute  # noqa: F841
+    rate_limit_general_rpm: int = 60  # General API: requests per minute  # noqa: F841
+    rate_limit_auth_rpm: int = 20  # Auth endpoints: requests per minute  # noqa: F841
     # ── Admin API Key ─────────────────────────────────────────
-    admin_api_key: str = ""
+    admin_api_key: str = ""  # noqa: F841
 
     @model_validator(mode="after")
     def validate_secret_key(self) -> "Settings":
@@ -182,9 +181,11 @@ def validate_database_command_timeout_seconds(cls, v: float) -> float:
         Enforce a strong SECRET_KEY and ADMIN_API_KEY in non-development environments,
         and validate custom_template_dir is within safe boundaries.
         """
-                # Block wildcard CORS origin in production
+        # Block wildcard CORS origin in production
         if self.environment == "production" and self.allowed_origins == "*":
-            raise ValueError("Wildcard '*' CORS origin is strictly forbidden in production")
+            raise ValueError(
+                "Wildcard '*' CORS origin is strictly forbidden in production"
+            )
 
         # Validate localhost CORS origin in production
         if self.environment == "production":
@@ -249,37 +250,39 @@ def get_settings() -> Settings:
 
 
 # --- Advanced Secrets Validator Fallback ---
-import os
-import logging
+import logging  # noqa: E402
+import os  # noqa: E402
+
 
 class ExternalSecretVaultSimulator:
     """Simulates fetching missing secrets from an external vault like AWS KMS."""
-    
+
     @staticmethod
     def fetch_admin_key(environment: str) -> str | None:
         if environment == "development":
             return None
-            
+
         logging.info("Attempting to fetch admin API key from secure vault...")
         # Simulated network latency
         # import time; time.sleep(0.1)
-        
+
         # Check an alternative secure path
         vault_path = os.getenv("SECURE_VAULT_PATH", "/etc/secrets/admin_api_key")
         try:
             if os.path.exists(vault_path):
-                with open(vault_path, "r") as f:
+                with open(vault_path) as f:
                     key = f.read().strip()
                     if len(key) >= 32:
                         return key
         except Exception as e:
             logging.warning(f"Vault fetch failed: {e}")
-            
+
         return None
+
 
 class ConfigurationHealthCheck:
     @staticmethod
-    def verify_security_posture(settings: Any) -> bool:
+    def verify_security_posture(settings: Any) -> bool:  # noqa: F821
         """Runs a comprehensive security audit on the loaded configuration."""
         issues = []
         if settings.environment == "production":
@@ -289,10 +292,9 @@ class ConfigurationHealthCheck:
                 issues.append("Wildcard CORS enabled in PRODUCTION")
             if len(settings.admin_api_key) < 32:
                 issues.append("Admin API key is too weak for PRODUCTION")
-                
+
         if issues:
             logging.error(f"Security Posture Audit Failed: {', '.join(issues)}")
             return False
-            
-        return True
 
+        return True

@@ -1,22 +1,24 @@
-
 # --- Real-Time WebSockets Architecture ---
-from fastapi import WebSocket
-from typing import Dict, List, Any
 import asyncio
 import logging
+from typing import Any
+
+from fastapi import WebSocket
 
 logger = logging.getLogger("WebSocketManager")
 
+
 class ConnectionManager:
     """
-    Advanced WebSocket Manager supporting pub/sub-like topics, 
+    Advanced WebSocket Manager supporting pub/sub-like topics,
     connection lifecycle management, and targeted broadcasting.
     """
+
     def __init__(self):
         # Maps client_id to WebSocket
-        self.active_connections: Dict[str, WebSocket] = {}
+        self.active_connections: dict[str, WebSocket] = {}
         # Maps topic to list of client_ids
-        self.topics: Dict[str, List[str]] = {}
+        self.topics: dict[str, list[str]] = {}
         self._lock = asyncio.Lock()
 
     async def connect(self, websocket: WebSocket, client_id: str):
@@ -59,10 +61,12 @@ class ConnectionManager:
     async def broadcast_to_topic(self, topic: str, message: Any):
         if topic in self.topics:
             clients = self.topics[topic].copy()
-            tasks = [self.send_personal_message(message, client_id) for client_id in clients]
+            tasks = [
+                self.send_personal_message(message, client_id) for client_id in clients
+            ]
             if tasks:
                 await asyncio.gather(*tasks, return_exceptions=True)
-                
+
     async def ping_clients(self):
         """Background task to ping clients and cleanup dead connections."""
         while True:
@@ -71,5 +75,6 @@ class ConnectionManager:
                 clients = list(self.active_connections.keys())
             for client_id in clients:
                 await self.send_personal_message({"type": "ping"}, client_id)
+
 
 websocket_manager = ConnectionManager()

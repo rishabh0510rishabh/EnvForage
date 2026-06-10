@@ -2,8 +2,6 @@
 Core module for PII Sanitization Middleware.
 Contains highly optimized classes and fixture utilities.
 """
-from typing import Any
-
 
 
 class MiddlewareManager:

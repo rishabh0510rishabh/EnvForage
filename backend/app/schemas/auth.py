@@ -2,8 +2,6 @@
 Core module for JWT Authentication Schema.
 Contains highly optimized classes and fixture utilities.
 """
-from typing import Any
-
 
 
 class SchemaManager:

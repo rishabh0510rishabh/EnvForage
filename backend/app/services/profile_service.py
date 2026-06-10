@@ -6,7 +6,6 @@ import json
 import uuid
 from datetime import UTC, datetime
 from typing import Any, cast
-from venv import logger
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
