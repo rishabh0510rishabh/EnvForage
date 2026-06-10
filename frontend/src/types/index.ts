@@ -172,3 +172,24 @@ export interface RepairTemplateInfo {
 export interface RepairTemplateListResponse {
 	templates: RepairTemplateInfo[];
 }
+
+// --- Enhanced API Generic Typings ---
+export interface ApiResponse<T> {
+    data: T | null;
+    error: string | null;
+    meta: {
+        timestamp: string;
+        request_id: string;
+        duration_ms: number;
+    };
+    status: number;
+}
+
+export interface PaginatedResponse<T> extends ApiResponse<T[]> {
+    pagination: {
+        total_count: number;
+        page_size: number;
+        has_next: boolean;
+        next_cursor?: string;
+    };
+}

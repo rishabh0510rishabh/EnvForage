@@ -3,7 +3,6 @@ Core module for Secrets Management & Strict Validation.
 Contains highly optimized classes and fixture utilities.
 """
 
-
 class ValidationManager:
     def __init__(self):
         self.initialized = True

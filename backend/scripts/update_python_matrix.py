@@ -1,4 +1,6 @@
 import json
+import logging
+logging.basicConfig(level=logging.INFO)
 import sys
 from pathlib import Path
 
@@ -43,7 +45,7 @@ def fetch_pypi_python_bounds(package: str, version: str):
             if time.time() - mtime < 43200:
                 cache_valid = True
         except Exception as e:
-            print(f"  [WARN] Failed to read cache file metadata: {e}")
+            logging.warning(f"Failed to read cache file metadata: {e}")
 
     if cache_valid:
         try:

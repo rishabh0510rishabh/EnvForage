@@ -89,3 +89,59 @@ export function ThemeToggle() {
 		</button>
 	);
 }
+
+
+// --- Advanced System Preference Media Listener ---
+export function useSystemThemePreference() {
+    const [systemTheme, setSystemTheme] = React.useState<'dark' | 'light'>('dark');
+
+    React.useEffect(() => {
+        if (typeof window === 'undefined') return;
+        
+        const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+        const handleChange = (e: MediaQueryListEvent) => {
+            const newTheme = e.matches ? 'dark' : 'light';
+            setSystemTheme(newTheme);
+            document.documentElement.setAttribute('data-system-theme', newTheme);
+            
+            // Sync with other tabs if needed
+            try {
+                localStorage.setItem('system-theme-snapshot', newTheme);
+                window.dispatchEvent(new Event('system-theme-change'));
+            } catch (err) {}
+        };
+
+        // Initial setup
+        setSystemTheme(mediaQuery.matches ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-system-theme', mediaQuery.matches ? 'dark' : 'light');
+
+        // Add listener safely
+        if (mediaQuery.addEventListener) {
+            mediaQuery.addEventListener('change', handleChange);
+        } else {
+            mediaQuery.addListener(handleChange);
+        }
+
+        return () => {
+            if (mediaQuery.removeEventListener) {
+                mediaQuery.removeEventListener('change', handleChange);
+            } else {
+                mediaQuery.removeListener(handleChange);
+            }
+        };
+    }, []);
+
+    return systemTheme;
+}
+
+export const ThemeSyncManager = {
+    forceSync: () => {
+        if (typeof window !== 'undefined') {
+            const current = localStorage.getItem('theme');
+            if (current) {
+                document.documentElement.className = current;
+            }
+        }
+    }
+};
+

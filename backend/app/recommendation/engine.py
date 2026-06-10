@@ -29,6 +29,13 @@ def recommend_profiles(report: DiagnosticReportSchema) -> dict[str, Any]:
     total_ram = report.ram.total_gb
     is_apple_silicon = _is_apple_silicon(report)
 
+    if total_ram <= 0:
+        raise ValueError(f"Invalid RAM value: total_gb={total_ram}. RAM must be a positive number.")
+
+    for gpu in report.gpus:
+        if gpu.vram_gb is not None and gpu.vram_gb <= 0:
+            raise ValueError(f"Invalid VRAM value: vram_gb={gpu.vram_gb}. VRAM must be a positive number.")
+
     if total_ram < 8:
         warnings.append(
             "Low system RAM (<8 GB). Heavy ML workloads may fail or swap heavily. "

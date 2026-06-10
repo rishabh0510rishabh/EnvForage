@@ -1,7 +1,7 @@
 import React from 'react';
 
 // Simplified wrapper for MDX code blocks
-export const CodeBlock = ({ children, className }: any) => {
+export const CodeBlock = ({ children, className }: { children: React.ReactNode, className?: string }) => {
   const language = className ? className.replace(/language-/, '') : '';
   
   return (

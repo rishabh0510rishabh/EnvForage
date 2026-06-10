@@ -1,5 +1,7 @@
 """Unit tests for the ML Framework Recommendation Engine."""
 
+import pytest
+
 from app.recommendation.engine import recommend_profiles
 from app.schemas.diagnostic import DiagnosticReportSchema
 
@@ -96,3 +98,23 @@ class TestRankOrdering:
         result = recommend_profiles(_make_report(gpus=gpus))
         ranks = [p["rank"] for p in result["recommended_profiles"]]
         assert ranks == sorted(ranks)
+
+
+class TestNegativeValues:
+    def test_negative_ram_raises(self):
+        with pytest.raises(ValueError, match="RAM"):
+            recommend_profiles(_make_report(ram_gb=-16.0))
+
+    def test_zero_ram_raises(self):
+        with pytest.raises(ValueError, match="RAM"):
+            recommend_profiles(_make_report(ram_gb=0.0))
+
+    def test_negative_vram_raises(self):
+        with pytest.raises(ValueError, match="VRAM"):
+            gpus = [{"name": "RTX 4090", "vram_gb": -8.0, "index": 0}]
+            recommend_profiles(_make_report(gpus=gpus))
+
+    def test_zero_vram_raises(self):
+        with pytest.raises(ValueError, match="VRAM"):
+            gpus = [{"name": "RTX 4090", "vram_gb": 0.0, "index": 0}]
+            recommend_profiles(_make_report(gpus=gpus))

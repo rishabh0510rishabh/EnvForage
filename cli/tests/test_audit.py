@@ -48,10 +48,19 @@ class TestVersionClassification:
         assert _classify_version_change("1.0.0", "1.0.1") == "patch"
 
     def test_non_numeric_falls_to_other(self):
-        assert _classify_version_change("1.0.0", "1.0.0-rc1") == "other"
+        assert _classify_version_change("1.0.0", "abc") == "other"
 
     def test_short_versions_handled(self):
         assert _classify_version_change("1", "1.0.1") == "patch"
+
+    def test_pre_release_handled_accurately(self):
+        assert _classify_version_change("2.1.0-rc1", "2.1.0") == "patch"
+        assert _classify_version_change("2.1.0-rc1", "2.1.0-rc2") == "patch"
+        assert _classify_version_change("2.0.0", "2.1.0-rc1") == "minor"
+        assert _classify_version_change("1.0.0", "2.0.0-rc1") == "major"
+        assert _classify_version_change("1.0.0", "1.0.0") == "other"
+        assert _classify_version_change(None, "1.0.0") == "other"
+        assert _classify_version_change("1.0.0", None) == "other"
 
 
 class TestLockfileSource:

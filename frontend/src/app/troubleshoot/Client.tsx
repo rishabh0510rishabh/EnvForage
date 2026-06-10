@@ -268,7 +268,8 @@ export default function TroubleshootPage() {
 							padding: "1rem",
 							borderRadius: "16px",
 							background:
-								"linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(236, 72, 153, 0.15))",
+								"linear-gradient(135deg, rgba(99, 102, 241, 0.25), rgba(236, 72, 153, 0.25))",
+boxShadow: "0 4px 24px rgba(99, 102, 241, 0.3)",
 							marginBottom: "1.5rem",
 						}}
 					>
@@ -329,9 +330,9 @@ export default function TroubleshootPage() {
 									style={{
 										width: "100%",
 										padding: "0.75rem 1rem",
-										background: "rgba(0,0,0,0.2)",
+										background: "rgba(99, 102, 241, 0.05)",
 										border: "1px solid var(--border-strong)",
-										color: "white",
+										color: "var(--text-primary)",
 										borderRadius: "8px",
 										fontSize: "0.95rem",
 										outline: "none",
@@ -367,9 +368,9 @@ export default function TroubleshootPage() {
 									style={{
 										width: "100%",
 										padding: "0.75rem 1rem",
-										background: "rgba(0,0,0,0.2)",
+										background: "rgba(99, 102, 241, 0.05)",
 										border: "1px solid var(--border-strong)",
-										color: "white",
+										color: "var(--text-primary)",
 										borderRadius: "8px",
 										fontSize: "0.95rem",
 										outline: "none",
@@ -421,7 +422,7 @@ export default function TroubleshootPage() {
 								style={{
 									width: "100%",
 									height: "240px",
-									background: "rgba(0,0,0,0.3)",
+									background: "rgba(99, 102, 241, 0.04)",
 									border: "1px solid var(--border-strong)",
 									borderRadius: "8px",
 									padding: "1rem",
@@ -532,6 +533,7 @@ export default function TroubleshootPage() {
 								disabled={loading || !diagnosticJson.trim()}
 								style={{
 									padding: "0.85rem 2.5rem",
+width: "100%",
 									fontSize: "1rem",
 									gap: "0.5rem",
 									display: "flex",
@@ -847,7 +849,7 @@ export default function TroubleshootPage() {
 																				alignItems: "center",
 																				justifyContent: "space-between",
 																				padding: "0.5rem 0.75rem",
-																				background: "rgba(0,0,0,0.3)",
+																				background: "rgba(99, 102, 241, 0.04)",
 																				borderRadius: "6px",
 																				fontFamily: "var(--font-mono)",
 																				fontSize: "0.85rem",
