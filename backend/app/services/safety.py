@@ -2,8 +2,8 @@
 
 import os
 from pathlib import Path
-import bashlex
 
+import bashlex
 
 class SecurityAlertError(Exception):
     """Raised when a malicious pattern is detected in a script."""
