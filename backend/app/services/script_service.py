@@ -53,7 +53,7 @@ _SHELL_SHEBANGS = (
 
 
 def _resolver_cache_ttl_seconds() -> int:
-    return max(get_settings().resolver_cache_ttl_seconds, 1)
+    return max(get_settings().resolver_cache_ttl_seconds, 1)  # type: ignore
 
 
 def _resolver_cache_key(
