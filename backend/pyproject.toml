@@ -85,3 +85,6 @@ module = "tests.*"
 disallow_untyped_defs = false
 disallow_incomplete_defs = false
 check_untyped_defs = false
+
+[tool.ruff]
+ignore = ["I001", "W293"] # I001 import sorting hai, W293 whitespace hai
