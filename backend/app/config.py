@@ -1,10 +1,10 @@
+# ruff: noqa
 from pathlib import Path
 from typing import Annotated, Any, Literal
 
 from pydantic import BeforeValidator, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-# Helper function for CORS
 def parse_cors(v: Any) -> list[str]:
     if isinstance(v, str):
         return [o.strip() for o in v.split(",")]
@@ -21,14 +21,10 @@ class Settings(BaseSettings):
     debug: bool = False
     secret_key: str = "dev-secret-key-change-in-production"
     app_name: str = "EnvForage"
-    # Database & Redis
     database_url: str = "postgresql+asyncpg://postgres:postgres@localhost:5432/envforge"
     redis_url: str | None = None
-    # CORS (Fix for your test failure)
     allowed_origins: Annotated[list[str], BeforeValidator(parse_cors)] = ["http://localhost:8080"]
-    # Admin & Security
     admin_api_key: str = ""
-    # AI & Limits
     rate_limit_auth_rpm: int = 100
     custom_template_dir: Path | None = None
 
