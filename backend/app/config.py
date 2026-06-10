@@ -28,8 +28,9 @@ class Settings(BaseSettings):
         env_file=".env",
         env_file_encoding="utf-8",
         case_sensitive=False,
-        extra="ignore",
+        extra="forbid",
     )
+    admin_api_key: str | None = None
     redis_url: str | None = None
     # Rate Limiting
     rate_limit_auth_rpm: int = 100
