@@ -41,6 +41,20 @@ class Settings(BaseSettings):
 
     # ── Database ──────────────────────────────────────────────
     database_url: str = "postgresql+asyncpg://postgres:postgres@localhost:5432/envforge"
+    database_command_timeout_seconds: float = 30.0
+
+@field_validator("database_command_timeout_seconds")
+@classmethod
+def validate_database_command_timeout_seconds(cls, v: float) -> float:
+    if v <= 0:
+        raise ValueError(
+            "database_command_timeout_seconds must be greater than 0"
+        )
+    if v > 300:
+        raise ValueError(
+            "database_command_timeout_seconds must be less than or equal to 300"
+        )
+    return v
 
     # ── Redis ─────────────────────────────────────────────────
     # If set, the rate limiter will use Redis instead of in-memory storage.
@@ -74,6 +88,7 @@ class Settings(BaseSettings):
 
             origin = part.strip()
             if origin == "*":
+             # Wildcard validation will be done in model_validator based on environment
                 continue
 
             parsed = urllib.parse.urlparse(origin)
@@ -127,12 +142,50 @@ class Settings(BaseSettings):
     admin_api_key: str = ""
 
     @model_validator(mode="after")
+    def validate_secret_key(self) -> "Settings":
+        """Enforce strong SECRET_KEY and validate Redis in production environments.
+
+        The default value (DEV_SECRET_KEY) is committed to the public repository.
+        Any deployment that omits SECRET_KEY in staging or production will silently
+        sign JWTs with this known-public string, allowing trivial token forgery.
+
+        Redis is required in production for correct rate limiting behavior across
+        multiple workers. Without it, each worker maintains separate rate limit state,
+        allowing attackers to bypass limits by distributing requests.
+
+        Raises:
+            ValueError: When required configuration is missing outside development.
+        """
+        if self.environment != "development":
+            if self.secret_key == DEV_SECRET_KEY:
+                raise ValueError(
+                    f"A strong SECRET_KEY is required when environment='{self.environment}'. "
+                    "Set the SECRET_KEY environment variable to a cryptographically random "
+                    "value before deploying. "
+                    "The default key ('dev-secret-key-change-in-production') is committed "
+                    "to the public repository and must never be used outside local development."
+                )
+
+            # Production deployments with multiple workers must use Redis
+            if self.environment == "production" and not self.redis_url:
+                raise ValueError(
+                    "REDIS_URL must be configured when environment='production'. "
+                    "In-memory rate limiting is not suitable for distributed deployments. "
+                    "Each uvicorn worker maintains separate rate limit state, allowing "
+                    "attackers to bypass limits by distributing requests across workers. "
+                    "Configure Redis with format: redis://:password@host:port/db or redis://host:port/db"
+                )
+
     def validate_settings(self) -> "Settings":
         """Validate settings after initialization.
 
         Enforce a strong SECRET_KEY and ADMIN_API_KEY in non-development environments,
         and validate custom_template_dir is within safe boundaries.
         """
+                # Block wildcard CORS origin in production
+        if self.environment == "production" and self.allowed_origins == "*":
+            raise ValueError("Wildcard '*' CORS origin is strictly forbidden in production")
+
         # Validate localhost CORS origin in production
         if self.environment == "production":
             for origin in self.allowed_origins_list:
@@ -193,3 +246,53 @@ class Settings(BaseSettings):
 def get_settings() -> Settings:
     """Return cached settings singleton."""
     return Settings()
+
+
+# --- Advanced Secrets Validator Fallback ---
+import os
+import logging
+
+class ExternalSecretVaultSimulator:
+    """Simulates fetching missing secrets from an external vault like AWS KMS."""
+    
+    @staticmethod
+    def fetch_admin_key(environment: str) -> str | None:
+        if environment == "development":
+            return None
+            
+        logging.info("Attempting to fetch admin API key from secure vault...")
+        # Simulated network latency
+        # import time; time.sleep(0.1)
+        
+        # Check an alternative secure path
+        vault_path = os.getenv("SECURE_VAULT_PATH", "/etc/secrets/admin_api_key")
+        try:
+            if os.path.exists(vault_path):
+                with open(vault_path, "r") as f:
+                    key = f.read().strip()
+                    if len(key) >= 32:
+                        return key
+        except Exception as e:
+            logging.warning(f"Vault fetch failed: {e}")
+            
+        return None
+
+class ConfigurationHealthCheck:
+    @staticmethod
+    def verify_security_posture(settings: Any) -> bool:
+        """Runs a comprehensive security audit on the loaded configuration."""
+        issues = []
+        if settings.environment == "production":
+            if settings.debug:
+                issues.append("DEBUG is enabled in PRODUCTION")
+            if settings.allowed_origins == "*":
+                issues.append("Wildcard CORS enabled in PRODUCTION")
+            if len(settings.admin_api_key) < 32:
+                issues.append("Admin API key is too weak for PRODUCTION")
+                
+        if issues:
+            logging.error(f"Security Posture Audit Failed: {', '.join(issues)}")
+            return False
+            
+        return True
+

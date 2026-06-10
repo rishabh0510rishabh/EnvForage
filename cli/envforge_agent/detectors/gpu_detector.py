@@ -196,9 +196,18 @@ def _detect_via_rocm_smi(timeout: int = 30) -> list[GPUInfo]:
         return []
 
     import json
+    
+    out_str = result.stdout
+    start_idx = out_str.find('{')
+    end_idx = out_str.rfind('}')
+    
+    if start_idx != -1 and end_idx != -1 and end_idx > start_idx:
+        json_str = out_str[start_idx:end_idx+1]
+    else:
+        json_str = out_str
 
     try:
-        data = json.loads(result.stdout)
+        data = json.loads(json_str)
     except json.JSONDecodeError:
         return []
 

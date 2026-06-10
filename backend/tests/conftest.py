@@ -79,7 +79,9 @@ def new_result_processor(self, dialect, coltype):
                 return None
             try:
                 return json.loads(value)
-            except Exception:
+            except Exception as e:
+                import logging
+                logging.error(f"Test fixture error: {e}")
                 return value
 
         return process
@@ -120,13 +122,17 @@ async def test_engine():
                 arr = json.loads(arr_str)
                 try:
                     item = json.loads(item_str)
-                except Exception:
+                except Exception as e:
+                    import logging
+                    logging.error(f"Test fixture error: {e}")
                     item = item_str
 
                 if isinstance(item, list):
                     return all(x in arr for x in item)
                 return item in arr
-            except Exception:
+            except Exception as e:
+                import logging
+                logging.error(f"Test fixture error: {e}")
                 return False
 
         dbapi_connection.create_function("array_contains", 2, array_contains)

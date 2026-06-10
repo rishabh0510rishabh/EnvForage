@@ -1,6 +1,7 @@
 """Global exception handlers for FastAPI application."""
 
 import logging
+import uuid
 from typing import Any
 
 from fastapi import FastAPI, Request
@@ -93,7 +94,11 @@ def register_exception_handlers(app: FastAPI) -> None:
         request: Request,
         exc: Exception,
     ) -> JSONResponse:
-        logger.exception("Unhandled exception: %s", exc)
+        reference_id = str(uuid.uuid4())
+        logger.exception("Unhandled exception [%s]: %s", reference_id, exc)
         return _error_response(
-            500, "INTERNAL_SERVER_ERROR", "An unexpected error occurred.", {}
+            500,
+            "INTERNAL_SERVER_ERROR",
+            "An unexpected error occurred.",
+            {"reference_id": reference_id},
         )

@@ -90,7 +90,8 @@ def parse_supported_python(requires_python: str | None) -> list[str]:
         spec = SpecifierSet(requires_python)
         supported = [v for v in all_py_versions if Version(v) in spec]
         return supported
-    except Exception:
+    except Exception as e:
+        logger.error(f"Sync service error: {e}")
         return []
 
 
@@ -128,7 +129,8 @@ async def sync_pypi_releases(db: AsyncSession) -> None:
                 for v_str in releases.keys():
                     try:
                         sorted_releases.append((Version(v_str), v_str))
-                    except Exception:
+                    except Exception as e:
+                        logger.error(f"Sync error 1: {e}")
                         pass
                 sorted_releases.sort()
 
@@ -158,7 +160,8 @@ async def sync_pypi_releases(db: AsyncSession) -> None:
                                     .get("info", {})
                                     .get("requires_python")
                                 )
-                        except Exception:
+                        except Exception as e:
+                            logger.error(f"Sync error 2: {e}")
                             pass
 
                     supported_py = parse_supported_python(requires_python)
@@ -188,7 +191,8 @@ async def sync_pypi_releases(db: AsyncSession) -> None:
                                 ):
                                     best_match = entry
                                     break
-                            except Exception:
+                            except Exception as e:
+                                logger.error(f"Sync error 3: {e}")
                                 pass
                         closest_cuda = best_match.supported_cuda
                         closest_rocm = best_match.supported_rocm
@@ -260,7 +264,8 @@ async def sync_nvidia_cuda_releases(db: AsyncSession) -> None:
                         latest_existing = max(
                             cuda_rows, key=lambda r: Version(r.cuda_version)
                         )
-                    except Exception:
+                    except Exception as e:
+                        logger.error(f"Sync error 4: {e}")
                         latest_existing = cuda_rows[0]
 
                 min_linux = (

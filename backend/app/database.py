@@ -3,6 +3,7 @@ Database engine and session management.
 Uses SQLAlchemy 2.0 async API throughout.
 """
 
+import logging
 from collections.abc import AsyncGenerator
 
 from sqlalchemy.ext.asyncio import (
@@ -14,6 +15,8 @@ from sqlalchemy.ext.asyncio import (
 from sqlalchemy.orm import DeclarativeBase
 
 from app.config import get_settings
+
+logger = logging.getLogger(__name__)
 
 
 class Base(DeclarativeBase):
@@ -31,13 +34,13 @@ def _make_engine() -> AsyncEngine:
         pool_size=10,
         max_overflow=20,
         pool_recycle=1800,
-        connect_args={
+                connect_args={
+            # asyncpg client-side timeout in seconds
+            "command_timeout": settings.database_command_timeout_seconds,
             "prepared_statement_cache_size": 0,
             "statement_cache_size": 0,
         },
     )
-
-
 engine = _make_engine()
 
 AsyncSessionLocal = async_sessionmaker(
@@ -55,7 +58,10 @@ async def get_db() -> AsyncGenerator[AsyncSession, None]:
         try:
             yield session
             await session.commit()
-        except Exception:
+        except Exception as e:
+            import logging
+
+            logging.error(f"DB connection error: {e}")
             await session.rollback()
             raise
         finally:

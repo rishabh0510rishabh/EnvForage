@@ -8,35 +8,38 @@ will be wired in as a follow-up to refine which deltas are likely breaking.
 
 from __future__ import annotations
 from typing import Dict
+from packaging.version import InvalidVersion, parse as parse_version
 
 from .models import AuditResult, DiffEntry
 from .sources import Source
 
 
-def _classify_version_change(a: str, b: str) -> str:
+def _classify_version_change(a: str | None, b: str | None) -> str:
     """Classify a version change by semver-style severity.
 
     Returns one of: "major", "minor", "patch", "other".
     Non-numeric or unparseable version strings fall through to "other".
     """
     try:
-        a_parts = [int(x) for x in a.split(".")[:3]]
-        b_parts = [int(x) for x in b.split(".")[:3]]
-    except ValueError:
+        a_ver = parse_version(a) if a is not None else None
+        b_ver = parse_version(b) if b is not None else None
+    except (InvalidVersion, TypeError):
         return "other"
 
-    while len(a_parts) < 3:
-        a_parts.append(0)
-    while len(b_parts) < 3:
-        b_parts.append(0)
+    if a_ver is None or b_ver is None:
+        return "other"
 
-    if a_parts[0] != b_parts[0]:
+    if a_ver == b_ver:
+        return "other"
+
+    if a_ver.major != b_ver.major:
         return "major"
-    if a_parts[1] != b_parts[1]:
+    if a_ver.minor != b_ver.minor:
         return "minor"
-    if a_parts[2] != b_parts[2]:
-        return "patch"
-    return "other"
+
+    # If major and minor are identical, and they are not equal, then
+    # it's a patch or pre-release/post-release/dev/local change (patch level).
+    return "patch"
 
 
 def _to_dict(source: Source) -> Dict[str, str]:

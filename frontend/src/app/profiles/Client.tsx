@@ -26,6 +26,8 @@ export default function ProfilesPage() {
 	const [selectedOS, setSelectedOS] = useState("ALL");
 	const [cudaFilter, setCudaFilter] = useState("ALL");// ALL, REQUIRED, OPTIONAL
 	const [favorites, setFavorites] = useState<string[]>([]);
+	const [recentProfiles, setRecentProfiles] = useState<
+	{ slug: string; name: string; description?: string }[]>([]);
 
 	useEffect(() => {
 		async function loadProfiles() {
@@ -57,6 +59,19 @@ export default function ProfilesPage() {
 			}
 		}
 	}, []);
+
+	useEffect(() => {
+  const saved = localStorage.getItem("recentProfiles");
+
+			if (saved) {
+				try {
+					setRecentProfiles(JSON.parse(saved));
+				} catch {
+					setRecentProfiles([]);
+			}
+		}
+	}, []);
+
 const toggleFavorite = (slug: string) => {
 	const updated = favorites.includes(slug)
 		? favorites.filter((id) => id !== slug)
@@ -92,6 +107,12 @@ const toggleFavorite = (slug: string) => {
 
 		return matchesSearch && matchesOS && matchesCuda;
 	});
+
+	const recentProfileData = recentProfiles
+  		.map((recent) =>
+    		profiles.find((p) => p.slug === recent.slug)
+  		)
+  		.filter(Boolean);
 
 	if (loading) {
 		return (
@@ -168,6 +189,60 @@ const toggleFavorite = (slug: string) => {
 					</p>
 				</motion.div>
 			</div>
+
+			{recentProfileData.length > 0 && (
+			<motion.div
+				initial={{ opacity: 0 }}
+				animate={{ opacity: 1 }}
+				className="glass-panel"
+				style={{
+				padding: "1.5rem",
+				marginBottom: "2rem",
+				}}
+			>
+				<h2
+				style={{
+					marginBottom: "1rem",
+					fontSize: "1.4rem",
+				}}
+				>
+				🕒 Recently Used Profiles
+				</h2>
+
+				<div
+				style={{
+					display: "grid",
+					gap: "1rem",
+				}}
+				>
+				{recentProfileData.map((profile) => (
+					<Link
+					key={profile!.slug}
+					href={`/profiles/${profile!.slug}`}
+					style={{
+						padding: "1rem",
+						border: "1px solid var(--border-subtle)",
+						borderRadius: "8px",
+						textDecoration: "none",
+						color: "var(--text-primary)",
+					}}
+					>
+					<strong>{profile!.name}</strong>
+
+					<p
+						style={{
+						marginTop: "0.5rem",
+						color: "var(--text-secondary)",
+						fontSize: "0.9rem",
+						}}
+					>
+						{profile!.description}
+					</p>
+					</Link>
+				))}
+				</div>
+			</motion.div>
+			)}
 
 			{/* Filter and Search Bar */}
 			<motion.div

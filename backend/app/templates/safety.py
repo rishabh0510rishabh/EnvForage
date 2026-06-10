@@ -236,7 +236,8 @@ def _validate_bash_ast(content: str, template_name: str = "") -> None:
                                                         ):
                                                             is_whitelisted = True
                                                             break
-                                                    except Exception:
+                                                    except Exception as e:
+                                                        logger.error(f"Safety parse error: {e}")
                                                         pass
                             if not is_whitelisted:
                                 violations.append(
@@ -463,5 +464,6 @@ def validate_rendered_output(
             logger.warning(
                 f"AI Safety check failed due to provider error — degrading to regex-only: {str(e)}"
             )
+
 
     return content

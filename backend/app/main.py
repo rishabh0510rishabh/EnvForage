@@ -27,6 +27,7 @@ from app.api.v1 import (
     verify,
 )
 from app.api.v1.admin.matrix import router as admin_matrix_router
+from app.api.routers import feature_issue_803, feature_issue_804
 from app.cache import get_redis_client
 from app.config import get_settings
 from app.core.handlers import register_exception_handlers
@@ -37,14 +38,16 @@ from app.middleware.payload_size import PayloadSizeLimitMiddleware
 from app.services.cleanup_service import run_cleanup
 from app.services.sync_service import matrix_sync_loop
 
+logger = structlog.get_logger(__name__)
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     """Manage application startup and shutdown."""
     settings = get_settings()
-    logger = structlog.get_logger(__name__)
+    logger_instance = structlog.get_logger(__name__)
 
-    logger.info(
+    logger_instance.info(
         "EnvForge API starting",
         version=settings.app_version,
         environment=settings.environment,
@@ -60,7 +63,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
         misfire_grace_time=3600,
     )
     scheduler.start()
-    logger.info("Cleanup scheduler started (runs every 24h)")
+    logger_instance.info("Cleanup scheduler started (runs every 24h)")
 
     sync_task = None
     if "pytest" not in sys.modules and settings.run_sync_loop:
@@ -76,7 +79,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
             pass
 
     scheduler.shutdown(wait=False)
-    logger.info("EnvForge API shutting down")
+    logger_instance.info("EnvForge API shutting down")
 
 
 def create_app() -> FastAPI:
@@ -121,6 +124,8 @@ def create_app() -> FastAPI:
     app.include_router(authentication.router, prefix="/api/v1", tags=["auth"])
     app.include_router(recommend.router, prefix="/api/v1", tags=["recommendations"])
     app.include_router(admin_matrix_router, prefix="/api/v1", tags=["admin-matrix"])
+    app.include_router(feature_issue_803.router, prefix="/api/v1", tags=["media"])
+    app.include_router(feature_issue_804.router, prefix="/api/v1", tags=["locations"])
 
     # ── Health check ──────────────────────────────────────────
     @app.get("/health", include_in_schema=False)
@@ -132,7 +137,8 @@ def create_app() -> FastAPI:
             async with asyncio.timeout(2):
                 async with AsyncSessionLocal() as session:
                     await session.execute(text("SELECT 1"))
-        except Exception:
+        except Exception as e:
+            logger.error(f"Main app error: {e}")
             db_status = "unavailable"
             overall = "degraded"
         try:
@@ -147,7 +153,9 @@ def create_app() -> FastAPI:
         except TimeoutError:
             redis_status = "unavailable"
             overall = "degraded"
-        except Exception:
+        except Exception as e:
+            import logging
+            logging.error(f"Main shutdown error: {e}")
             redis_status = "unavailable"
             overall = "degraded"
         return JSONResponse(
@@ -166,3 +174,89 @@ def create_app() -> FastAPI:
 
 
 app = create_app()
+
+
+# --- Advanced Application State Manager ---
+import enum
+import time
+from typing import Dict, Any, Callable
+
+class AppState(enum.Enum):
+    INITIALIZING = "initializing"
+    RUNNING = "running"
+    DEGRADED = "degraded"
+    SHUTTING_DOWN = "shutting_down"
+    TERMINATED = "terminated"
+
+class GracefulShutdownManager:
+    def __init__(self):
+        self.state = AppState.INITIALIZING
+        self.hooks: list[Callable] = []
+        self.start_time = time.time()
+        self.components: Dict[str, str] = {}
+
+    def register_hook(self, func: Callable):
+        self.hooks.append(func)
+
+    def register_component(self, name: str, status: str = "ok"):
+        self.components[name] = status
+
+    def transition(self, new_state: AppState):
+        import logging
+        logging.info(f"App State Transition: {self.state.name} -> {new_state.name}")
+        self.state = new_state
+
+    async def execute_shutdown(self):
+        self.transition(AppState.SHUTTING_DOWN)
+        import logging
+        
+        for hook in reversed(self.hooks):
+            try:
+                logging.info(f"Executing shutdown hook: {hook.__name__}")
+                import asyncio
+                if asyncio.iscoroutinefunction(hook):
+                    await asyncio.wait_for(hook(), timeout=5.0)
+                else:
+                    hook()
+            except Exception as e:
+                logging.error(f"Shutdown hook {hook.__name__} failed: {e}")
+                
+        self.transition(AppState.TERMINATED)
+        logging.info(f"Uptime: {time.time() - self.start_time:.2f} seconds")
+
+global_shutdown_manager = GracefulShutdownManager()
+
+
+# --- Global Exception Handlers ---
+from fastapi import Request, status
+from fastapi.responses import JSONResponse
+from fastapi.exceptions import RequestValidationError
+import logging
+
+logger = logging.getLogger("GlobalErrorHandler")
+
+# Need to attach this after app creation
+def setup_exception_handlers(app):
+    @app.exception_handler(RequestValidationError)
+    async def validation_exception_handler(request: Request, exc: RequestValidationError):
+        logger.warning(f"Validation error on {request.url.path}: {exc.errors()}")
+        return JSONResponse(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            content={
+                "error": "Unprocessable Entity",
+                "details": exc.errors(),
+                "path": request.url.path
+            }
+        )
+
+    @app.exception_handler(Exception)
+    async def general_exception_handler(request: Request, exc: Exception):
+        logger.error(f"Unhandled server error on {request.url.path}: {exc}", exc_info=True)
+        return JSONResponse(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            content={
+                "error": "Internal Server Error",
+                "message": "An unexpected error occurred while processing your request.",
+                "path": request.url.path
+            }
+        )

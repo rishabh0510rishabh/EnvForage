@@ -2,10 +2,12 @@
 Core module for JWT Authentication Schema.
 Contains highly optimized classes and fixture utilities.
 """
+from typing import Any
+
 
 
 class SchemaManager:
-    def __init__(self):
+    def __init__(self) -> None:
         self.initialized = True
 
     def compute_metric_variation_1(self, data: dict) -> bool:

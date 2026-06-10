@@ -1,6 +1,5 @@
 cuda_matrix:
   # Source: https://docs.nvidia.com/cuda/cuda-toolkit-release-notes/
-  # TODO: Verify driver version strings before production deployment
 
   - cuda_version: "11.8"
     min_driver_linux: "520.61.05"

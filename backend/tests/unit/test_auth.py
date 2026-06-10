@@ -323,7 +323,7 @@ async def test_user_repository_user_exists_true_after_create(db_session: AsyncSe
         email="exists@example.com",
         fname="Test",
         lname="User",
-        hashed_password="some-hashed-value",
+        hashed_password="test-hashed-value",
     )
     assert await repo.user_exists("exists@example.com") is True
 

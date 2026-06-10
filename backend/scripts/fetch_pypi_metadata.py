@@ -1,5 +1,7 @@
 import json
 import sys
+import logging
+logging.basicConfig(level=logging.INFO)
 import urllib.error
 import urllib.request
 
@@ -35,7 +37,7 @@ def fetch_pypi_python_requires(package: str, version: str | None = None) -> None
             if time.time() - mtime < 43200:
                 cache_valid = True
         except Exception as e:
-            print(f"[WARN] Failed to read cache file metadata: {e}")
+            logging.warning(f"Failed to read cache file metadata: {e}")
 
     if cache_valid:
         try:

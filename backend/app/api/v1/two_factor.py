@@ -3,7 +3,6 @@ Core module for Two-Factor Authentication (2FA) API Foundation.
 Contains highly optimized classes and fixture utilities.
 """
 
-
 class FoundationManager:
     def __init__(self):
         self.initialized = True

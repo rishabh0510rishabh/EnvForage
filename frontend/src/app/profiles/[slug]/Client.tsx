@@ -2,12 +2,14 @@
 
 import { motion } from "framer-motion";
 import {
-	ArrowLeft,
-	Box,
-	CheckCircle,
-	Cpu,
-	ShieldAlert,
-	Terminal,
+    ArrowLeft,
+    Box,
+    CheckCircle,
+    Cpu,
+    ShieldAlert,
+    Terminal,
+    Copy,
+    Check,
 } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
@@ -22,12 +24,34 @@ export default function ProfileDetailPage() {
 	const [profile, setProfile] = useState<Profile | null>(null);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
+	const [copied, setCopied] = useState(false);
 
 	useEffect(() => {
 		async function loadProfile() {
 			try {
 				const data = await api.getProfile(slug);
 				setProfile(data);
+				const recentProfiles = JSON.parse(
+				localStorage.getItem("recentProfiles") || "[]"
+				);
+
+				const filteredProfiles = recentProfiles.filter(
+				(item: { slug: string }) => item.slug !== data.slug
+				);
+
+				const updatedProfiles = [
+				{
+					slug: data.slug,
+					name: data.name,
+					description: data.description,
+				},
+				...filteredProfiles,
+				].slice(0, 5);
+
+				localStorage.setItem(
+				"recentProfiles",
+				JSON.stringify(updatedProfiles)
+				);
 			} catch (err) {
 				setError(err instanceof Error ? err.message : "Failed to load profile");
 			} finally {
@@ -37,6 +61,25 @@ export default function ProfileDetailPage() {
 		loadProfile();
 	}, [slug]);
 
+	const handleCopyPackages = async () => {
+    if (!profile?.packages?.length) return;
+
+    const packageList = profile.packages
+        .map((pkg) => pkg.package_name)
+        .join("\n");
+
+    try {
+        await navigator.clipboard.writeText(packageList);
+
+        setCopied(true);
+
+        setTimeout(() => {
+            setCopied(false);
+        }, 2000);
+    	} catch (error) {
+        console.error("Failed to copy packages:", error);
+    	}
+	};
 	if (loading) {
 		return (
 			<div
@@ -212,9 +255,43 @@ export default function ProfileDetailPage() {
 						</div>
 					</div>
 
-					<h2 style={{ fontSize: "2rem", marginBottom: "1.5rem" }}>
-						Included Packages
-					</h2>
+					<div
+						style={{
+							display: "flex",
+							justifyContent: "space-between",
+							alignItems: "center",
+							marginBottom: "1.5rem",
+							flexWrap: "wrap",
+							gap: "1rem",
+						}}
+					>
+						<h2 style={{ fontSize: "2rem" }}>
+							Included Packages
+						</h2>
+
+						<button
+							onClick={handleCopyPackages}
+							style={{
+								display: "flex",
+								alignItems: "center",
+								gap: "0.5rem",
+								padding: "0.75rem 1rem",
+								borderRadius: "8px",
+								border: "1px solid var(--border-subtle)",
+								background: copied
+									? "rgba(16,185,129,0.15)"
+									: "rgba(255,255,255,0.05)",
+								color: copied
+									? "#10b981"
+									: "var(--text-primary)",
+								cursor: "pointer",
+								transition: "all 0.2s ease",
+							}}
+						>
+							{copied ? <Check size={16} /> : <Copy size={16} />}
+							{copied ? "Copied!" : "Copy Packages"}
+						</button>
+					</div>
 					<div className="glass-panel" style={{ overflow: "hidden" }}>
 						<table
 							style={{
