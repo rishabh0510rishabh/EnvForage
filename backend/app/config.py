@@ -17,31 +17,24 @@ class Settings(BaseSettings):
         case_sensitive=False,
         extra="forbid",
     )
-
-    # Application
     environment: Literal["development", "staging", "production"] = "development"
     debug: bool = False
     secret_key: str = "dev-secret-key-change-in-production"
     app_name: str = "EnvForage"
-    
     # Database & Redis
     database_url: str = "postgresql+asyncpg://postgres:postgres@localhost:5432/envforge"
     redis_url: str | None = None
-    
     # CORS (Fix for your test failure)
     allowed_origins: Annotated[list[str], BeforeValidator(parse_cors)] = ["http://localhost:8080"]
-    
     # Admin & Security
     admin_api_key: str = ""
-    
     # AI & Limits
     rate_limit_auth_rpm: int = 100
     custom_template_dir: Path | None = None
 
-    @field_validator("database_command_timeout_seconds", mode='before')
+    @field_validator("database_command_timeout_seconds", mode="before")
     @classmethod
     def validate_db_timeout(cls, v: Any) -> float:
-        # Default value if not provided
         val = float(v or 30.0)
         if val <= 0 or val > 300:
             raise ValueError("Timeout must be between 0 and 300")
