@@ -275,7 +275,13 @@ def _print_report_summary(report: DiagnosticReport) -> None:
     if report.active_python:
         py = report.active_python
         venv = " [dim](venv)[/]" if py.is_venv else ""
-        table.add_row("Python", f"{py.version} at {py.path}{venv}")
+        py_str = f"{py.version} at {py.path}{venv}"
+        if py.is_venv:
+            py_str += (
+                "  [yellow]⚠ Running inside a venv — CUDA detection via torch "
+                "may be inaccurate if torch is not installed in this environment.[/]"
+            )
+        table.add_row("Python", py_str)
 
     if len(report.python_installations) > 1:
         others = [
