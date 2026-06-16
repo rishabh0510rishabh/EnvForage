@@ -5,7 +5,7 @@
 
 ## Overview
 
-The Diagnostic Dashboard is a frontend feature of the EnvForge Web Application that allows users to paste the JSON output of the CLI diagnostic agent (`envforge diagnose --quiet`) and visualize their hardware configuration, run compatibility checks against environment profiles, and navigate directly to the Script Generation Wizard for compatible profiles.
+The Diagnostic Dashboard is a frontend feature of the EnvForage Web Application that allows users to paste the JSON output of the CLI diagnostic agent (`envforage diagnose --quiet`) and visualize their hardware configuration, run compatibility checks against environment profiles, and navigate directly to the Script Generation Wizard for compatible profiles.
 
 ## Location
 
@@ -51,7 +51,7 @@ The dashboard renders four hardware cards from the parsed JSON:
     {
       "severity": "WARNING",
       "component": "cuda",
-      "message": "CUDA 10.2 is not in EnvForge's validated matrix.",
+      "message": "CUDA 10.2 is not in EnvForage's validated matrix.",
       "suggested_fix": "Supported CUDA versions: 11.8, 12.1",
       "docs_url": "https://docs.nvidia.com/cuda/"
     }

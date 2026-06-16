@@ -1,4 +1,4 @@
-# EnvForge Strategic Roadmap
+# EnvForage Strategic Roadmap
 
 This roadmap outlines the implementation trajectory for the expansion plan, grouped into four major quarters of development.
 
@@ -18,7 +18,7 @@ This roadmap outlines the implementation trajectory for the expansion plan, grou
   - Construct the Compatibility Resolver (parsing CUDA, ROCm, and Python JSON matrices).
   - Implement secure Jinja2 asynchronous script generation with negative-lookahead regex safety.
   - Connect AI Providers (OpenRouter, OpenAI, Anthropic, Ollama) with SSE real-time streaming UI.
-- **Expected Outcome:** The core "brain" of EnvForge is operational. The system can ingest hardware telemetry, calculate the delta against known working matrices, output safe bash scripts, and stream AI troubleshooting context.
+- **Expected Outcome:** The core "brain" of EnvForage is operational. The system can ingest hardware telemetry, calculate the delta against known working matrices, output safe bash scripts, and stream AI troubleshooting context.
 
 ## Q3: CLI Agent Resilience & Security (Milestones 9 - 12)
 **Focus:** Empowering the local developer environment and hardening the perimeter.
@@ -30,7 +30,7 @@ This roadmap outlines the implementation trajectory for the expansion plan, grou
 - **Expected Outcome:** Developers can extract deterministic hardware data reliably, even on offline or air-gapped machines. Enterprise users can subscribe to system events via webhooks, and APIs are protected from abuse.
 
 ## Q4: Enterprise Scaling & Observability (Milestones 13 - 15)
-**Focus:** Preparing EnvForge for large-scale production deployments and team environments.
+**Focus:** Preparing EnvForage for large-scale production deployments and team environments.
 - **Goals:**
   - Implement Deep Observability (Prometheus metrics, structlog JSON, Datadog/ELK hooks, Sentry).
   - Automate the CI/CD Pipeline (GitHub Actions for TS/Pytest/Playwright, Dependabot, Release Drafter).

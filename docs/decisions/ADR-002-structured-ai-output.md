@@ -2,7 +2,7 @@
 
 **Status**: Accepted  
 **Date**: 2026-05-06  
-**Author**: EnvForge Architecture
+**Author**: EnvForage Architecture
 
 ---
 

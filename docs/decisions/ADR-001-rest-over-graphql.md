@@ -2,13 +2,13 @@
 
 **Status**: Accepted  
 **Date**: 2026-05-06  
-**Author**: EnvForge Architecture
+**Author**: EnvForage Architecture
 
 ---
 
 ## Context
 
-EnvForge needs an API style for frontend–backend communication.
+EnvForage needs an API style for frontend–backend communication.
 The main candidates were REST and GraphQL.
 
 ## Decision

@@ -1,12 +1,12 @@
 <div align="center">
   
-# EnvForge 🛠️
+# EnvForage 🛠️
 
 ### ✨ Production-Grade ML Environment Provisioning Platform
 
-EnvForge is an **intelligent environment provisioning platform** that **automates one of the most frustrating parts of machine learning development: creating reliable and compatible development environments.**
+EnvForage is an **intelligent environment provisioning platform** that **automates one of the most frustrating parts of machine learning development: creating reliable and compatible development environments.**
 
-By combining **hardware diagnostics, compatibility-aware version resolution, template-driven script generation, and built-in safety validation**, EnvForge enables developers to **generate deterministic setup scripts for PyTorch, TensorFlow, CUDA, YOLO, and other ML ecosystems across Windows, WSL, and Linux.**
+By combining **hardware diagnostics, compatibility-aware version resolution, template-driven script generation, and built-in safety validation**, EnvForage enables developers to **generate deterministic setup scripts for PyTorch, TensorFlow, CUDA, YOLO, and other ML ecosystems across Windows, WSL, and Linux.**
 
 **No more** CUDA mismatches. No more dependency conflicts. No more hours spent debugging installation issues.
 
@@ -18,7 +18,7 @@ By combining **hardware diagnostics, compatibility-aware version resolution, tem
 
 ## Contributors
 
-👥 A massive thank you to all the developers who have contributed code, resolved issues, and helped shape EnvForge into a production-grade ML environment provisioning platform!
+👥 A massive thank you to all the developers who have contributed code, resolved issues, and helped shape EnvForage into a production-grade ML environment provisioning platform!
 
 <a href="https://github.com/rishabh0510rishabh/EnvForage/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=rishabh0510rishabh/EnvForage" alt="Contributors Grid" style="max-width: 100%; border-radius: 8px;" />
@@ -45,9 +45,9 @@ By combining **hardware diagnostics, compatibility-aware version resolution, tem
 ## Project Overview
 
 **Deterministic logic > AI generation.**
-Because scripts affect real systems, EnvForge relies on a strictly deterministic **Compatibility Engine** to resolve versions. It never guesses package versions or writes destructive shell commands.
+Because scripts affect real systems, EnvForage relies on a strictly deterministic **Compatibility Engine** to resolve versions. It never guesses package versions or writes destructive shell commands.
 
-EnvForge helps users:
+EnvForage helps users:
 * 🔧 Generate environment setup scripts (`setup.sh`, `setup.ps1`, `Dockerfile`)
 * 🧪 Install compatible ML frameworks (TensorFlow, PyTorch, YOLO, etc.)
 * ✅ Verify existing environments
@@ -67,7 +67,7 @@ EnvForge helps users:
 
 ## Architecture
 
-🏗️ EnvForge is built with a modular, scalable architecture.
+🏗️ EnvForage is built with a modular, scalable architecture.
 
 1. **CLI Diagnostic Agent**: Inspects local hardware and emits a structured JSON `DiagnosticReport`.
 2. **API Layer**: FastAPI handles incoming requests and orchestrates logic.
@@ -247,7 +247,7 @@ Please read our [Contributing Guide](./CONTRIBUTING.md) before getting started. 
 
 Before submitting a contribution, please ensure that all tests pass and relevant documentation is updated.
 
-Thank you for helping make EnvForge more reliable, safe, and developer-friendly!
+Thank you for helping make EnvForage more reliable, safe, and developer-friendly!
 
 ----
 

@@ -1,4 +1,4 @@
-# EnvForge — Database Schema Design
+# EnvForage — Database Schema Design
 
 > **Version**: 1.0.0
 > **Status**: Production

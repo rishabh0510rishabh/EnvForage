@@ -1,6 +1,6 @@
-# EnvForge Feature Matrix
+# EnvForage Feature Matrix
 
-The EnvForge platform is categorized into five distinct feature pillars, representing the complete capabilities introduced throughout the implementation plan.
+The EnvForage platform is categorized into five distinct feature pillars, representing the complete capabilities introduced throughout the implementation plan.
 
 ## 1. Local System Introspection
 - **Deterministic Hardware Extraction:** Analyzes OS Kernels, CPU instruction sets (x86/ARM), and active Python environments.

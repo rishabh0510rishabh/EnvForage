@@ -1,4 +1,4 @@
-# EnvForge — Compatibility Engine Design
+# EnvForage — Compatibility Engine Design
 
 > **Version**: 1.0.0
 > **Status**: Production
@@ -8,7 +8,7 @@
 
 ## Purpose
 
-The Compatibility Engine is the core decision-making module of EnvForge.
+The Compatibility Engine is the core decision-making module of EnvForage.
 It determines which package versions, CUDA versions, driver versions, and
 Python versions are mutually compatible given a set of constraints.
 

@@ -1,6 +1,6 @@
 # Environment Profile Specification
 
-This document explains how to construct an ML Environment Profile for EnvForge.
+This document explains how to construct an ML Environment Profile for EnvForage.
 
 Profiles are stored as YAML in `backend/seeds/profiles.yaml` and loaded into the PostgreSQL database on startup.
 

@@ -1,4 +1,4 @@
-# EnvForge Master Implementation Blueprint 
+# EnvForage Master Implementation Blueprint 
 
 ## Global Verification Checklist (Must pass for every PR)
 1. **Frontend Lint & Types:** `npm run lint` and `npx tsc --noEmit` inside `frontend/` (0 errors).

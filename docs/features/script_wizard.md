@@ -5,7 +5,7 @@
 
 ## Overview
 
-The Script Generation Wizard is the core feature of the EnvForge Web Application (Frontend). It provides an intuitive, step-by-step user interface that allows developers to select an environment profile and configure it to generate deterministic setup scripts.
+The Script Generation Wizard is the core feature of the EnvForage Web Application (Frontend). It provides an intuitive, step-by-step user interface that allows developers to select an environment profile and configure it to generate deterministic setup scripts.
 
 ## Architecture & Data Flow
 
