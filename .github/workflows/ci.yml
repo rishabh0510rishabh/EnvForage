@@ -46,7 +46,7 @@ jobs:
           pytest tests/ --cov=app --cov-report=xml
 
       - name: Upload coverage
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v7
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           file: ./backend/coverage.xml
