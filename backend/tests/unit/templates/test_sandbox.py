@@ -29,12 +29,12 @@ def make_context(
     )
 
 
-def test_sandbox_environment_active():
+async def test_sandbox_environment_active():
     """Verify that _JINJA_ENV is an instance of SandboxedEnvironment."""
     assert isinstance(_JINJA_ENV, SandboxedEnvironment)
 
 
-def test_sandbox_blocks_unsafe_attributes():
+async def test_sandbox_blocks_unsafe_attributes():
     """Verify that accessing dangerous python class internals is restricted."""
     env = _JINJA_ENV
 
@@ -55,7 +55,7 @@ def test_sandbox_blocks_unsafe_attributes():
         )
 
 
-def test_sandbox_allows_safe_filters_and_rendering():
+async def test_sandbox_allows_safe_filters_and_rendering():
     """Verify that safe built-in filters (default, replace) execute perfectly."""
     env = _JINJA_ENV
 
@@ -69,13 +69,13 @@ def test_sandbox_allows_safe_filters_and_rendering():
     assert template_replace.render(value="3.11") == "3-11"
 
 
-def test_sandbox_integration_with_renderer():
+async def test_sandbox_integration_with_renderer():
     """Verify that TemplateRenderer works cleanly under the sandboxed environment."""
     context = make_context(
         profile_name="sandbox-test",
         python_version="3.10",
     )
     renderer = TemplateRenderer()
-    result = renderer.render("environment.yml", context)
+    result = await renderer.render("environment.yml", context)
     assert "sandbox-test" in result.content
     assert "python=3.10" in result.content

@@ -53,32 +53,32 @@ def _destructive_sql():
 
 @given(cmd=_obfuscated_rm_rf())
 @settings(max_examples=50)
-def test_rm_rf_always_caught(cmd: str):
+async def test_rm_rf_always_caught(cmd: str):
     with pytest.raises(SafetyViolationError):
-        validate_rendered_output(cmd, "fuzz_rm_rf")
+        await validate_rendered_output(cmd, "fuzz_rm_rf")
 
 
 @given(cmd=_obfuscated_fork_bomb())
 @settings(max_examples=5)
-def test_fork_bomb_always_caught(cmd: str):
+async def test_fork_bomb_always_caught(cmd: str):
     with pytest.raises(SafetyViolationError):
-        validate_rendered_output(cmd, "fuzz_fork_bomb")
+        await validate_rendered_output(cmd, "fuzz_fork_bomb")
 
 
 @given(cmd=_curl_pipe_shell())
 @settings(max_examples=30)
-def test_curl_pipe_shell_always_caught(cmd: str):
+async def test_curl_pipe_shell_always_caught(cmd: str):
     # Exclude allowlisted domains
     assume("micro.mamba.pm" not in cmd and "astral.sh" not in cmd)
     with pytest.raises(SafetyViolationError):
-        validate_rendered_output(cmd, "fuzz_curl_pipe")
+        await validate_rendered_output(cmd, "fuzz_curl_pipe")
 
 
 @given(cmd=_destructive_sql())
 @settings(max_examples=30)
-def test_destructive_sql_always_caught(cmd: str):
+async def test_destructive_sql_always_caught(cmd: str):
     with pytest.raises(SafetyViolationError):
-        validate_rendered_output(cmd, "fuzz_sql")
+        await validate_rendered_output(cmd, "fuzz_sql")
 
 
 # ── Tests — Safe commands MUST pass ─────────────────────────────────────
@@ -99,14 +99,14 @@ def test_destructive_sql_always_caught(cmd: str):
         "curl https://micro.mamba.pm/install.sh | bash",  # Allowlisted
     ],
 )
-def test_safe_commands_pass(script: str):
+async def test_safe_commands_pass(script: str):
     # Should NOT raise
-    validate_rendered_output(script, "fuzz_safe")
+    await validate_rendered_output(script, "fuzz_safe")
 
 
 @given(pkg=st.from_regex(r"[a-z][a-z0-9_-]{1,20}", fullmatch=True))
 @settings(max_examples=50)
-def test_pip_install_always_passes(pkg: str):
+async def test_pip_install_always_passes(pkg: str):
     script = f"pip install {pkg}"
     # Should NOT raise (no dangerous patterns)
-    validate_rendered_output(script, "fuzz_pip_install")
+    await validate_rendered_output(script, "fuzz_pip_install")

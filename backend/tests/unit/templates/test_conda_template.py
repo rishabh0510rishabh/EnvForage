@@ -24,7 +24,7 @@ def make_context(
     )
 
 
-def test_conda_template_renders_basic():
+async def test_conda_template_renders_basic():
     context = make_context(
         profile_name="myenv",
         python_version="3.10",
@@ -34,14 +34,14 @@ def test_conda_template_renders_basic():
         ],
     )
     renderer = TemplateRenderer()
-    result = renderer.render("environment.yml", context)
+    result = await renderer.render("environment.yml", context)
     assert "myenv" in result.content
     assert "3.10" in result.content
     assert "numpy" in result.content
     assert "pandas" in result.content
 
 
-def test_conda_template_no_cuda():
+async def test_conda_template_no_cuda():
     context = make_context(
         profile_name="cpu-env",
         python_version="3.9",
@@ -51,12 +51,12 @@ def test_conda_template_no_cuda():
         ],
     )
     renderer = TemplateRenderer()
-    result = renderer.render("environment.yml", context)
+    result = await renderer.render("environment.yml", context)
     assert "cpu-env" in result.content
     assert "scipy" in result.content
 
 
-def test_conda_template_with_cuda():
+async def test_conda_template_with_cuda():
     context = make_context(
         profile_name="gpu-env",
         python_version="3.11",
@@ -66,50 +66,50 @@ def test_conda_template_with_cuda():
         ],
     )
     renderer = TemplateRenderer()
-    result = renderer.render("environment.yml", context)
+    result = await renderer.render("environment.yml", context)
     assert "gpu-env" in result.content
     assert "3.11" in result.content
     assert "torch" in result.content
 
 
-def test_conda_template_contains_channels():
+async def test_conda_template_contains_channels():
     """Output must include the channels section with conda-forge."""
     context = make_context(profile_name="myenv", python_version="3.10")
     renderer = TemplateRenderer()
-    result = renderer.render("environment.yml", context)
+    result = await renderer.render("environment.yml", context)
     assert "channels:" in result.content
     assert "conda-forge" in result.content
     assert "defaults" in result.content
 
 
-def test_conda_template_contains_install_comment():
+async def test_conda_template_contains_install_comment():
     """Output must include the conda env create install instruction."""
     context = make_context(profile_name="myenv", python_version="3.10")
     renderer = TemplateRenderer()
-    result = renderer.render("environment.yml", context)
+    result = await renderer.render("environment.yml", context)
     assert "conda env create -f environment.yml" in result.content
 
 
-def test_conda_template_python_version_uses_single_equals():
+async def test_conda_template_python_version_uses_single_equals():
     """Conda requires 'python=3.10' not 'python==3.10'."""
     context = make_context(profile_name="myenv", python_version="3.10")
     renderer = TemplateRenderer()
-    result = renderer.render("environment.yml", context)
+    result = await renderer.render("environment.yml", context)
     assert "python=3.10" in result.content
     assert "python==3.10" not in result.content
 
 
-def test_conda_template_empty_packages():
+async def test_conda_template_empty_packages():
     """Template renders cleanly with no packages — only python dependency."""
     context = make_context(profile_name="empty-env", python_version="3.11", packages=[])
     renderer = TemplateRenderer()
-    result = renderer.render("environment.yml", context)
+    result = await renderer.render("environment.yml", context)
     assert "empty-env" in result.content
     assert "python=3.11" in result.content
     assert "dependencies:" in result.content
 
 
-def test_conda_template_includes_warnings_comments():
+async def test_conda_template_includes_warnings_comments():
     context = make_context(
         profile_name="warn-env",
         python_version="3.11",
@@ -122,11 +122,11 @@ def test_conda_template_includes_warnings_comments():
         "This profile mixes conda-managed packages with pip-installed GPU wheels."
     ]
     renderer = TemplateRenderer()
-    result = renderer.render("environment.yml", context)
+    result = await renderer.render("environment.yml", context)
     assert "# WARNING: This profile mixes conda-managed packages" in result.content
 
 
-def test_conda_template_cuda_variant_goes_to_pip_section():
+async def test_conda_template_cuda_variant_goes_to_pip_section():
     """Packages with CUDA variant ('+' in spec) must appear under pip: section."""
     context = make_context(
         profile_name="gpu-env",
@@ -137,16 +137,16 @@ def test_conda_template_cuda_variant_goes_to_pip_section():
         ],
     )
     renderer = TemplateRenderer()
-    result = renderer.render("environment.yml", context)
+    result = await renderer.render("environment.yml", context)
     assert "pip:" in result.content
     assert "torch" in result.content
 
 
-def test_conda_template_name_field_matches_profile():
+async def test_conda_template_name_field_matches_profile():
     """The 'name:' field must exactly match the profile name."""
     context = make_context(profile_name="pytorch-cuda", python_version="3.11")
     renderer = TemplateRenderer()
-    result = renderer.render("environment.yml", context)
+    result = await renderer.render("environment.yml", context)
     assert "name: pytorch-cuda" in result.content
 
 
@@ -165,7 +165,7 @@ def _extract_channels(rendered: str) -> list[str]:
     return out
 
 
-def test_conda_template_cuda_adds_pytorch_nvidia_channels():
+async def test_conda_template_cuda_adds_pytorch_nvidia_channels():
     """When cuda_version is set, channels must include pytorch and nvidia in correct order."""
     context = make_context(
         profile_name="cuda-env",
@@ -173,7 +173,7 @@ def test_conda_template_cuda_adds_pytorch_nvidia_channels():
         cuda_version="12.1",
     )
     renderer = TemplateRenderer()
-    result = renderer.render("environment.yml", context)
+    result = await renderer.render("environment.yml", context)
     assert _extract_channels(result.content) == [
         "pytorch",
         "nvidia",
@@ -182,7 +182,7 @@ def test_conda_template_cuda_adds_pytorch_nvidia_channels():
     ]
 
 
-def test_conda_template_rocm_adds_pytorch_channel():
+async def test_conda_template_rocm_adds_pytorch_channel():
     """When rocm_version is set, channels must include pytorch but not nvidia."""
     context = make_context(
         profile_name="rocm-env",
@@ -196,11 +196,11 @@ def test_conda_template_rocm_adds_pytorch_channel():
         packages=context.resolved.packages,
     )
     renderer = TemplateRenderer()
-    result = renderer.render("environment.yml", context)
+    result = await renderer.render("environment.yml", context)
     assert _extract_channels(result.content) == ["pytorch", "conda-forge", "defaults"]
 
 
-def test_conda_template_cpu_only_no_gpu_channels():
+async def test_conda_template_cpu_only_no_gpu_channels():
     """Without cuda or rocm, channels must only have conda-forge and defaults."""
     context = make_context(
         profile_name="cpu-env",
@@ -208,5 +208,5 @@ def test_conda_template_cpu_only_no_gpu_channels():
         cuda_version=None,
     )
     renderer = TemplateRenderer()
-    result = renderer.render("environment.yml", context)
+    result = await renderer.render("environment.yml", context)
     assert _extract_channels(result.content) == ["conda-forge", "defaults"]

