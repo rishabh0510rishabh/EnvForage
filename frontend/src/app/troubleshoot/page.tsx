@@ -7,14 +7,21 @@ export const metadata: Metadata = {
 	},
 };
 
-export default function Page(): JSX.Element {
+export default function Page() {
 	return <Client />;
 }
 
 
+
 // --- Advanced Report Exporter ---
+interface DiagnosticReport {
+    os?: { name: string; version: string };
+    gpus?: { name: string; vram_gb: number }[];
+    [key: string]: unknown;
+}
+
 export class DiagnosticReportExporter {
-    static async exportToJSON(reportData: any, filename: string = 'diagnostic-report.json') {
+    static async exportToJSON(reportData: DiagnosticReport, filename: string = 'diagnostic-report.json') {
         try {
             const dataStr = JSON.stringify(reportData, null, 2);
             const blob = new Blob([dataStr], { type: 'application/json' });
@@ -26,7 +33,7 @@ export class DiagnosticReportExporter {
         }
     }
 
-    static async exportToMarkdown(reportData: any, filename: string = 'diagnostic-report.md') {
+    static async exportToMarkdown(reportData: DiagnosticReport, filename: string = 'diagnostic-report.md') {
         try {
             let md = `# Diagnostic Report\n\n`;
             md += `Generated at: ${new Date().toISOString()}\n\n`;
@@ -39,7 +46,7 @@ export class DiagnosticReportExporter {
 
             if (reportData.gpus && Array.isArray(reportData.gpus)) {
                 md += `## Hardware\n`;
-                reportData.gpus.forEach((gpu: any) => {
+                reportData.gpus.forEach((gpu) => {
                     md += `- GPU: ${gpu.name} (${gpu.vram_gb}GB VRAM)\n`;
                 });
                 md += `\n`;

@@ -7,7 +7,7 @@ def get_provider() -> LLMProvider:
     """
     Instantiate and return the LLM provider configured in settings.
 
-    The provider is determined by ``ENVFORGE_LLM_PROVIDER`` env var:
+    The provider is determined by ``ENVFORAGE_LLM_PROVIDER`` env var:
         - ``mock``       → deterministic responses for testing
         - ``openrouter`` → routes to 100+ models via OpenRouter API
         - ``openai``     → direct OpenAI API
@@ -23,7 +23,7 @@ def get_provider() -> LLMProvider:
 
     settings = get_settings()
 
-    provider_name = settings.envforge_llm_provider.lower()
+    provider_name = settings.envforage_llm_provider.lower()
 
     if provider_name == "mock":
         from app.ai.providers.mock import MockProvider

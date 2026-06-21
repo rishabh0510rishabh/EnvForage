@@ -1,7 +1,7 @@
-import re
 import logging
-from typing import Dict, Any, List, Optional
 from dataclasses import dataclass, field
+from typing import Any
+
 from pydantic import BaseModel
 
 logger = logging.getLogger("ABAC")
@@ -15,14 +15,14 @@ class Action(str):
 @dataclass
 class Subject:
     id: str
-    roles: List[str]
-    attributes: Dict[str, Any] = field(default_factory=dict)
+    roles: list[str]
+    attributes: dict[str, Any] = field(default_factory=dict)
 
 @dataclass
 class Resource:
     type: str
     id: str
-    attributes: Dict[str, Any] = field(default_factory=dict)
+    attributes: dict[str, Any] = field(default_factory=dict)
 
 class PolicyCondition(BaseModel):
     attribute: str
@@ -33,17 +33,17 @@ class ABACPolicy(BaseModel):
     id: str
     description: str
     effect: str # allow or deny
-    subjects: List[str] # role names or '*'
-    actions: List[str] # Action strings or '*'
-    resources: List[str] # Resource types or '*'
-    conditions: List[PolicyCondition] = []
+    subjects: list[str] # role names or '*'
+    actions: list[str] # Action strings or '*'
+    resources: list[str] # Resource types or '*'
+    conditions: list[PolicyCondition] = []
 
 class ABACEvaluator:
     """
     Evaluates Attribute-Based Access Control policies.
     Provides highly granular security checks beyond simple RBAC.
     """
-    def __init__(self, policies: List[ABACPolicy]):
+    def __init__(self, policies: list[ABACPolicy]):
         self.policies = policies
 
     def _evaluate_condition(self, condition: PolicyCondition, subject: Subject, resource: Resource) -> bool:
@@ -55,14 +55,14 @@ class ABACEvaluator:
         elif condition.attribute.startswith("resource."):
             key = condition.attribute.replace("resource.", "")
             attr_val = resource.attributes.get(key)
-            
+
         if attr_val is None:
             return False
 
         # Evaluate operator
         op = condition.operator
         val = condition.value
-        
+
         try:
             if op == "eq": return attr_val == val
             if op == "neq": return attr_val != val
@@ -72,42 +72,42 @@ class ABACEvaluator:
             if op == "contains": return val in attr_val
         except TypeError:
             return False
-            
+
         return False
 
     def is_allowed(self, subject: Subject, action: str, resource: Resource) -> bool:
         allowed = False
-        
+
         for policy in self.policies:
             # Check subject match
             subj_match = "*" in policy.subjects or any(r in policy.subjects for r in subject.roles)
             if not subj_match: continue
-            
+
             # Check action match
             act_match = "*" in policy.actions or action in policy.actions
             if not act_match: continue
-            
+
             # Check resource match
             res_match = "*" in policy.resources or resource.type in policy.resources
             if not res_match: continue
-            
+
             # Check conditions
             cond_match = all(self._evaluate_condition(c, subject, resource) for c in policy.conditions)
             if not cond_match: continue
-            
+
             # Policy matches!
             if policy.effect == "deny":
                 logger.warning(f"ABAC Deny: {subject.id} attempted {action} on {resource.type}/{resource.id} (Policy {policy.id})")
                 return False # Explicit deny immediately overrides any allows
-                
+
             if policy.effect == "allow":
                 allowed = True
-                
+
         if allowed:
             logger.debug(f"ABAC Allow: {subject.id} -> {action} -> {resource.type}/{resource.id}")
         else:
             logger.warning(f"ABAC Default Deny: {subject.id} -> {action} -> {resource.type}/{resource.id}")
-            
+
         return allowed
 
 # Default organizational policy registry

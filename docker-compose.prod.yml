@@ -1,7 +1,19 @@
+# ===========================================================================
+# EnvForage Production Docker Compose
+# ===========================================================================
+# Security notes:
+#   - API is NOT directly exposed to the internet; all traffic routes through
+#     the Caddy reverse proxy which handles TLS termination automatically.
+#   - Alembic migrations run in a dedicated one-shot 'migrate' container to
+#     prevent race conditions when multiple API workers start simultaneously.
+#   - Ollama has resource limits to prevent runaway inference jobs from
+#     starving other services.
+# ===========================================================================
+
 services:
   db:
     image: postgres:16-alpine
-    container_name: envforge_db_prod
+    container_name: envforage_db_prod
     restart: always
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
@@ -17,7 +29,7 @@ services:
 
   redis:
     image: redis:7-alpine
-    container_name: envforge_redis_prod
+    container_name: envforage_redis_prod
     restart: always
     command: redis-server --requirepass ${REDIS_PASSWORD} --save 60 1 --loglevel warning
     volumes:
@@ -30,16 +42,45 @@ services:
 
   llm:
     image: ollama/ollama
-    container_name: envforge_ollama_prod
+    container_name: envforage_ollama_prod
     restart: always
     volumes:
       - ollama_data:/root/.ollama
+    deploy:
+      resources:
+        limits:
+          cpus: "4.0"
+          memory: 8G
+        reservations:
+          memory: 2G
+
+  # --- One-shot migration container ---
+  # Runs Alembic migrations exactly once before the API starts.
+  # Prevents race conditions when multiple API workers start simultaneously
+  # (each would otherwise attempt to run migrations concurrently).
+  migrate:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: envforage_migrate_prod
+    restart: "no"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+      REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379/0
+      ENVIRONMENT: production
+      SECRET_KEY: ${SECRET_KEY}
+    command: alembic upgrade head
 
   api:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: envforge_api_prod
+    container_name: envforage_api_prod
     restart: always
 
     depends_on:
@@ -49,9 +90,13 @@ services:
         condition: service_healthy
       llm:
         condition: service_started
+      migrate:
+        condition: service_completed_successfully
 
-    ports:
-      - "8000:8000"
+    # NOTE: No 'ports' stanza — the API is only reachable via the internal
+    # Docker network. The Caddy reverse proxy handles external traffic.
+    expose:
+      - "8000"
 
     environment:
       DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
@@ -60,7 +105,7 @@ services:
       DEBUG: "false"
       SECRET_KEY: ${SECRET_KEY}
       ALLOWED_ORIGINS: ${ALLOWED_ORIGINS}
-      ENVFORGE_LLM_PROVIDER: ${ENVFORGE_LLM_PROVIDER}
+      ENVFORAGE_LLM_PROVIDER: ${ENVFORAGE_LLM_PROVIDER}
       OPENROUTER_API_KEY: ${OPENROUTER_API_KEY}
       OPENROUTER_MODEL: ${OPENROUTER_MODEL}
       RATE_LIMIT_AI_RPM: ${RATE_LIMIT_AI_RPM:-10}
@@ -68,12 +113,32 @@ services:
       RATE_LIMIT_GENERAL_RPM: ${RATE_LIMIT_GENERAL_RPM:-60}
       OLLAMA_HOST: http://llm:11434
 
+    # Migrations handled by the 'migrate' service above — only seed + run here
     command: >
       sh -c "
-        alembic upgrade head &&
         python -m app.services.seed_service &&
         uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 2
       "
+
+  # --- Reverse Proxy & TLS Termination ---
+  # Caddy automatically obtains and renews TLS certificates via Let's Encrypt.
+  # All external traffic enters through Caddy; the API is never directly exposed.
+  proxy:
+    image: caddy:2-alpine
+    container_name: envforage_proxy_prod
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      api:
+        condition: service_started
+      frontend:
+        condition: service_started
 
   frontend:
     build:
@@ -82,10 +147,11 @@ services:
       args:
         - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-/api/v1}
         - BACKEND_API_URL=${BACKEND_API_URL:-http://api:8000}
-    container_name: envforge_frontend_prod
+    container_name: envforage_frontend_prod
     restart: always
-    ports:
-      - "3000:3000"
+    # No external port — routed through Caddy proxy
+    expose:
+      - "3000"
     environment:
       - PORT=3000
     depends_on:
@@ -96,3 +162,5 @@ volumes:
   postgres_data:
   redis_data:
   ollama_data:
+  caddy_data:
+  caddy_config:

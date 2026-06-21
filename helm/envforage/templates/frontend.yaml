@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "envforage.fullname" . }}-frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ include "envforage.fullname" . }}-frontend
+  template:
+    metadata:
+      labels:
+        app: {{ include "envforage.fullname" . }}-frontend
+    spec:
+      containers:
+        - name: frontend
+          image: "{{ .Values.frontend.repository }}:{{ .Values.frontend.tag }}"
+          imagePullPolicy: {{ .Values.frontend.pullPolicy }}
+          ports:
+            - containerPort: 3000
+          env:
+            - name: PORT
+              value: "3000"
+            - name: NEXT_PUBLIC_API_URL
+              value: {{ .Values.frontend.apiUrl | quote }}
+            - name: BACKEND_API_URL
+              value: "http://{{ include "envforage.fullname" . }}:{{ .Values.service.port }}"
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 3000
+            initialDelaySeconds: 15
+            periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "envforage.fullname" . }}-frontend
+spec:
+  type: {{ .Values.service.type }}
+  selector:
+    app: {{ include "envforage.fullname" . }}-frontend
+  ports:
+    - port: 3000
+      targetPort: 3000

@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "envforage.fullname" . }}-backend
+  labels:
+    app: {{ include "envforage.fullname" . }}-backend
+spec:
+  selector:
+    matchLabels:
+      app: {{ include "envforage.fullname" . }}-backend
+  template:
+    metadata:
+      labels:
+        app: {{ include "envforage.fullname" . }}-backend
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+      initContainers:
+        - name: migrate
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command:
+            - sh
+            - -c
+            - |
+              alembic upgrade head &&
+              python -m app.services.seed_service
+          envFrom:
+            - configMapRef:
+                name: {{ include "envforage.fullname" . }}-config
+      containers:
+        - name: envforage
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: 8000
+          envFrom:
+            - configMapRef:
+                name: {{ include "envforage.fullname" . }}-config
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 10
+            periodSeconds: 15
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 5
+            periodSeconds: 10

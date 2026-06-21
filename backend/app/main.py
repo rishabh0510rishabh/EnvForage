@@ -15,10 +15,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from sqlalchemy import text
 
+from app.api.routers import media_upload, spatial_query
 from app.api.v1 import (
     authentication,
     compatibility,
     diagnose,
+    feedback,
     profiles,
     recommend,
     repair,
@@ -26,8 +28,10 @@ from app.api.v1 import (
     troubleshoot,
     verify,
 )
+from app.api.v1 import (
+    health as health_v1,
+)
 from app.api.v1.admin.matrix import router as admin_matrix_router
-from app.api.routers import feature_issue_803, feature_issue_804
 from app.cache import get_redis_client
 from app.config import get_settings
 from app.core.handlers import register_exception_handlers
@@ -36,6 +40,7 @@ from app.core.stream_tracker import StreamTracker
 from app.database import AsyncSessionLocal
 from app.middleware.metrics import setup_metrics
 from app.middleware.payload_size import PayloadSizeLimitMiddleware
+from app.middleware.security_headers import SecurityHeadersMiddleware
 from app.services.cleanup_service import run_cleanup
 from app.services.sync_service import matrix_sync_loop
 
@@ -49,7 +54,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     logger_instance = structlog.get_logger(__name__)
 
     logger_instance.info(
-        "EnvForge API starting",
+        "EnvForage API starting",
         version=settings.app_version,
         environment=settings.environment,
     )
@@ -93,11 +98,12 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
             pass
 
     scheduler.shutdown(wait=False)
-    logger_instance.info("EnvForge API shutting down")
+    logger_instance.info("EnvForage API shutting down")
 
 
 def create_app() -> FastAPI:
     settings = get_settings()
+    _is_prod = settings.environment == "production"
     app = FastAPI(
         title=settings.app_name,
         version=settings.app_version,
@@ -106,9 +112,9 @@ def create_app() -> FastAPI:
             "Generates setup scripts, diagnoses environments, and provides "
             "AI-assisted troubleshooting."
         ),
-        docs_url="/api/docs",
-        redoc_url="/api/redoc",
-        openapi_url="/api/openapi.json",
+        docs_url=None if _is_prod else "/api/docs",
+        redoc_url=None if _is_prod else "/api/redoc",
+        openapi_url=None if _is_prod else "/api/openapi.json",
         lifespan=lifespan,
     )
     setup_logging()
@@ -127,6 +133,7 @@ def create_app() -> FastAPI:
         allow_headers=["*"],
     )
     app.add_middleware(PayloadSizeLimitMiddleware)
+    app.add_middleware(SecurityHeadersMiddleware)
 
     # ── Prometheus Metrics ────────────────────────────────────
     setup_metrics(app)
@@ -135,6 +142,7 @@ def create_app() -> FastAPI:
     app.include_router(profiles.router, prefix="/api/v1", tags=["profiles"])
     app.include_router(scripts.router, prefix="/api/v1", tags=["scripts"])
     app.include_router(diagnose.router, prefix="/api/v1", tags=["diagnose"])
+    app.include_router(feedback.router, prefix="/api/v1", tags=["feedback"])
     app.include_router(troubleshoot.router, prefix="/api/v1", tags=["ai"])
     app.include_router(repair.router, prefix="/api/v1", tags=["ai"])
     app.include_router(verify.router, prefix="/api/v1", tags=["verify"])
@@ -142,8 +150,9 @@ def create_app() -> FastAPI:
     app.include_router(authentication.router, prefix="/api/v1", tags=["auth"])
     app.include_router(recommend.router, prefix="/api/v1", tags=["recommendations"])
     app.include_router(admin_matrix_router, prefix="/api/v1", tags=["admin-matrix"])
-    app.include_router(feature_issue_803.router, prefix="/api/v1", tags=["media"])
-    app.include_router(feature_issue_804.router, prefix="/api/v1", tags=["locations"])
+    app.include_router(media_upload.router, prefix="/api/v1", tags=["media"])
+    app.include_router(spatial_query.router, prefix="/api/v1", tags=["locations"])
+    app.include_router(health_v1.router, prefix="/api/v1", tags=["health"])
 
     # ── Health check ──────────────────────────────────────────
     @app.get("/health", include_in_schema=False)
@@ -192,56 +201,4 @@ def create_app() -> FastAPI:
 
 
 app = create_app()
-
-
-# --- Advanced Application State Manager ---
-import enum
-import time
-from typing import Dict, Any, Callable
-
-class AppState(enum.Enum):
-    INITIALIZING = "initializing"
-    RUNNING = "running"
-    DEGRADED = "degraded"
-    SHUTTING_DOWN = "shutting_down"
-    TERMINATED = "terminated"
-
-class GracefulShutdownManager:
-    def __init__(self):
-        self.state = AppState.INITIALIZING
-        self.hooks: list[Callable] = []
-        self.start_time = time.time()
-        self.components: Dict[str, str] = {}
-
-    def register_hook(self, func: Callable):
-        self.hooks.append(func)
-
-    def register_component(self, name: str, status: str = "ok"):
-        self.components[name] = status
-
-    def transition(self, new_state: AppState):
-        import logging
-        logging.info(f"App State Transition: {self.state.name} -> {new_state.name}")
-        self.state = new_state
-
-    async def execute_shutdown(self):
-        self.transition(AppState.SHUTTING_DOWN)
-        import logging
-        
-        for hook in reversed(self.hooks):
-            try:
-                logging.info(f"Executing shutdown hook: {hook.__name__}")
-                import asyncio
-                if asyncio.iscoroutinefunction(hook):
-                    await asyncio.wait_for(hook(), timeout=5.0)
-                else:
-                    hook()
-            except Exception as e:
-                logging.error(f"Shutdown hook {hook.__name__} failed: {e}")
-                
-        self.transition(AppState.TERMINATED)
-        logging.info(f"Uptime: {time.time() - self.start_time:.2f} seconds")
-
-global_shutdown_manager = GracefulShutdownManager()
-
 

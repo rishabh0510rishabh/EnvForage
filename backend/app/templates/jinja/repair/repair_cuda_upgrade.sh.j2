@@ -1,8 +1,8 @@
 #!/bin/bash
 # ==============================================================================
-# EnvForge Repair Script — CUDA Toolkit Upgrade
+# EnvForage Repair Script — CUDA Toolkit Upgrade
 # Generated: {{ generated_at }}
-# EnvForge : v{{ envforge_version }}
+# EnvForage : v{{ envforage_version }}
 #
 # This script upgrades the CUDA toolkit to the target version.
 # It will NOT remove existing CUDA installations (they coexist).
@@ -17,7 +17,7 @@
 set -euo pipefail
 
 RED='\033[0;31m'; GREEN='\033[0;32m'; YELLOW='\033[1;33m'; NC='\033[0m'
-info()  { echo -e "${GREEN}[EnvForge Repair]${NC} $1"; }
+info()  { echo -e "${GREEN}[EnvForage Repair]${NC} $1"; }
 warn()  { echo -e "${YELLOW}[WARN]${NC} $1"; }
 error() { echo -e "${RED}[ERROR]${NC} $1" >&2; exit 1; }
 
@@ -25,7 +25,7 @@ TARGET_CUDA="{{ target_cuda_version | default('12.1') }}"
 
 # ── Confirmation ──────────────────────────────────────────────────────────────
 echo ""
-info "EnvForge CUDA Upgrade Repair Script"
+info "EnvForage CUDA Upgrade Repair Script"
 info "Target CUDA version: $TARGET_CUDA"
 echo ""
 read -p "Do you want to proceed? [y/N]: " CONFIRM

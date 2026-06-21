@@ -1,4 +1,4 @@
-"""CLI utility to validate EnvForge profile configurations against schemas and logic rules."""
+"""CLI utility to validate EnvForage profile configurations against schemas and logic rules."""
 
 # ruff: noqa: E402
 import os
@@ -97,7 +97,7 @@ def validate_profile_file(file_path: Path) -> tuple[bool, list[str]]:
     "path", type=click.Path(exists=True, file_okay=True, dir_okay=True, path_type=Path)
 )
 def main(path: Path) -> None:
-    """Validate EnvForge profile YAML schemas and logical consistency rules."""
+    """Validate EnvForage profile YAML schemas and logical consistency rules."""
     files_to_validate: list[Path] = []
 
     if path.is_file():

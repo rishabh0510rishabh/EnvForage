@@ -27,8 +27,8 @@ def fetch_pypi_python_bounds(package: str, version: str):
     import os
     import time
 
-    # Store cache under ~/.envforge/cache per issue #386 spec
-    cache_dir = Path(os.path.expanduser("~/.envforge/cache"))
+    # Store cache under ~/.envforage/cache per issue #386 spec
+    cache_dir = Path(os.path.expanduser("~/.envforage/cache"))
     cache_dir.mkdir(parents=True, exist_ok=True)
 
     safe_pkg = "".join(c for c in package if c.isalnum() or c in ".-_")

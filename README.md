@@ -1,12 +1,12 @@
 <div align="center">
   
-# EnvForge 🛠️
+# EnvForage 🛠️
 
 ### ✨ Production-Grade ML Environment Provisioning Platform
 
-EnvForge is an **intelligent environment provisioning platform** that **automates one of the most frustrating parts of machine learning development: creating reliable and compatible development environments.**
+EnvForage is an **intelligent environment provisioning platform** that **automates one of the most frustrating parts of machine learning development: creating reliable and compatible development environments.**
 
-By combining **hardware diagnostics, compatibility-aware version resolution, template-driven script generation, and built-in safety validation**, EnvForge enables developers to **generate deterministic setup scripts for PyTorch, TensorFlow, CUDA, YOLO, and other ML ecosystems across Windows, WSL, and Linux.**
+By combining **hardware diagnostics, compatibility-aware version resolution, template-driven script generation, and built-in safety validation**, EnvForage enables developers to **generate deterministic setup scripts for PyTorch, TensorFlow, CUDA, YOLO, and other ML ecosystems across Windows, WSL, and Linux.**
 
 **No more** CUDA mismatches. No more dependency conflicts. No more hours spent debugging installation issues.
 
@@ -18,7 +18,7 @@ By combining **hardware diagnostics, compatibility-aware version resolution, tem
 
 ## Contributors
 
-👥 A massive thank you to all the developers who have contributed code, resolved issues, and helped shape EnvForge into a production-grade ML environment provisioning platform!
+👥 A massive thank you to all the developers who have contributed code, resolved issues, and helped shape EnvForage into a production-grade ML environment provisioning platform!
 
 <a href="https://github.com/rishabh0510rishabh/EnvForage/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=rishabh0510rishabh/EnvForage" alt="Contributors Grid" style="max-width: 100%; border-radius: 8px;" />
@@ -37,7 +37,6 @@ By combining **hardware diagnostics, compatibility-aware version resolution, tem
 - [🚀 Steps To Run](#steps-to-run)
 - [📚 Documentation Links](#documentation-links)
 - [🤝 Contributing](#contributing)
-- [🗺️ Roadmap](#roadmap)
 - [⚖️ License](#license)
 
 ----
@@ -45,9 +44,9 @@ By combining **hardware diagnostics, compatibility-aware version resolution, tem
 ## Project Overview
 
 **Deterministic logic > AI generation.**
-Because scripts affect real systems, EnvForge relies on a strictly deterministic **Compatibility Engine** to resolve versions. It never guesses package versions or writes destructive shell commands.
+Because scripts affect real systems, EnvForage relies on a strictly deterministic **Compatibility Engine** to resolve versions. It never guesses package versions or writes destructive shell commands.
 
-EnvForge helps users:
+EnvForage helps users:
 * 🔧 Generate environment setup scripts (`setup.sh`, `setup.ps1`, `Dockerfile`)
 * 🧪 Install compatible ML frameworks (TensorFlow, PyTorch, YOLO, etc.)
 * ✅ Verify existing environments
@@ -58,7 +57,9 @@ EnvForge helps users:
 ## Features
 
 - **Environment Profiles**: Out-of-the-box configurations for `pytorch-cuda`, `tf-gpu`, `yolov8`, and more.
-- **Hardware Introspection**: A standalone CLI agent (`envforge-agent`) that detects OS, RAM, GPU, VRAM, and CUDA details without an internet connection.
+- **Windows Installer**: Official setup executable with existing-install detection, upgrade flows, and repair UI.
+- **Hardware Introspection**: A standalone CLI agent (`envforage`) that detects OS, RAM, GPU, VRAM, and CUDA details without an internet connection.
+- **Uninstall Feedback**: End-to-end telemetry and user feedback capture during uninstallation.
 - **Safety First**: Every generated script passes through a regex-based `SafetyFilter` that strictly blocks dangerous commands (e.g., `rm -rf /`, `mkfs`).
 - **Idempotent Setup**: Scripts verify prerequisites before installing anything.
 - **RESTful API**: Fast, async backend built on FastAPI and PostgreSQL.
@@ -67,7 +68,7 @@ EnvForge helps users:
 
 ## Architecture
 
-🏗️ EnvForge is built with a modular, scalable architecture.
+🏗️ EnvForage is built with a modular, scalable architecture.
 
 1. **CLI Diagnostic Agent**: Inspects local hardware and emits a structured JSON `DiagnosticReport`.
 2. **API Layer**: FastAPI handles incoming requests and orchestrates logic.
@@ -171,8 +172,8 @@ EnvForage/
 ### 1. Install the CLI Agent
 Inspect your environment without needing the backend!
 ```bash
-pip install envforge-agent
-envforge diagnose
+pip install envforage
+envforage diagnose
 ```
 
 
@@ -193,15 +194,15 @@ docker-compose up -d
 ```
 
 ```bash
-helm install envforge ./helm/envforge
+helm install envforage ./helm/envforage
 
 # Enable ingress (optional)
-helm install envforge ./helm/envforge \
+helm install envforage ./helm/envforage \
   --set ingress.enabled=true \
   --set ingress.host=api.yourdomain.com
 
-kubectl port-forward svc/envforge 8000:8000
-kubectl port-forward svc/envforge-frontend 3000:3000
+kubectl port-forward svc/envforage 8000:8000
+kubectl port-forward svc/envforage-frontend 3000:3000
 ```
 
 🚀 The API is now running at `http://localhost:8000`.
@@ -225,7 +226,7 @@ curl -X POST http://localhost:8000/api/v1/scripts/generate \
 | [WORKFLOW.md](./docs/WORKFLOW.md) | Script generation, diagnosis, and repair flows |
 | [AI_USAGE_POLICY.md](./docs/AI_USAGE_POLICY.md) | Where AI is allowed vs where deterministic logic is required |
 | [SCRIPT_SAFETY.md](./docs/SCRIPT_SAFETY.md) | Prohibited commands and rollback philosophy |
-| [CLI_REFERENCE.md](./docs/CLI_REFERENCE.md) | Commands for `envforge diagnose`, `verify`, and `fix` |
+| [CLI_REFERENCE.md](./docs/CLI_REFERENCE.md) | Commands for `envforage diagnose`, `verify`, and `fix` |
 | [API_DESIGN.md](./docs/API_DESIGN.md) | REST endpoints, schemas, and validation rules |
 | [PROFILE_SPEC.md](./docs/PROFILE_SPEC.md) | How to build and define new ML profiles |
 | [TASKS.md](./TASKS.md) | The master implementation blueprint |
@@ -247,22 +248,9 @@ Please read our [Contributing Guide](./CONTRIBUTING.md) before getting started. 
 
 Before submitting a contribution, please ensure that all tests pass and relevant documentation is updated.
 
-Thank you for helping make EnvForge more reliable, safe, and developer-friendly!
+Thank you for helping make EnvForage more reliable, safe, and developer-friendly!
 
-----
 
-## Roadmap
-
-- **Phase 1**: Core Backend (Compatibility Engine, Template Engine) ✅
-- **Phase 2**: CLI Diagnostic Agent (`envforge-agent`) ✅
-- **Phase 3**: Next.js Frontend Web App ✅
-- **Phase 4**: AI Troubleshooting Layer ✅
-- **Phase 5**: Environment Verification ✅
-- **Phase 6**: Polish & Production Readiness ✅
-
-🗺️ See the full [ROADMAP.md](./docs/ROADMAP.md) for details.
-
-----
 
 ## License
 

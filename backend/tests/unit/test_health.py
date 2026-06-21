@@ -137,3 +137,96 @@ def test_health_redis_timeout():
     assert body["status"] == "degraded"
     assert body["services"]["database"] == "ok"
     assert body["services"]["redis"] == "unavailable"
+
+
+# ── Deep Health Check ─────────────────────────────────────────────────────────
+
+
+def test_deep_health_all_ok():
+    """Verify deep health check returns healthy when all services are up."""
+    with (
+        patch("app.api.v1.health.ping_database", new=AsyncMock(return_value={"status": "up", "latency_ms": 10.0})),
+        patch("app.api.v1.health.ping_redis", new=AsyncMock(return_value={"status": "up", "latency_ms": 5.0})),
+        patch("app.api.v1.health.get_system_metrics", return_value={
+            "cpu_percent": 15.0,
+            "memory": {"total_gb": 16.0, "used_percent": 50.0},
+            "disk": {"total_gb": 100.0, "used_percent": 30.0}
+        }),
+    ):
+        response = TestClient(create_app()).get("/api/v1/health/deep")
+    assert response.status_code == 200
+    body = response.json()
+    assert body["status"] == "healthy"
+    assert body["components"]["database"]["status"] == "up"
+    assert body["components"]["redis"]["status"] == "up"
+    assert "timestamp" in body
+
+
+def test_deep_health_db_down():
+    """Verify deep health check returns degraded and 503 when DB is down."""
+    with (
+        patch("app.api.v1.health.ping_database", new=AsyncMock(return_value={"status": "down", "error": "db down"})),
+        patch("app.api.v1.health.ping_redis", new=AsyncMock(return_value={"status": "up", "latency_ms": 5.0})),
+        patch("app.api.v1.health.get_system_metrics", return_value={
+            "cpu_percent": 15.0,
+            "memory": {"total_gb": 16.0, "used_percent": 50.0},
+            "disk": {"total_gb": 100.0, "used_percent": 30.0}
+        }),
+    ):
+        response = TestClient(create_app()).get("/api/v1/health/deep")
+    assert response.status_code == 503
+    body = response.json()
+    assert body["status"] == "degraded"
+    assert body["components"]["database"]["status"] == "down"
+
+
+def test_deep_health_redis_down():
+    """Verify deep health check returns degraded and 503 when Redis is down."""
+    with (
+        patch("app.api.v1.health.ping_database", new=AsyncMock(return_value={"status": "up", "latency_ms": 10.0})),
+        patch("app.api.v1.health.ping_redis", new=AsyncMock(return_value={"status": "down", "error": "redis down"})),
+        patch("app.api.v1.health.get_system_metrics", return_value={
+            "cpu_percent": 15.0,
+            "memory": {"total_gb": 16.0, "used_percent": 50.0},
+            "disk": {"total_gb": 100.0, "used_percent": 30.0}
+        }),
+    ):
+        response = TestClient(create_app()).get("/api/v1/health/deep")
+    assert response.status_code == 503
+    body = response.json()
+    assert body["status"] == "degraded"
+    assert body["components"]["redis"]["status"] == "down"
+
+
+def test_deep_health_memory_exhaustion():
+    """Verify deep health check returns degraded and 503 when system memory is exhausted."""
+    with (
+        patch("app.api.v1.health.ping_database", new=AsyncMock(return_value={"status": "up", "latency_ms": 10.0})),
+        patch("app.api.v1.health.ping_redis", new=AsyncMock(return_value={"status": "up", "latency_ms": 5.0})),
+        patch("app.api.v1.health.get_system_metrics", return_value={
+            "cpu_percent": 15.0,
+            "memory": {"total_gb": 16.0, "used_percent": 96.0},
+            "disk": {"total_gb": 100.0, "used_percent": 30.0}
+        }),
+    ):
+        response = TestClient(create_app()).get("/api/v1/health/deep")
+    assert response.status_code == 503
+    body = response.json()
+    assert body["status"] == "degraded"
+
+
+def test_deep_health_disk_exhaustion():
+    """Verify deep health check returns degraded and 503 when system disk is exhausted."""
+    with (
+        patch("app.api.v1.health.ping_database", new=AsyncMock(return_value={"status": "up", "latency_ms": 10.0})),
+        patch("app.api.v1.health.ping_redis", new=AsyncMock(return_value={"status": "up", "latency_ms": 5.0})),
+        patch("app.api.v1.health.get_system_metrics", return_value={
+            "cpu_percent": 15.0,
+            "memory": {"total_gb": 16.0, "used_percent": 50.0},
+            "disk": {"total_gb": 100.0, "used_percent": 99.0}
+        }),
+    ):
+        response = TestClient(create_app()).get("/api/v1/health/deep")
+    assert response.status_code == 503
+    body = response.json()
+    assert body["status"] == "degraded"

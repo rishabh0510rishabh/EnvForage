@@ -57,14 +57,14 @@ async def db_session(engine) -> AsyncGenerator[AsyncSession, None]:
     transaction = await connection.begin()
 
     # Bind an AsyncSession to the connection
-    SessionMaker = async_sessionmaker(
+    session_maker = async_sessionmaker(
         bind=connection,
         expire_on_commit=False,
         class_=AsyncSession,
         join_transaction_mode="create_savepoint" # Crucial for isolation
     )
 
-    session = SessionMaker()
+    session = session_maker()
 
     try:
         # Yield the session to the test

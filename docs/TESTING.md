@@ -1,6 +1,6 @@
 # Testing Strategy
 
-Because EnvForge generates executable scripts that modify system configurations, testing is not optional — it is a strict requirement for all contributions.
+Because EnvForage generates executable scripts that modify system configurations, testing is not optional — it is a strict requirement for all contributions.
 
 Our test suite is divided into three tiers:
 
@@ -21,7 +21,7 @@ pytest tests/unit/ --cov=app --cov-report=term-missing
 
 ## 2. Unit Tests (CLI Agent)
 
-Located in `cli/tests/`. The `envforge-agent` must be tested across different operating systems. Since CI runners don't have multiple GPUs, we use **JSON Fixtures**.
+Located in `cli/tests/`. The `envforage` must be tested across different operating systems. Since CI runners don't have multiple GPUs, we use **JSON Fixtures**.
 
 **JSON Fixtures (`cli/tests/fixtures/`)**:
 We capture real `DiagnosticReport` outputs from actual hardware (Linux GPU, WSL2, Windows GPU) and save them as JSON. The test suite loads these JSON files to test the Pydantic schemas and the `ReportBuilder` without needing actual NVIDIA hardware.

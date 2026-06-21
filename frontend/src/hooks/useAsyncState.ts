@@ -25,7 +25,7 @@ export interface AsyncState<T> {
  * @param immediate If true, runs the function immediately on mount
  * @returns The async state and an execute trigger
  */
-export function useAsyncState<T, P extends any[]>(
+export function useAsyncState<T, P extends unknown[]>(
   asyncFunction: (...args: P) => Promise<T>,
   immediate = false
 ) {
@@ -100,7 +100,7 @@ export function useAsyncState<T, P extends any[]>(
   // Support immediate execution on mount
   useEffect(() => {
     if (immediate) {
-      // @ts-ignore - we don't know the exact args, assume empty
+      // @ts-expect-error — execute() accepts any args; empty call is valid for parameter-free functions
       execute();
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -1,5 +1,5 @@
 """
-Unit tests for cli/envforge_agent/detectors/os_detector.py
+Unit tests for cli/envforage/detectors/os_detector.py
 Issue #152: Add unit tests for CLI OS Detector
 """
 
@@ -9,7 +9,7 @@ import unittest
 from unittest.mock import mock_open, patch, MagicMock
 
 
-from envforge_agent.detectors.os_detector import (
+from envforage.detectors.os_detector import (
     detect_os,
     _detect_linux,
     _detect_windows,
@@ -91,11 +91,11 @@ class TestDetectLinux(unittest.TestCase):
 
     def test_ubuntu_native(self):
         with patch(
-            "envforge_agent.detectors.os_detector._read_os_release",
+            "envforage.detectors.os_detector._read_os_release",
             return_value=("Ubuntu 22.04.3 LTS", "22.04"),
         ):
             with patch(
-                "envforge_agent.detectors.os_detector._detect_wsl",
+                "envforage.detectors.os_detector._detect_wsl",
                 return_value=None,
             ):
                 with patch("platform.machine", return_value="x86_64"):
@@ -106,11 +106,11 @@ class TestDetectLinux(unittest.TestCase):
 
     def test_ubuntu_wsl2(self):
         with patch(
-            "envforge_agent.detectors.os_detector._read_os_release",
+            "envforage.detectors.os_detector._read_os_release",
             return_value=("Ubuntu 22.04.3 LTS", "22.04"),
         ):
             with patch(
-                "envforge_agent.detectors.os_detector._detect_wsl",
+                "envforage.detectors.os_detector._detect_wsl",
                 return_value="WSL2",
             ):
                 result = _detect_linux("x86_64")
@@ -132,7 +132,7 @@ class TestDetectWindows(unittest.TestCase):
             return (values[name], 1)
 
         with patch(
-            "envforge_agent.detectors.os_detector.platform.system",
+            "envforage.detectors.os_detector.platform.system",
             return_value="Windows",
         ):
             with patch.dict(
@@ -146,7 +146,7 @@ class TestDetectWindows(unittest.TestCase):
                 },
             ):
                 import importlib
-                import envforge_agent.detectors.os_detector as mod
+                import envforage.detectors.os_detector as mod
 
                 importlib.reload(mod)
                 result = mod._detect_windows("AMD64")
@@ -170,7 +170,7 @@ class TestDetectOs(unittest.TestCase):
         with patch("platform.system", return_value="Linux"):
             with patch("platform.machine", return_value="x86_64"):
                 with patch(
-                    "envforge_agent.detectors.os_detector._detect_linux",
+                    "envforage.detectors.os_detector._detect_linux",
                     return_value=MagicMock(
                         name="Ubuntu 22.04",
                         version="22.04",
@@ -185,7 +185,7 @@ class TestDetectOs(unittest.TestCase):
         with patch("platform.system", return_value="Windows"):
             with patch("platform.machine", return_value="AMD64"):
                 with patch(
-                    "envforge_agent.detectors.os_detector._detect_windows",
+                    "envforage.detectors.os_detector._detect_windows",
                     return_value=MagicMock(
                         name="Windows 10 Pro",
                         version="22H2",

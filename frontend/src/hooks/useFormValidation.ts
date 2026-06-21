@@ -4,7 +4,7 @@ import { useState, useCallback, useEffect } from 'react';
 
 // Simplified Zod interface mock to avoid direct dependency in this snippet
 interface ZodSchemaMock<T> {
-  safeParse: (data: unknown) => { success: true; data: T } | { success: false; error: any };
+  safeParse: (data: unknown) => { success: true; data: T } | { success: false; error: { issues: { path: (string | number)[]; message: string }[] } };
 }
 
 export interface FormValidationState<T> {
@@ -31,7 +31,7 @@ export interface FormValidationState<T> {
  * @param validationSchema A Zod schema (or similar object with a safeParse method)
  * @param onSubmit Callback triggered when form is perfectly valid and submitted
  */
-export function useFormValidation<T extends Record<string, any>>(
+export function useFormValidation<T extends Record<string, unknown>>(
   initialValues: T,
   validationSchema?: ZodSchemaMock<T>,
   onSubmit?: (values: T) => Promise<void> | void
@@ -57,7 +57,7 @@ export function useFormValidation<T extends Record<string, any>>(
     // Extract Zod errors into a flat dictionary map
     const newErrors: Partial<Record<keyof T, string>> = {};
     if (result.error && result.error.issues) {
-      result.error.issues.forEach((issue: any) => {
+      result.error.issues.forEach((issue: { path: (string | number)[]; message: string }) => {
         const key = issue.path[0] as keyof T;
         // Keep the first error for each field
         if (!newErrors[key]) {
@@ -71,6 +71,7 @@ export function useFormValidation<T extends Record<string, any>>(
   // Effect to re-validate on value changes
   useEffect(() => {
     const errors = validate(state.values);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setState((prev) => ({
       ...prev,
       errors,
@@ -100,7 +101,7 @@ export function useFormValidation<T extends Record<string, any>>(
   }, []);
 
   // Programmatic setter for complex custom inputs (e.g. date pickers)
-  const setFieldValue = useCallback((name: keyof T, value: any) => {
+  const setFieldValue = useCallback((name: keyof T, value: unknown) => {
     setState((prev) => ({
       ...prev,
       values: { ...prev.values, [name]: value },

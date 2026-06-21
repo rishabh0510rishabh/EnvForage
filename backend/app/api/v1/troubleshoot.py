@@ -1,5 +1,6 @@
 """Troubleshoot endpoint — POST /api/v1/troubleshoot."""
 
+import json
 import logging
 from collections.abc import AsyncIterator
 
@@ -53,15 +54,16 @@ async def troubleshoot(
                     yield f"data: {chunk}\n\n"
             except LLMProviderError as exc:
                 logger.error("LLM provider error in stream: %s", exc)
-                yield (
-                    f'data: {{"error":"PROVIDER_ERROR","message":"{exc.reason}"}}\n\n'
+                error_payload = json.dumps(
+                    {"error": "PROVIDER_ERROR", "message": str(exc.reason)}
                 )
+                yield f"data: {error_payload}\n\n"
             except Exception:
                 logger.exception("Error in troubleshoot stream generator")
-                yield (
-                    'data: {"error":"STREAM_ERROR",'
-                    '"message":"Internal streaming error."}\n\n'
+                error_payload = json.dumps(
+                    {"error": "STREAM_ERROR", "message": "Internal streaming error."}
                 )
+                yield f"data: {error_payload}\n\n"
 
         stream: AsyncIterator[str] = event_generator()
         tracker = getattr(http_request.app.state, "stream_tracker", None)

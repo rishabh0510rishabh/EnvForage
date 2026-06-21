@@ -1,8 +1,8 @@
 #!/bin/bash
 # ==============================================================================
-# EnvForge Repair Script — Virtual Environment Recreate
+# EnvForage Repair Script — Virtual Environment Recreate
 # Generated: {{ generated_at }}
-# EnvForge : v{{ envforge_version }}
+# EnvForage : v{{ envforage_version }}
 #
 # This script backs up and recreates a Python virtual environment.
 # The old venv is renamed (not deleted) for safety.
@@ -16,7 +16,7 @@
 set -euo pipefail
 
 RED='\033[0;31m'; GREEN='\033[0;32m'; YELLOW='\033[1;33m'; NC='\033[0m'
-info()  { echo -e "${GREEN}[EnvForge Repair]${NC} $1"; }
+info()  { echo -e "${GREEN}[EnvForage Repair]${NC} $1"; }
 warn()  { echo -e "${YELLOW}[WARN]${NC} $1"; }
 error() { echo -e "${RED}[ERROR]${NC} $1" >&2; exit 1; }
 
@@ -24,7 +24,7 @@ PYTHON_BIN="{{ python_bin | default('python3') }}"
 VENV_DIR="{{ venv_dir | default('.venv') }}"
 
 echo ""
-info "EnvForge Virtual Environment Recreate Script"
+info "EnvForage Virtual Environment Recreate Script"
 info "Python: $PYTHON_BIN"
 info "Venv directory: $VENV_DIR"
 echo ""

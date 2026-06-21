@@ -1,10 +1,10 @@
 # ==============================================================================
-# EnvForge Generated Dockerfile
+# EnvForage Generated Dockerfile
 # Profile  : {{ profile.name }}
 # Python   : {{ python_version }}
 {% if cuda_version %}# CUDA     : {{ cuda_version }}
 {% endif %}# Generated: {{ generated_at }}
-# EnvForge : v{{ envforge_version }}
+# EnvForage : v{{ envforage_version }}
 # ==============================================================================
 
 {% if cuda_version %}
@@ -61,4 +61,4 @@ RUN pip install --upgrade pip && \
 COPY . .
 
 # Default command (override in docker-compose or at runtime)
-CMD ["python3", "-c", "print('EnvForge container ready. Override CMD to run your app.')"]
+CMD ["python3", "-c", "print('EnvForage container ready. Override CMD to run your app.')"]

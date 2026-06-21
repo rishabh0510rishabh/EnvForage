@@ -1,6 +1,6 @@
-# envforge-agent
+# envforage
 
-> Standalone CLI diagnostic agent for the [EnvForge](https://github.com/rishabh0510rishabh/EnvForage) platform.
+> Standalone CLI diagnostic agent for the [EnvForage](https://github.com/rishabh0510rishabh/EnvForage) platform.
 
 Inspects your local ML environment and reports what's installed, what's compatible,
 and what's broken — without requiring a network connection.
@@ -8,26 +8,26 @@ and what's broken — without requiring a network connection.
 ## Install
 
 ```bash
-pip install envforge-agent
+pip install envforage
 ```
 
 ## Commands
 
 ```bash
 # Inspect your environment (output to terminal)
-envforge diagnose
+envforage diagnose
 
 # Save report to JSON file
-envforge diagnose --output report.json
+envforage diagnose --output report.json
 
-# Send report to EnvForge API for compatibility analysis
-envforge diagnose --send --api-url https://api.envforge.dev
+# Send report to EnvForage API for compatibility analysis
+envforage diagnose --send --api-url https://api.envforage.dev
 
 # Check if a specific profile is compatible with your system
-envforge verify --profile pytorch-cuda
+envforage verify --profile pytorch-cuda
 
 # Generate a repair script from a saved diagnostic report
-envforge fix --report report.json
+envforage fix --report report.json
 ```
 
 ## What it detects
@@ -47,7 +47,7 @@ All commands output `DiagnosticReport` JSON compatible with `POST /api/v1/diagno
 
 ```json
 {
-  "agent_version": "1.0.0",
+  "agent_version": "2.0.0",
   "os": { "name": "Ubuntu 22.04", "version": "22.04", "architecture": "x86_64" },
   "cpu": { "brand": "Intel Core i9-13900K", "cores": 24, "threads": 32 },
   "ram": { "total_gb": 64.0, "available_gb": 48.2 },

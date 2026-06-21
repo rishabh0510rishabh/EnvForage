@@ -52,9 +52,12 @@ export function useLocalStorage<T>(
     }
   });
 
-  // Keep a ref to the latest value to avoid stale closures in event listeners
+  // Keep a ref to the latest value to avoid stale closures in event listeners.
+  // The assignment is done in an effect to satisfy the react-hooks/refs lint rule.
   const valueRef = useRef(storedValue);
-  valueRef.current = storedValue;
+  useEffect(() => {
+    valueRef.current = storedValue;
+  });
 
   const setValue = useCallback(
     (value: T | ((val: T) => T)) => {

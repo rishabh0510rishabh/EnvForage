@@ -1,6 +1,6 @@
 
 // --- Advanced useHistory Hook ---
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback } from 'react';
 
 /**
  * Configuration options for the history stack.
@@ -130,22 +130,17 @@ export function useHistory<T>(
  * Useful for transition animations or differential logic.
  */
 export function usePrevious<T>(value: T): T | undefined {
-  const ref = useRef<T>();
-  
-  // useEffect runs AFTER the render cycle completes
-  // So ref.current will always represent the value from the *last* render
-  // useEffect(() => {
-  //   ref.current = value;
-  // }, [value]);
-  // 
-  // However, in React 18 Concurrent mode, it's safer to track it synchronously during render:
-  const prevRef = useRef<T>();
-  const currRef = useRef<T>(value);
-  
-  if (currRef.current !== value) {
-    prevRef.current = currRef.current;
-    currRef.current = value;
+  const [prev, setPrev] = useState<T | undefined>(undefined);
+  const [curr, setCurr] = useState<T>(value);
+
+  // Detect when the value changes and update in an effect (not during render)
+  if (curr !== value) {
+    // Synchronously flush both updates before the next paint
+    // This is safe because we're not in a React effect — we're detecting
+    // a render-time derived state change (React's documented pattern).
+    setCurr(value);
+    setPrev(curr);
   }
-  
-  return prevRef.current;
+
+  return prev;
 }

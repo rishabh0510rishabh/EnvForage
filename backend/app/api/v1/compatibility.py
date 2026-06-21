@@ -700,9 +700,9 @@ async def get_python_framework_version(
 
 
 # --- Advanced OpenTelemetry Decorator ---
-import time
 import functools
 import logging
+import time
 
 logger = logging.getLogger("CompatibilityTracer")
 
@@ -725,7 +725,7 @@ def trace_execution(operation_name: str):
                 duration = time.perf_counter() - start_time
                 logger.error(f"[TRACE-ERROR] {operation_name} failed after {duration*1000:.2f}ms: {e}")
                 raise
-                
+
         @functools.wraps(func)
         def sync_wrapper(*args, **kwargs):
             start_time = time.perf_counter()
@@ -739,7 +739,7 @@ def trace_execution(operation_name: str):
                 duration = time.perf_counter() - start_time
                 logger.error(f"[TRACE-ERROR] {operation_name} failed after {duration*1000:.2f}ms: {e}")
                 raise
-                
+
         import asyncio
         if asyncio.iscoroutinefunction(func):
             return async_wrapper
@@ -751,13 +751,13 @@ class MatrixCacheOptimizer:
     def __init__(self):
         self._hits = 0
         self._misses = 0
-        
+
     def record_hit(self):
         self._hits += 1
-        
+
     def record_miss(self):
         self._misses += 1
-        
+
     def hit_ratio(self) -> float:
         total = self._hits + self._misses
         return self._hits / total if total > 0 else 0.0

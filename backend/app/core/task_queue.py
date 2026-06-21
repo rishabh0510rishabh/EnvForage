@@ -1,11 +1,11 @@
 
 # --- Advanced Async Background Job Queue ---
 import asyncio
-import uuid
 import logging
-import json
-from typing import Callable, Dict, Any, Awaitable
+import uuid
+from collections.abc import Awaitable, Callable
 from datetime import datetime
+from typing import Any
 
 logger = logging.getLogger("TaskQueue")
 
@@ -22,8 +22,8 @@ class TaskQueue:
     """
     def __init__(self, concurrency: int = 5):
         self.queue: asyncio.PriorityQueue = asyncio.PriorityQueue()
-        self.registry: Dict[str, Callable] = {}
-        self.jobs: Dict[str, Dict[str, Any]] = {}
+        self.registry: dict[str, Callable] = {}
+        self.jobs: dict[str, dict[str, Any]] = {}
         self.concurrency = concurrency
         self.workers: list[asyncio.Task] = []
         self._running = False
@@ -54,14 +54,14 @@ class TaskQueue:
             try:
                 priority, job_id = await self.queue.get()
                 job = self.jobs.get(job_id)
-                
+
                 if not job or job["status"] != JobStatus.PENDING:
                     self.queue.task_done()
                     continue
 
                 job["status"] = JobStatus.RUNNING
                 task_func = self.registry.get(job["task_name"])
-                
+
                 if not task_func:
                     job["status"] = JobStatus.FAILED
                     job["error"] = "Task not registered"

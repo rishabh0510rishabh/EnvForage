@@ -1,8 +1,8 @@
-# EnvForge — API Design
+# EnvForage — API Design
 
-> **Version**: 1.0.0
+> **Version**: 2.0.0
 > **Status**: Production
-> **Last Updated**: 2026-05-21
+> **Last Updated**: 2026-06-18
 
 ---
 
@@ -19,7 +19,7 @@
 ## Base URL
 
 ```
-Production : https://api.envforge.dev/api/v1
+Production : https://api.envforage.dev/api/v1
 Development: http://localhost:8000/api/v1
 ```
 
@@ -102,7 +102,7 @@ Generate a set of setup scripts for a profile.
   "status": "completed",
   "download_url": "/scripts/gen_abc123/download",
   "preview": {
-    "setup.sh": "#!/bin/bash\n# EnvForge Generated Script\n..."
+    "setup.sh": "#!/bin/bash\n# EnvForage Generated Script\n..."
   }
 }
 ```
@@ -168,6 +168,30 @@ Submit a verification request for an installed environment.
 
 ---
 
+### Feedback
+
+#### `POST /feedback`
+Submit user feedback, typically triggered during the uninstall flow.
+
+**Request**:
+```json
+{
+  "reason": "Too complex",
+  "comments": "I preferred doing it manually.",
+  "rating": 2
+}
+```
+
+**Response**:
+```json
+{
+  "feedback_id": "fb_123456",
+  "status": "recorded"
+}
+```
+
+---
+
 ### AI Troubleshooting
 
 #### `POST /troubleshoot`
@@ -216,7 +240,7 @@ Generate a repair script based on AI analysis.
 **Response**:
 ```json
 {
-  "repair_script": "#!/bin/bash\n# EnvForge Repair Script\n...",
+  "repair_script": "#!/bin/bash\n# EnvForage Repair Script\n...",
   "warnings": ["This script will reinstall the NVIDIA driver. Close all GPU processes first."]
 }
 ```

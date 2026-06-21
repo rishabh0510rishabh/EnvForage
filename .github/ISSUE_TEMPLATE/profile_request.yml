@@ -1,5 +1,5 @@
 name: Profile Request
-description: Request a new ML environment profile to be added to EnvForge
+description: Request a new ML environment profile to be added to EnvForage
 title: "[Profile]: "
 labels: ["enhancement", "profile"]
 body:

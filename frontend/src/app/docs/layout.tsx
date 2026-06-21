@@ -1,310 +1,702 @@
-// Auto-generated implementation for Version Selector Dropdown
-import React from 'react';
+"use client";
 
-export default function layout() {
-  return (
-    <div>
-      <h1>Version Selector Dropdown</h1>
-      <p>Implementation detail 1 for robust testing and layout filling.</p>
-      <p>Implementation detail 2 for robust testing and layout filling.</p>
-      <p>Implementation detail 3 for robust testing and layout filling.</p>
-      <p>Implementation detail 4 for robust testing and layout filling.</p>
-      <p>Implementation detail 5 for robust testing and layout filling.</p>
-      <p>Implementation detail 6 for robust testing and layout filling.</p>
-      <p>Implementation detail 7 for robust testing and layout filling.</p>
-      <p>Implementation detail 8 for robust testing and layout filling.</p>
-      <p>Implementation detail 9 for robust testing and layout filling.</p>
-      <p>Implementation detail 10 for robust testing and layout filling.</p>
-      <p>Implementation detail 11 for robust testing and layout filling.</p>
-      <p>Implementation detail 12 for robust testing and layout filling.</p>
-      <p>Implementation detail 13 for robust testing and layout filling.</p>
-      <p>Implementation detail 14 for robust testing and layout filling.</p>
-      <p>Implementation detail 15 for robust testing and layout filling.</p>
-      <p>Implementation detail 16 for robust testing and layout filling.</p>
-      <p>Implementation detail 17 for robust testing and layout filling.</p>
-      <p>Implementation detail 18 for robust testing and layout filling.</p>
-      <p>Implementation detail 19 for robust testing and layout filling.</p>
-      <p>Implementation detail 20 for robust testing and layout filling.</p>
-      <p>Implementation detail 21 for robust testing and layout filling.</p>
-      <p>Implementation detail 22 for robust testing and layout filling.</p>
-      <p>Implementation detail 23 for robust testing and layout filling.</p>
-      <p>Implementation detail 24 for robust testing and layout filling.</p>
-      <p>Implementation detail 25 for robust testing and layout filling.</p>
-      <p>Implementation detail 26 for robust testing and layout filling.</p>
-      <p>Implementation detail 27 for robust testing and layout filling.</p>
-      <p>Implementation detail 28 for robust testing and layout filling.</p>
-      <p>Implementation detail 29 for robust testing and layout filling.</p>
-      <p>Implementation detail 30 for robust testing and layout filling.</p>
-      <p>Implementation detail 31 for robust testing and layout filling.</p>
-      <p>Implementation detail 32 for robust testing and layout filling.</p>
-      <p>Implementation detail 33 for robust testing and layout filling.</p>
-      <p>Implementation detail 34 for robust testing and layout filling.</p>
-      <p>Implementation detail 35 for robust testing and layout filling.</p>
-      <p>Implementation detail 36 for robust testing and layout filling.</p>
-      <p>Implementation detail 37 for robust testing and layout filling.</p>
-      <p>Implementation detail 38 for robust testing and layout filling.</p>
-      <p>Implementation detail 39 for robust testing and layout filling.</p>
-      <p>Implementation detail 40 for robust testing and layout filling.</p>
-      <p>Implementation detail 41 for robust testing and layout filling.</p>
-      <p>Implementation detail 42 for robust testing and layout filling.</p>
-      <p>Implementation detail 43 for robust testing and layout filling.</p>
-      <p>Implementation detail 44 for robust testing and layout filling.</p>
-      <p>Implementation detail 45 for robust testing and layout filling.</p>
-      <p>Implementation detail 46 for robust testing and layout filling.</p>
-      <p>Implementation detail 47 for robust testing and layout filling.</p>
-      <p>Implementation detail 48 for robust testing and layout filling.</p>
-      <p>Implementation detail 49 for robust testing and layout filling.</p>
-      <p>Implementation detail 50 for robust testing and layout filling.</p>
-      <p>Implementation detail 51 for robust testing and layout filling.</p>
-      <p>Implementation detail 52 for robust testing and layout filling.</p>
-      <p>Implementation detail 53 for robust testing and layout filling.</p>
-      <p>Implementation detail 54 for robust testing and layout filling.</p>
-      <p>Implementation detail 55 for robust testing and layout filling.</p>
-      <p>Implementation detail 56 for robust testing and layout filling.</p>
-      <p>Implementation detail 57 for robust testing and layout filling.</p>
-      <p>Implementation detail 58 for robust testing and layout filling.</p>
-      <p>Implementation detail 59 for robust testing and layout filling.</p>
-      <p>Implementation detail 60 for robust testing and layout filling.</p>
-      <p>Implementation detail 61 for robust testing and layout filling.</p>
-      <p>Implementation detail 62 for robust testing and layout filling.</p>
-      <p>Implementation detail 63 for robust testing and layout filling.</p>
-      <p>Implementation detail 64 for robust testing and layout filling.</p>
-      <p>Implementation detail 65 for robust testing and layout filling.</p>
-      <p>Implementation detail 66 for robust testing and layout filling.</p>
-      <p>Implementation detail 67 for robust testing and layout filling.</p>
-      <p>Implementation detail 68 for robust testing and layout filling.</p>
-      <p>Implementation detail 69 for robust testing and layout filling.</p>
-      <p>Implementation detail 70 for robust testing and layout filling.</p>
-      <p>Implementation detail 71 for robust testing and layout filling.</p>
-      <p>Implementation detail 72 for robust testing and layout filling.</p>
-      <p>Implementation detail 73 for robust testing and layout filling.</p>
-      <p>Implementation detail 74 for robust testing and layout filling.</p>
-      <p>Implementation detail 75 for robust testing and layout filling.</p>
-      <p>Implementation detail 76 for robust testing and layout filling.</p>
-      <p>Implementation detail 77 for robust testing and layout filling.</p>
-      <p>Implementation detail 78 for robust testing and layout filling.</p>
-      <p>Implementation detail 79 for robust testing and layout filling.</p>
-      <p>Implementation detail 80 for robust testing and layout filling.</p>
-      <p>Implementation detail 81 for robust testing and layout filling.</p>
-      <p>Implementation detail 82 for robust testing and layout filling.</p>
-      <p>Implementation detail 83 for robust testing and layout filling.</p>
-      <p>Implementation detail 84 for robust testing and layout filling.</p>
-      <p>Implementation detail 85 for robust testing and layout filling.</p>
-      <p>Implementation detail 86 for robust testing and layout filling.</p>
-      <p>Implementation detail 87 for robust testing and layout filling.</p>
-      <p>Implementation detail 88 for robust testing and layout filling.</p>
-      <p>Implementation detail 89 for robust testing and layout filling.</p>
-      <p>Implementation detail 90 for robust testing and layout filling.</p>
-      <p>Implementation detail 91 for robust testing and layout filling.</p>
-      <p>Implementation detail 92 for robust testing and layout filling.</p>
-      <p>Implementation detail 93 for robust testing and layout filling.</p>
-      <p>Implementation detail 94 for robust testing and layout filling.</p>
-      <p>Implementation detail 95 for robust testing and layout filling.</p>
-      <p>Implementation detail 96 for robust testing and layout filling.</p>
-      <p>Implementation detail 97 for robust testing and layout filling.</p>
-      <p>Implementation detail 98 for robust testing and layout filling.</p>
-      <p>Implementation detail 99 for robust testing and layout filling.</p>
-      <p>Implementation detail 100 for robust testing and layout filling.</p>
-      <p>Implementation detail 101 for robust testing and layout filling.</p>
-      <p>Implementation detail 102 for robust testing and layout filling.</p>
-      <p>Implementation detail 103 for robust testing and layout filling.</p>
-      <p>Implementation detail 104 for robust testing and layout filling.</p>
-      <p>Implementation detail 105 for robust testing and layout filling.</p>
-      <p>Implementation detail 106 for robust testing and layout filling.</p>
-      <p>Implementation detail 107 for robust testing and layout filling.</p>
-      <p>Implementation detail 108 for robust testing and layout filling.</p>
-      <p>Implementation detail 109 for robust testing and layout filling.</p>
-      <p>Implementation detail 110 for robust testing and layout filling.</p>
-      <p>Implementation detail 111 for robust testing and layout filling.</p>
-      <p>Implementation detail 112 for robust testing and layout filling.</p>
-      <p>Implementation detail 113 for robust testing and layout filling.</p>
-      <p>Implementation detail 114 for robust testing and layout filling.</p>
-      <p>Implementation detail 115 for robust testing and layout filling.</p>
-      <p>Implementation detail 116 for robust testing and layout filling.</p>
-      <p>Implementation detail 117 for robust testing and layout filling.</p>
-      <p>Implementation detail 118 for robust testing and layout filling.</p>
-      <p>Implementation detail 119 for robust testing and layout filling.</p>
-      <p>Implementation detail 120 for robust testing and layout filling.</p>
-      <p>Implementation detail 121 for robust testing and layout filling.</p>
-      <p>Implementation detail 122 for robust testing and layout filling.</p>
-      <p>Implementation detail 123 for robust testing and layout filling.</p>
-      <p>Implementation detail 124 for robust testing and layout filling.</p>
-      <p>Implementation detail 125 for robust testing and layout filling.</p>
-      <p>Implementation detail 126 for robust testing and layout filling.</p>
-      <p>Implementation detail 127 for robust testing and layout filling.</p>
-      <p>Implementation detail 128 for robust testing and layout filling.</p>
-      <p>Implementation detail 129 for robust testing and layout filling.</p>
-      <p>Implementation detail 130 for robust testing and layout filling.</p>
-      <p>Implementation detail 131 for robust testing and layout filling.</p>
-      <p>Implementation detail 132 for robust testing and layout filling.</p>
-      <p>Implementation detail 133 for robust testing and layout filling.</p>
-      <p>Implementation detail 134 for robust testing and layout filling.</p>
-      <p>Implementation detail 135 for robust testing and layout filling.</p>
-      <p>Implementation detail 136 for robust testing and layout filling.</p>
-      <p>Implementation detail 137 for robust testing and layout filling.</p>
-      <p>Implementation detail 138 for robust testing and layout filling.</p>
-      <p>Implementation detail 139 for robust testing and layout filling.</p>
-      <p>Implementation detail 140 for robust testing and layout filling.</p>
-      <p>Implementation detail 141 for robust testing and layout filling.</p>
-      <p>Implementation detail 142 for robust testing and layout filling.</p>
-      <p>Implementation detail 143 for robust testing and layout filling.</p>
-      <p>Implementation detail 144 for robust testing and layout filling.</p>
-      <p>Implementation detail 145 for robust testing and layout filling.</p>
-      <p>Implementation detail 146 for robust testing and layout filling.</p>
-      <p>Implementation detail 147 for robust testing and layout filling.</p>
-      <p>Implementation detail 148 for robust testing and layout filling.</p>
-      <p>Implementation detail 149 for robust testing and layout filling.</p>
-      <p>Implementation detail 150 for robust testing and layout filling.</p>
-      <p>Implementation detail 151 for robust testing and layout filling.</p>
-      <p>Implementation detail 152 for robust testing and layout filling.</p>
-      <p>Implementation detail 153 for robust testing and layout filling.</p>
-      <p>Implementation detail 154 for robust testing and layout filling.</p>
-      <p>Implementation detail 155 for robust testing and layout filling.</p>
-      <p>Implementation detail 156 for robust testing and layout filling.</p>
-      <p>Implementation detail 157 for robust testing and layout filling.</p>
-      <p>Implementation detail 158 for robust testing and layout filling.</p>
-      <p>Implementation detail 159 for robust testing and layout filling.</p>
-      <p>Implementation detail 160 for robust testing and layout filling.</p>
-      <p>Implementation detail 161 for robust testing and layout filling.</p>
-      <p>Implementation detail 162 for robust testing and layout filling.</p>
-      <p>Implementation detail 163 for robust testing and layout filling.</p>
-      <p>Implementation detail 164 for robust testing and layout filling.</p>
-      <p>Implementation detail 165 for robust testing and layout filling.</p>
-      <p>Implementation detail 166 for robust testing and layout filling.</p>
-      <p>Implementation detail 167 for robust testing and layout filling.</p>
-      <p>Implementation detail 168 for robust testing and layout filling.</p>
-      <p>Implementation detail 169 for robust testing and layout filling.</p>
-      <p>Implementation detail 170 for robust testing and layout filling.</p>
-      <p>Implementation detail 171 for robust testing and layout filling.</p>
-      <p>Implementation detail 172 for robust testing and layout filling.</p>
-      <p>Implementation detail 173 for robust testing and layout filling.</p>
-      <p>Implementation detail 174 for robust testing and layout filling.</p>
-      <p>Implementation detail 175 for robust testing and layout filling.</p>
-      <p>Implementation detail 176 for robust testing and layout filling.</p>
-      <p>Implementation detail 177 for robust testing and layout filling.</p>
-      <p>Implementation detail 178 for robust testing and layout filling.</p>
-      <p>Implementation detail 179 for robust testing and layout filling.</p>
-      <p>Implementation detail 180 for robust testing and layout filling.</p>
-      <p>Implementation detail 181 for robust testing and layout filling.</p>
-      <p>Implementation detail 182 for robust testing and layout filling.</p>
-      <p>Implementation detail 183 for robust testing and layout filling.</p>
-      <p>Implementation detail 184 for robust testing and layout filling.</p>
-      <p>Implementation detail 185 for robust testing and layout filling.</p>
-      <p>Implementation detail 186 for robust testing and layout filling.</p>
-      <p>Implementation detail 187 for robust testing and layout filling.</p>
-      <p>Implementation detail 188 for robust testing and layout filling.</p>
-      <p>Implementation detail 189 for robust testing and layout filling.</p>
-      <p>Implementation detail 190 for robust testing and layout filling.</p>
-      <p>Implementation detail 191 for robust testing and layout filling.</p>
-      <p>Implementation detail 192 for robust testing and layout filling.</p>
-      <p>Implementation detail 193 for robust testing and layout filling.</p>
-      <p>Implementation detail 194 for robust testing and layout filling.</p>
-      <p>Implementation detail 195 for robust testing and layout filling.</p>
-      <p>Implementation detail 196 for robust testing and layout filling.</p>
-      <p>Implementation detail 197 for robust testing and layout filling.</p>
-      <p>Implementation detail 198 for robust testing and layout filling.</p>
-      <p>Implementation detail 199 for robust testing and layout filling.</p>
-      <p>Implementation detail 200 for robust testing and layout filling.</p>
-      <p>Implementation detail 201 for robust testing and layout filling.</p>
-      <p>Implementation detail 202 for robust testing and layout filling.</p>
-      <p>Implementation detail 203 for robust testing and layout filling.</p>
-      <p>Implementation detail 204 for robust testing and layout filling.</p>
-      <p>Implementation detail 205 for robust testing and layout filling.</p>
-      <p>Implementation detail 206 for robust testing and layout filling.</p>
-      <p>Implementation detail 207 for robust testing and layout filling.</p>
-      <p>Implementation detail 208 for robust testing and layout filling.</p>
-      <p>Implementation detail 209 for robust testing and layout filling.</p>
-      <p>Implementation detail 210 for robust testing and layout filling.</p>
-      <p>Implementation detail 211 for robust testing and layout filling.</p>
-      <p>Implementation detail 212 for robust testing and layout filling.</p>
-      <p>Implementation detail 213 for robust testing and layout filling.</p>
-      <p>Implementation detail 214 for robust testing and layout filling.</p>
-      <p>Implementation detail 215 for robust testing and layout filling.</p>
-      <p>Implementation detail 216 for robust testing and layout filling.</p>
-      <p>Implementation detail 217 for robust testing and layout filling.</p>
-      <p>Implementation detail 218 for robust testing and layout filling.</p>
-      <p>Implementation detail 219 for robust testing and layout filling.</p>
-      <p>Implementation detail 220 for robust testing and layout filling.</p>
-      <p>Implementation detail 221 for robust testing and layout filling.</p>
-      <p>Implementation detail 222 for robust testing and layout filling.</p>
-      <p>Implementation detail 223 for robust testing and layout filling.</p>
-      <p>Implementation detail 224 for robust testing and layout filling.</p>
-      <p>Implementation detail 225 for robust testing and layout filling.</p>
-      <p>Implementation detail 226 for robust testing and layout filling.</p>
-      <p>Implementation detail 227 for robust testing and layout filling.</p>
-      <p>Implementation detail 228 for robust testing and layout filling.</p>
-      <p>Implementation detail 229 for robust testing and layout filling.</p>
-      <p>Implementation detail 230 for robust testing and layout filling.</p>
-      <p>Implementation detail 231 for robust testing and layout filling.</p>
-      <p>Implementation detail 232 for robust testing and layout filling.</p>
-      <p>Implementation detail 233 for robust testing and layout filling.</p>
-      <p>Implementation detail 234 for robust testing and layout filling.</p>
-      <p>Implementation detail 235 for robust testing and layout filling.</p>
-      <p>Implementation detail 236 for robust testing and layout filling.</p>
-      <p>Implementation detail 237 for robust testing and layout filling.</p>
-      <p>Implementation detail 238 for robust testing and layout filling.</p>
-      <p>Implementation detail 239 for robust testing and layout filling.</p>
-      <p>Implementation detail 240 for robust testing and layout filling.</p>
-      <p>Implementation detail 241 for robust testing and layout filling.</p>
-      <p>Implementation detail 242 for robust testing and layout filling.</p>
-      <p>Implementation detail 243 for robust testing and layout filling.</p>
-      <p>Implementation detail 244 for robust testing and layout filling.</p>
-      <p>Implementation detail 245 for robust testing and layout filling.</p>
-      <p>Implementation detail 246 for robust testing and layout filling.</p>
-      <p>Implementation detail 247 for robust testing and layout filling.</p>
-      <p>Implementation detail 248 for robust testing and layout filling.</p>
-      <p>Implementation detail 249 for robust testing and layout filling.</p>
-      <p>Implementation detail 250 for robust testing and layout filling.</p>
-      <p>Implementation detail 251 for robust testing and layout filling.</p>
-      <p>Implementation detail 252 for robust testing and layout filling.</p>
-      <p>Implementation detail 253 for robust testing and layout filling.</p>
-      <p>Implementation detail 254 for robust testing and layout filling.</p>
-      <p>Implementation detail 255 for robust testing and layout filling.</p>
-      <p>Implementation detail 256 for robust testing and layout filling.</p>
-      <p>Implementation detail 257 for robust testing and layout filling.</p>
-      <p>Implementation detail 258 for robust testing and layout filling.</p>
-      <p>Implementation detail 259 for robust testing and layout filling.</p>
-      <p>Implementation detail 260 for robust testing and layout filling.</p>
-      <p>Implementation detail 261 for robust testing and layout filling.</p>
-      <p>Implementation detail 262 for robust testing and layout filling.</p>
-      <p>Implementation detail 263 for robust testing and layout filling.</p>
-      <p>Implementation detail 264 for robust testing and layout filling.</p>
-      <p>Implementation detail 265 for robust testing and layout filling.</p>
-      <p>Implementation detail 266 for robust testing and layout filling.</p>
-      <p>Implementation detail 267 for robust testing and layout filling.</p>
-      <p>Implementation detail 268 for robust testing and layout filling.</p>
-      <p>Implementation detail 269 for robust testing and layout filling.</p>
-      <p>Implementation detail 270 for robust testing and layout filling.</p>
-      <p>Implementation detail 271 for robust testing and layout filling.</p>
-      <p>Implementation detail 272 for robust testing and layout filling.</p>
-      <p>Implementation detail 273 for robust testing and layout filling.</p>
-      <p>Implementation detail 274 for robust testing and layout filling.</p>
-      <p>Implementation detail 275 for robust testing and layout filling.</p>
-      <p>Implementation detail 276 for robust testing and layout filling.</p>
-      <p>Implementation detail 277 for robust testing and layout filling.</p>
-      <p>Implementation detail 278 for robust testing and layout filling.</p>
-      <p>Implementation detail 279 for robust testing and layout filling.</p>
-      <p>Implementation detail 280 for robust testing and layout filling.</p>
-      <p>Implementation detail 281 for robust testing and layout filling.</p>
-      <p>Implementation detail 282 for robust testing and layout filling.</p>
-      <p>Implementation detail 283 for robust testing and layout filling.</p>
-      <p>Implementation detail 284 for robust testing and layout filling.</p>
-      <p>Implementation detail 285 for robust testing and layout filling.</p>
-      <p>Implementation detail 286 for robust testing and layout filling.</p>
-      <p>Implementation detail 287 for robust testing and layout filling.</p>
-      <p>Implementation detail 288 for robust testing and layout filling.</p>
-      <p>Implementation detail 289 for robust testing and layout filling.</p>
-      <p>Implementation detail 290 for robust testing and layout filling.</p>
-      <p>Implementation detail 291 for robust testing and layout filling.</p>
-      <p>Implementation detail 292 for robust testing and layout filling.</p>
-      <p>Implementation detail 293 for robust testing and layout filling.</p>
-      <p>Implementation detail 294 for robust testing and layout filling.</p>
-      <p>Implementation detail 295 for robust testing and layout filling.</p>
-      <p>Implementation detail 296 for robust testing and layout filling.</p>
-      <p>Implementation detail 297 for robust testing and layout filling.</p>
-      <p>Implementation detail 298 for robust testing and layout filling.</p>
-      <p>Implementation detail 299 for robust testing and layout filling.</p>
-      <p>Implementation detail 300 for robust testing and layout filling.</p>
-    </div>
-  );
+import { usePathname } from "next/navigation";
+import Link from "next/link";
+import { useState, useEffect } from "react";
+import {
+	BookOpen,
+	ChevronDown,
+	Code,
+	ExternalLink,
+	Layers,
+	Menu,
+	Search,
+	Terminal,
+	X,
+} from "lucide-react";
+
+interface NavItem {
+	title: string;
+	href: string;
+	icon: React.ComponentType<{ size?: number; color?: string }>;
+	isExternal?: boolean;
+}
+
+interface NavSection {
+	category: string;
+	items: NavItem[];
+}
+
+const docsNavigation: NavSection[] = [
+	{
+		category: "Getting Started",
+		items: [
+			{
+				title: "Quick Start Guide",
+				href: "/docs/getting-started",
+				icon: Terminal,
+			},
+		],
+	},
+	{
+		category: "Core Concepts",
+		items: [
+			{
+				title: "Architecture Overview",
+				href: "/docs/architecture",
+				icon: Layers,
+			},
+		],
+	},
+	{
+		category: "API Reference",
+		items: [
+			{
+				title: "REST API Schema",
+				href: "/docs/api",
+				icon: Code,
+			},
+		],
+	},
+	{
+		category: "Resources",
+		items: [
+			{
+				title: "Back to Home",
+				href: "/",
+				icon: BookOpen,
+			},
+			{
+				title: "CLI Reference",
+				href: "https://github.com/rishabh0510rishabh/EnvForage/blob/main/docs/CLI_REFERENCE.md",
+				icon: Terminal,
+				isExternal: true,
+			},
+			{
+				title: "GitHub Repository",
+				href: "https://github.com/rishabh0510rishabh/EnvForage",
+				icon: ExternalLink,
+				isExternal: true,
+			},
+		],
+	},
+];
+
+const versions = [
+	{ id: "v2.0.0", label: "v2.0.0 (Latest)" },
+	{ id: "v1.9.0", label: "v1.9.0" },
+	{ id: "v1.8.0", label: "v1.8.0" },
+];
+
+export default function DocsLayout({
+	children,
+}: {
+	children: React.ReactNode;
+}) {
+	const pathname = usePathname();
+	const [selectedVersion, setSelectedVersion] = useState("v2.0.0");
+	const [isVersionDropdownOpen, setIsVersionDropdownOpen] = useState(false);
+	const [searchQuery, setSearchQuery] = useState("");
+	const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+	// Close mobile menu when route changes
+	useEffect(() => {
+		// eslint-disable-next-line react-hooks/set-state-in-effect
+		setIsMobileMenuOpen(false);
+	}, [pathname]);
+
+	// Filter navigation items based on search query
+	const filteredNavigation = docsNavigation
+		.map((section) => ({
+			...section,
+			items: section.items.filter((item) =>
+				item.title.toLowerCase().includes(searchQuery.toLowerCase())
+			),
+		}))
+		.filter((section) => section.items.length > 0);
+
+	// Get current page category and title for breadcrumbs
+	let currentCategory = "Documentation";
+	let currentPageTitle = "";
+	for (const section of docsNavigation) {
+		const foundItem = section.items.find((item) => item.href === pathname);
+		if (foundItem) {
+			currentCategory = section.category;
+			currentPageTitle = foundItem.title;
+			break;
+		}
+	}
+
+	return (
+		<div
+			style={{
+				display: "flex",
+				minHeight: "calc(100vh - 140px)",
+				backgroundColor: "var(--bg-core)",
+				position: "relative",
+			}}
+		>
+			{/* DESKTOP SIDEBAR */}
+			<aside
+				className="hide-on-mobile glass-panel"
+				style={{
+					width: "300px",
+					borderRight: "1px solid var(--border-subtle)",
+					borderTop: "none",
+					borderBottom: "none",
+					borderLeft: "none",
+					borderRadius: 0,
+					padding: "2rem",
+					height: "calc(100vh - 140px)",
+					position: "sticky",
+					top: "76px",
+					overflowY: "auto",
+					zIndex: 8,
+				}}
+			>
+				{/* Version Selector */}
+				<div style={{ position: "relative", marginBottom: "2rem" }}>
+					<button
+						onClick={() => setIsVersionDropdownOpen(!isVersionDropdownOpen)}
+						style={{
+							width: "100%",
+							display: "flex",
+							alignItems: "center",
+							justifyContent: "space-between",
+							padding: "0.75rem 1rem",
+							borderRadius: "8px",
+							backgroundColor: "var(--bg-secondary)",
+							border: "1px solid var(--border-subtle)",
+							color: "var(--text-primary)",
+							fontWeight: 600,
+							fontSize: "0.875rem",
+							cursor: "pointer",
+							transition: "all var(--transition-fast)",
+						}}
+					>
+						<span style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+							<BookOpen size={16} color="var(--brand-primary)" />
+							{versions.find((v) => v.id === selectedVersion)?.label}
+						</span>
+						<ChevronDown
+							size={16}
+							style={{
+								transform: isVersionDropdownOpen ? "rotate(180deg)" : "none",
+								transition: "transform var(--transition-fast)",
+							}}
+						/>
+					</button>
+
+					{isVersionDropdownOpen && (
+						<div
+							style={{
+								position: "absolute",
+								top: "105%",
+								left: 0,
+								right: 0,
+								backgroundColor: "var(--bg-secondary)",
+								border: "1px solid var(--border-strong)",
+								borderRadius: "8px",
+								boxShadow: "var(--shadow-lg)",
+								zIndex: 20,
+								overflow: "hidden",
+							}}
+						>
+							{versions.map((ver) => (
+								<button
+									key={ver.id}
+									onClick={() => {
+										setSelectedVersion(ver.id);
+										setIsVersionDropdownOpen(false);
+									}}
+									style={{
+										width: "100%",
+										textAlign: "left",
+										padding: "0.75rem 1rem",
+										background: "none",
+										border: "none",
+										color: selectedVersion === ver.id ? "var(--brand-primary)" : "var(--text-primary)",
+										fontWeight: selectedVersion === ver.id ? 700 : 500,
+										fontSize: "0.875rem",
+										cursor: "pointer",
+										transition: "background var(--transition-fast)",
+										backgroundColor: selectedVersion === ver.id ? "rgba(99, 102, 241, 0.08)" : "transparent",
+									}}
+									onMouseEnter={(e) => {
+										if (selectedVersion !== ver.id) {
+											e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.02)";
+										}
+									}}
+									onMouseLeave={(e) => {
+										if (selectedVersion !== ver.id) {
+											e.currentTarget.style.backgroundColor = "transparent";
+										}
+									}}
+								>
+									{ver.label}
+								</button>
+							))}
+						</div>
+					)}
+				</div>
+
+				{/* Search Input */}
+				<div style={{ position: "relative", marginBottom: "2rem" }}>
+					<span style={{ position: "absolute", left: "0.75rem", top: "50%", transform: "translateY(-50%)", color: "var(--text-muted)", display: "flex" }}>
+						<Search size={16} />
+					</span>
+					<input
+						type="text"
+						placeholder="Search documentation..."
+						value={searchQuery}
+						onChange={(e) => setSearchQuery(e.target.value)}
+						style={{
+							width: "100%",
+							padding: "0.75rem 1rem 0.75rem 2.25rem",
+							borderRadius: "8px",
+							backgroundColor: "var(--bg-secondary)",
+							border: "1px solid var(--border-subtle)",
+							color: "var(--text-primary)",
+							fontSize: "0.875rem",
+							outline: "none",
+							transition: "border-color var(--transition-fast)",
+						}}
+						onFocus={(e) => (e.target.style.borderColor = "var(--brand-primary)")}
+						onBlur={(e) => (e.target.style.borderColor = "var(--border-subtle)")}
+					/>
+				</div>
+
+				{/* Navigation Links */}
+				<nav style={{ display: "flex", flexDirection: "column", gap: "1.75rem" }}>
+					{filteredNavigation.map((section, idx) => (
+						<div key={idx}>
+							<h4
+								style={{
+									fontSize: "0.75rem",
+									fontWeight: 700,
+									textTransform: "uppercase",
+									letterSpacing: "0.1em",
+									color: "var(--text-muted)",
+									marginBottom: "0.75rem",
+								}}
+							>
+								{section.category}
+							</h4>
+							<ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: "0.35rem" }}>
+								{section.items.map((item, itemIdx) => {
+									const Icon = item.icon;
+									const isActive = pathname === item.href;
+									return (
+										<li key={itemIdx}>
+											<Link
+												href={item.href}
+												target={item.isExternal ? "_blank" : undefined}
+												rel={item.isExternal ? "noopener noreferrer" : undefined}
+												style={{
+													display: "flex",
+													alignItems: "center",
+													gap: "0.75rem",
+													padding: "0.6rem 0.75rem",
+													borderRadius: "6px",
+													fontSize: "0.9rem",
+													fontWeight: isActive ? 600 : 500,
+													color: isActive ? "var(--text-primary)" : "var(--text-secondary)",
+													backgroundColor: isActive ? "rgba(99, 102, 241, 0.12)" : "transparent",
+													transition: "all var(--transition-fast)",
+													borderLeft: isActive ? "3px solid var(--brand-primary)" : "3px solid transparent",
+													paddingLeft: isActive ? "calc(0.75rem - 3px)" : "0.75rem",
+												}}
+											>
+												<Icon size={16} color={isActive ? "var(--brand-primary)" : "var(--text-muted)"} />
+												{item.title}
+											</Link>
+										</li>
+									);
+								})}
+							</ul>
+						</div>
+					))}
+				</nav>
+			</aside>
+
+			{/* MOBILE MENUBAR & TOGGLE */}
+			<div
+				className="p-mobile-sm"
+				style={{
+					display: "none",
+					width: "100%",
+					backgroundColor: "var(--bg-secondary)",
+					borderBottom: "1px solid var(--border-subtle)",
+					padding: "1rem 1.25rem",
+					position: "fixed",
+					top: "76px",
+					left: 0,
+					zIndex: 9,
+					alignItems: "center",
+					justifyContent: "space-between",
+				}}
+				// We override the 'display: none' using CSS responsive helper
+				ref={(el) => {
+					if (el) {
+						if (window.innerWidth <= 1024) {
+							el.style.display = "flex";
+						} else {
+							el.style.display = "none";
+						}
+					}
+				}}
+			>
+				<button
+					onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+					style={{
+						display: "flex",
+						alignItems: "center",
+						gap: "0.5rem",
+						background: "none",
+						border: "none",
+						color: "var(--text-primary)",
+						fontSize: "0.9rem",
+						fontWeight: 600,
+						cursor: "pointer",
+					}}
+				>
+					<Menu size={20} />
+					<span>Menu</span>
+				</button>
+				<div style={{ fontSize: "0.875rem", fontWeight: 700, color: "var(--brand-primary)" }}>
+					{versions.find((v) => v.id === selectedVersion)?.id}
+				</div>
+			</div>
+
+			{/* MOBILE SIDEBAR DRAWER OVERLAY */}
+			{isMobileMenuOpen && (
+				<div
+					style={{
+						position: "fixed",
+						top: "133px",
+						left: 0,
+						right: 0,
+						bottom: 0,
+						backgroundColor: "rgba(5, 5, 10, 0.8)",
+						zIndex: 99,
+						display: "flex",
+					}}
+				>
+					<div
+						style={{
+							width: "80%",
+							maxWidth: "320px",
+							backgroundColor: "var(--bg-primary)",
+							height: "100%",
+							padding: "2rem 1.25rem",
+							boxShadow: "var(--shadow-lg)",
+							display: "flex",
+							flexDirection: "column",
+							borderRight: "1px solid var(--border-subtle)",
+						}}
+					>
+						<div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "2rem" }}>
+							<span style={{ fontSize: "1.1rem", fontWeight: 800, fontFamily: "var(--font-display)" }}>
+								Navigation
+							</span>
+							<button
+								onClick={() => setIsMobileMenuOpen(false)}
+								style={{ background: "none", border: "none", color: "var(--text-primary)", cursor: "pointer", padding: "0.25rem" }}
+							>
+								<X size={20} />
+							</button>
+						</div>
+
+						{/* Version Selector for Mobile */}
+						<div style={{ marginBottom: "1.5rem" }}>
+							<select
+								value={selectedVersion}
+								onChange={(e) => setSelectedVersion(e.target.value)}
+								style={{
+									width: "100%",
+									padding: "0.75rem",
+									borderRadius: "8px",
+									backgroundColor: "var(--bg-secondary)",
+									border: "1px solid var(--border-subtle)",
+									color: "var(--text-primary)",
+									fontSize: "0.875rem",
+									fontWeight: 600,
+									outline: "none",
+								}}
+							>
+								{versions.map((ver) => (
+									<option key={ver.id} value={ver.id}>
+										{ver.label}
+									</option>
+								))}
+							</select>
+						</div>
+
+						{/* Search Input for Mobile */}
+						<div style={{ position: "relative", marginBottom: "1.5rem" }}>
+							<span style={{ position: "absolute", left: "0.75rem", top: "50%", transform: "translateY(-50%)", color: "var(--text-muted)", display: "flex" }}>
+								<Search size={16} />
+							</span>
+							<input
+								type="text"
+								placeholder="Search..."
+								value={searchQuery}
+								onChange={(e) => setSearchQuery(e.target.value)}
+								style={{
+									width: "100%",
+									padding: "0.6rem 1rem 0.6rem 2.25rem",
+									borderRadius: "8px",
+									backgroundColor: "var(--bg-secondary)",
+									border: "1px solid var(--border-subtle)",
+									color: "var(--text-primary)",
+									fontSize: "0.875rem",
+								}}
+							/>
+						</div>
+
+						{/* Navigation Links for Mobile */}
+						<nav style={{ display: "flex", flexDirection: "column", gap: "1.5rem", overflowY: "auto" }}>
+							{filteredNavigation.map((section, idx) => (
+								<div key={idx}>
+									<h4 style={{ fontSize: "0.75rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em", color: "var(--text-muted)", marginBottom: "0.5rem" }}>
+										{section.category}
+									</h4>
+									<ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: "0.25rem" }}>
+										{section.items.map((item, itemIdx) => {
+											const Icon = item.icon;
+											const isActive = pathname === item.href;
+											return (
+												<li key={itemIdx}>
+													<Link
+														href={item.href}
+														target={item.isExternal ? "_blank" : undefined}
+														rel={item.isExternal ? "noopener noreferrer" : undefined}
+														style={{
+															display: "flex",
+															alignItems: "center",
+															gap: "0.75rem",
+															padding: "0.5rem 0.75rem",
+															borderRadius: "6px",
+															fontSize: "0.9rem",
+															fontWeight: isActive ? 600 : 500,
+															color: isActive ? "var(--text-primary)" : "var(--text-secondary)",
+															backgroundColor: isActive ? "rgba(99, 102, 241, 0.1)" : "transparent",
+														}}
+													>
+														<Icon size={16} color={isActive ? "var(--brand-primary)" : "var(--text-muted)"} />
+														{item.title}
+													</Link>
+												</li>
+											);
+										})}
+									</ul>
+								</div>
+							))}
+						</nav>
+					</div>
+					{/* Click outside to close */}
+					<div style={{ flex: 1 }} onClick={() => setIsMobileMenuOpen(false)} />
+				</div>
+			)}
+
+			{/* MAIN READER CONTENT */}
+			<main
+				style={{
+					flex: 1,
+					minWidth: 0,
+					padding: "3rem 4rem 6rem",
+					overflowY: "auto",
+				}}
+				// Custom inline responsive styles handled safely via class or layout resize
+				ref={(el) => {
+					if (el) {
+						const adjustPadding = () => {
+							if (window.innerWidth <= 768) {
+								el.style.padding = "6.5rem 1.25rem 4rem";
+							} else if (window.innerWidth <= 1024) {
+								el.style.padding = "6.5rem 2.5rem 4rem";
+							} else {
+								el.style.padding = "3rem 4rem 6rem";
+							}
+						};
+						adjustPadding();
+						window.addEventListener("resize", adjustPadding);
+					}
+				}}
+			>
+				{/* Breadcrumb Header */}
+				<div
+					style={{
+						display: "flex",
+						alignItems: "center",
+						gap: "0.5rem",
+						fontSize: "0.85rem",
+						color: "var(--text-muted)",
+						marginBottom: "2rem",
+						fontFamily: "var(--font-sans)",
+					}}
+				>
+					<span style={{ cursor: "pointer" }}>Docs</span>
+					<span style={{ fontSize: "0.75rem" }}>/</span>
+					<span>{currentCategory}</span>
+					{currentPageTitle && (
+						<>
+							<span style={{ fontSize: "0.75rem" }}>/</span>
+							<span style={{ color: "var(--text-secondary)", fontWeight: 500 }}>
+								{currentPageTitle}
+							</span>
+						</>
+					)}
+				</div>
+
+				{/* Reading Pane container */}
+				<article
+					className="markdown-body"
+					style={{
+						maxWidth: "840px",
+						lineHeight: 1.7,
+						color: "var(--text-primary)",
+					}}
+				>
+					{/* Style Injector for MDX markup */}
+					<style dangerouslySetInnerHTML={{ __html: `
+						.markdown-body h1 {
+							font-size: 3rem;
+							font-weight: 800;
+							color: var(--text-primary);
+							margin-top: 1rem;
+							margin-bottom: 1.5rem;
+							letter-spacing: -0.03em;
+							line-height: 1.15;
+						}
+						.markdown-body h2 {
+							font-size: 1.85rem;
+							font-weight: 700;
+							color: var(--text-primary);
+							margin-top: 2.5rem;
+							margin-bottom: 1.25rem;
+							border-bottom: 1px solid var(--border-subtle);
+							padding-bottom: 0.5rem;
+							letter-spacing: -0.02em;
+						}
+						.markdown-body h3 {
+							font-size: 1.35rem;
+							font-weight: 600;
+							color: var(--text-primary);
+							margin-top: 2rem;
+							margin-bottom: 1rem;
+						}
+						.markdown-body p {
+							margin-bottom: 1.5rem;
+							color: var(--text-secondary);
+							font-size: 1.05rem;
+						}
+						.markdown-body ul, .markdown-body ol {
+							margin-bottom: 1.5rem;
+							padding-left: 1.5rem;
+							color: var(--text-secondary);
+							font-size: 1.05rem;
+						}
+						.markdown-body li {
+							margin-bottom: 0.5rem;
+						}
+						.markdown-body code {
+							font-family: var(--font-mono);
+							font-size: 0.9em;
+							background-color: var(--border-subtle);
+							padding: 0.2rem 0.4rem;
+							border-radius: 4px;
+							color: var(--brand-secondary);
+						}
+						.markdown-body pre {
+							background-color: var(--bg-secondary);
+							border: 1px solid var(--border-strong);
+							border-radius: 8px;
+							padding: 1.25rem;
+							overflow-x: auto;
+							margin-bottom: 2rem;
+						}
+						.markdown-body pre code {
+							background-color: transparent;
+							padding: 0;
+							border-radius: 0;
+							color: var(--text-primary);
+							font-size: 0.9rem;
+							line-height: 1.5;
+						}
+						.markdown-body blockquote {
+							border-left: 4px solid var(--brand-primary);
+							padding-left: 1.25rem;
+							margin-left: 0;
+							margin-right: 0;
+							font-style: italic;
+							color: var(--text-muted);
+							margin-bottom: 1.75rem;
+						}
+					` }} />
+					{children}
+				</article>
+
+				{/* Help / Footer CTA */}
+				<div
+					style={{
+						marginTop: "6rem",
+						paddingTop: "2rem",
+						borderTop: "1px solid var(--border-subtle)",
+						display: "flex",
+						justifyContent: "space-between",
+						alignItems: "center",
+						flexWrap: "wrap",
+						gap: "1.5rem",
+					}}
+				>
+					<div style={{ fontSize: "0.875rem", color: "var(--text-muted)" }}>
+						Did this guide help you? Reach out on{" "}
+						<a
+							href="https://github.com/rishabh0510rishabh/EnvForage"
+							target="_blank"
+							rel="noreferrer"
+							style={{ color: "var(--brand-primary)", textDecoration: "underline" }}
+						>
+							GitHub
+						</a>.
+					</div>
+					<div>
+						<Link
+							href="/download"
+							style={{
+								display: "inline-flex",
+								alignItems: "center",
+								gap: "0.5rem",
+								fontSize: "0.875rem",
+								fontWeight: 600,
+								color: "var(--brand-primary)",
+							}}
+						>
+							Get EnvForage CLI <ChevronRightIcon size={14} />
+						</Link>
+					</div>
+				</div>
+			</main>
+		</div>
+	);
+}
+
+// Small helper inline icon
+function ChevronRightIcon({ size }: { size: number }) {
+	return (
+		<svg
+			xmlns="http://www.w3.org/2000/svg"
+			width={size}
+			height={size}
+			viewBox="0 0 24 24"
+			fill="none"
+			stroke="currentColor"
+			strokeWidth="2"
+			strokeLinecap="round"
+			strokeLinejoin="round"
+		>
+			<path d="m9 18 6-6-6-6" />
+		</svg>
+	);
 }

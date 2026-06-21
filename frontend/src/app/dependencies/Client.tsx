@@ -380,7 +380,7 @@ const INFRA_NODES: Node[] = [
 	},
 	{
 		id: "env-provider",
-		label: "ENVFORGE_LLM_PROVIDER",
+		label: "ENVFORAGE_LLM_PROVIDER",
 		type: "env",
 		description: "Specifies which AI system model to resolve queries.",
 		details: { Allowed: "openai, openrouter, ollama, mock", Default: "mock" },

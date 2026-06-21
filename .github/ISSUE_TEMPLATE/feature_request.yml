@@ -1,12 +1,12 @@
 name: Feature Request
-description: Suggest an idea for EnvForge
+description: Suggest an idea for EnvForage
 title: "[Feature]: "
 labels: ["enhancement"]
 body:
   - type: markdown
     attributes:
       value: |
-        Thanks for your interest in improving EnvForge! Please describe your idea below.
+        Thanks for your interest in improving EnvForage! Please describe your idea below.
   - type: textarea
     id: problem
     attributes:

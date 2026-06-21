@@ -28,7 +28,7 @@ export interface AppState {
     
     // Profile State
     activeProfileSlug: string;
-    customParams: Record<string, any>;
+    customParams: Record<string, unknown>;
 
     // Actions
     toggleSidebar: () => void;
@@ -36,7 +36,7 @@ export interface AppState {
     setDiagnosticData: (data: DiagnosticData) => void;
     setAnalysisState: (isAnalyzing: boolean, result?: TroubleshootResult | null) => void;
     setActiveProfile: (slug: string) => void;
-    updateCustomParams: (key: string, value: any) => void;
+    updateCustomParams: (key: string, value: unknown) => void;
     resetState: () => void;
 }
 
@@ -55,7 +55,7 @@ const initialState = {
 export const useAppStore = create<AppState>()(
     devtools(
         persist(
-            (set, get) => ({
+            (set) => ({
                 ...initialState,
 
                 // --- UI Actions ---
@@ -87,7 +87,7 @@ export const useAppStore = create<AppState>()(
                 resetState: () => set(initialState, false, 'resetState'),
             }),
             {
-                name: 'envforge-storage', // unique name
+                name: 'envforage-storage', // unique name
                 storage: createJSONStorage(() => localStorage),
                 partialize: (state) => ({ 
                     activeTheme: state.activeTheme, 
@@ -96,7 +96,7 @@ export const useAppStore = create<AppState>()(
                 }), // Only persist specific fields
             }
         ),
-        { name: 'EnvForgeStore' }
+        { name: 'EnvForageStore' }
     )
 );
 
@@ -125,7 +125,7 @@ export const useThemeStatus = () => useAppStore(selectIsDarkTheme);
 // --- Middleware & Event Listeners ---
 if (typeof window !== 'undefined') {
     window.addEventListener('storage', (e) => {
-        if (e.key === 'envforge-storage') {
+        if (e.key === 'envforage-storage') {
             useAppStore.persist.rehydrate();
         }
     });

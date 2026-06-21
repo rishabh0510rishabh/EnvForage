@@ -164,9 +164,10 @@ export const DropdownMenu: React.FC<DropdownMenuProps> = ({
           {/* We intercept clicks on children to close the menu automatically */}
           {React.Children.map(children, (child) => {
             if (React.isValidElement(child)) {
-              return React.cloneElement(child as React.ReactElement<any>, {
+              const element = child as React.ReactElement<{ onClick?: (e: React.MouseEvent) => void }>;
+              return React.cloneElement(element, {
                 onClick: (e: React.MouseEvent) => {
-                  if (child.props.onClick) child.props.onClick(e);
+                  if (element.props.onClick) element.props.onClick(e);
                   handleClose();
                 },
               });

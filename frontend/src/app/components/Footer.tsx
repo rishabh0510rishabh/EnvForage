@@ -124,13 +124,13 @@ export default function Footer() {
 								gap: "0.8rem",
 							}}
 						>
-							<Link href="/coming-soon" className="footer-link">
+							<Link href="/docs" className="footer-link">
 								Documentation
 							</Link>
-							<Link href="/coming-soon" className="footer-link">
+							<Link href="/docs/getting-started" className="footer-link">
 								Guides
 							</Link>
-							<Link href="/coming-soon" className="footer-link">
+							<Link href="/docs/api" className="footer-link">
 								API Reference
 							</Link>
 							<Link href="/faq" className="footer-link">
@@ -171,7 +171,11 @@ export default function Footer() {
 							>
 								GitHub
 							</Link>
-							<Link href="/coming-soon" className="footer-link">
+							<Link
+								href="https://github.com/rishabh0510rishabh/EnvForage/issues"
+								target="_blank"
+								className="footer-link"
+							>
 								Report Issues
 							</Link>
 							<Link

@@ -57,7 +57,7 @@ class StreamTracker:
         )
         try:
             await asyncio.wait_for(self._idle.wait(), timeout)
-        except asyncio.TimeoutError:
+        except TimeoutError:
             logger.warning(
                 "Shutdown timeout reached with %d stream(s) still active",
                 self._active,

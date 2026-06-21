@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "envforage.fullname" . }}-ollama
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ include "envforage.fullname" . }}-ollama
+  template:
+    metadata:
+      labels:
+        app: {{ include "envforage.fullname" . }}-ollama
+    spec:
+      containers:
+        - name: ollama
+          image: {{ .Values.ollama.image }}
+          ports:
+            - containerPort: 11434
+          volumeMounts:
+            - name: ollama-data
+              mountPath: /root/.ollama
+      volumes:
+        - name: ollama-data
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "envforage.fullname" . }}-ollama
+spec:
+  selector:
+    app: {{ include "envforage.fullname" . }}-ollama
+  ports:
+    - port: 11434
+      targetPort: 11434

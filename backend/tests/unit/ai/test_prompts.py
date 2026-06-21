@@ -16,7 +16,7 @@ def builder():
 @pytest.fixture
 def sample_diagnostic():
     return {
-        "agent_version": "1.0.0",
+        "agent_version": "2.0.0",
         "os": {
             "name": "Ubuntu 22.04",
             "version": "22.04",
@@ -91,7 +91,7 @@ class TestPromptBuilder:
 
     def test_compatibility_context_present(self, builder, sample_request):
         result = builder.build(sample_request)
-        assert "## ENVFORGE COMPATIBILITY CONTEXT" in result
+        assert "## ENVFORAGE COMPATIBILITY CONTEXT" in result
         assert "Supported CUDA versions" in result
 
     def test_user_description_present(self, builder, sample_request):

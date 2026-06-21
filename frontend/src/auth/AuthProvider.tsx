@@ -48,6 +48,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     useEffect(() => {
         // Initial load validation
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         refreshTokens().finally(() => setIsLoading(false));
         
         // Background refresh loop (e.g. 14 minutes for a 15 min token)

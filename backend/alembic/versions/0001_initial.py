@@ -1,4 +1,4 @@
-"""Initial schema — all EnvForge tables.
+"""Initial schema — all EnvForage tables.
 
 Revision ID: 0001
 Revises:Create Date: 2026-05-06

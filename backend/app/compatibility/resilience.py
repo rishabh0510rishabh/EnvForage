@@ -1,9 +1,10 @@
-import time
 import asyncio
 import logging
-from typing import Callable, Any, TypeVar
+import time
+from collections.abc import Callable
 from enum import Enum
 from functools import wraps
+from typing import Any, TypeVar
 
 logger = logging.getLogger("CircuitBreaker")
 
@@ -22,15 +23,15 @@ class CircuitBreaker:
     A sophisticated Circuit Breaker state machine for protecting external API calls.
     """
     def __init__(
-        self, 
-        failure_threshold: int = 5, 
+        self,
+        failure_threshold: int = 5,
         recovery_timeout: float = 30.0,
         half_open_max_calls: int = 2
     ):
         self.failure_threshold = failure_threshold
         self.recovery_timeout = recovery_timeout
         self.half_open_max_calls = half_open_max_calls
-        
+
         self.state = CircuitState.CLOSED
         self.failure_count = 0
         self.last_failure_time = 0.0
@@ -49,11 +50,11 @@ class CircuitBreaker:
             logger.info("Circuit recovered, returning to CLOSED state")
             self.state = CircuitState.CLOSED
             self.failure_count = 0
-            
+
     def record_failure(self):
         self.last_failure_time = time.time()
         self.failure_count += 1
-        
+
         if self.state == CircuitState.HALF_OPEN:
             logger.error("Circuit failed in HALF_OPEN, reverting to OPEN")
             self.state = CircuitState.OPEN
@@ -76,9 +77,9 @@ class ExponentialBackoff:
     """Provides robust exponential backoff retry logic."""
     @staticmethod
     async def execute(
-        func: Callable[..., Any], 
-        max_retries: int = 3, 
-        base_delay: float = 1.0, 
+        func: Callable[..., Any],
+        max_retries: int = 3,
+        base_delay: float = 1.0,
         max_delay: float = 10.0,
         *args, **kwargs
     ) -> Any:
@@ -94,7 +95,7 @@ class ExponentialBackoff:
                 if retries > max_retries:
                     logger.error(f"Max retries ({max_retries}) exhausted.")
                     raise
-                
+
                 delay = min(base_delay * (2 ** (retries - 1)), max_delay)
                 logger.warning(f"Execution failed: {e}. Retrying in {delay}s ({retries}/{max_retries})...")
                 await asyncio.sleep(delay)
@@ -109,12 +110,12 @@ def with_resilience(max_retries: int = 3):
         async def wrapper(*args, **kwargs):
             if not matrix_circuit_breaker.can_execute():
                 raise CircuitBreakerError("Circuit is OPEN. Fast-failing request to protect downstream.")
-                
+
             try:
                 result = await ExponentialBackoff.execute(func, max_retries=max_retries, *args, **kwargs)
                 matrix_circuit_breaker.record_success()
                 return result
-            except Exception as e:
+            except Exception:
                 matrix_circuit_breaker.record_failure()
                 raise
         return wrapper

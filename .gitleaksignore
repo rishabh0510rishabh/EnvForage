@@ -1,0 +1,12 @@
+# Ignore historical false positives in backend/tests/unit/test_config.py
+# The key 'prod-safe-key-123' matched generic-api-key regex
+
+c954069c96045504ffcd9fab254b1ea9e41630fa:backend/tests/unit/test_config.py:generic-api-key:69
+c954069c96045504ffcd9fab254b1ea9e41630fa:backend/tests/unit/test_config.py:generic-api-key:79
+c954069c96045504ffcd9fab254b1ea9e41630fa:backend/tests/unit/test_config.py:generic-api-key:89
+c954069c96045504ffcd9fab254b1ea9e41630fa:backend/tests/unit/test_config.py:generic-api-key:98
+1412d7fd8a04c8f9fdeecf7db7ba947e91039d14:backend/tests/unit/test_config.py:generic-api-key:97
+1412d7fd8a04c8f9fdeecf7db7ba947e91039d14:backend/tests/unit/test_config.py:generic-api-key:109
+6c7f93a39c4df7ec8a7a8ae8d2b22342bfce78a8:backend/tests/unit/test_config.py:generic-api-key:70
+6c7f93a39c4df7ec8a7a8ae8d2b22342bfce78a8:backend/tests/unit/test_config.py:generic-api-key:82
+6c7f93a39c4df7ec8a7a8ae8d2b22342bfce78a8:backend/tests/unit/test_config.py:generic-api-key:90

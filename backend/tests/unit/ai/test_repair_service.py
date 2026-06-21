@@ -62,7 +62,7 @@ class TestRepairService:
         assert not result["filename"].endswith(".j2")
         assert len(result["content"]) > 50
         assert result["size_bytes"] > 0
-        assert "EnvForge" in result["content"]
+        assert "EnvForage" in result["content"]
 
     def test_render_unknown_template_raises(self, service):
         with pytest.raises(RepairTemplateNotFoundError) as exc_info:
@@ -86,9 +86,9 @@ class TestRepairService:
         result = service.render_repair("repair_driver_update")
         assert "Generated:" in result["content"]
 
-    def test_render_includes_envforge_version(self, service):
+    def test_render_includes_envforage_version(self, service):
         result = service.render_repair("repair_venv_recreate")
-        assert "EnvForge" in result["content"]
+        assert "EnvForage" in result["content"]
 
     def test_output_filename_strips_j2(self, service):
         result = service.render_repair("repair_cuda_upgrade")

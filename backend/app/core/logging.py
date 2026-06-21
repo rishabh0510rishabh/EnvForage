@@ -7,7 +7,7 @@ import structlog
 from app.config import get_settings
 
 
-def setup_logging() -> None:
+def setup_structlog_logging() -> None:
     """Configure structured logging for the application.
 
     Routes standard library logging through structlog for JSON formatting.
@@ -54,18 +54,16 @@ def setup_logging() -> None:
         logger.propagate = True
 
 # --- Structured JSON Logging Factory ---
-import logging
 import json
 import traceback
 from datetime import datetime
-from typing import Any, Dict
 
 try:
     import contextvars
     # Use contextvars to maintain trace IDs across async boundaries
     request_id_ctx = contextvars.ContextVar("request_id", default="-")
 except ImportError:
-    request_id_ctx = None
+    request_id_ctx = None  # type: ignore[assignment]
 
 class JSONLogFormatter(logging.Formatter):
     """
@@ -78,7 +76,7 @@ class JSONLogFormatter(logging.Formatter):
         self.service_name = service_name
 
     def format(self, record: logging.LogRecord) -> str:
-        log_obj: Dict[str, Any] = {
+        log_obj: dict[str, Any] = {
             "timestamp": datetime.utcnow().isoformat() + "Z",
             "level": record.levelname,
             "message": record.getMessage(),
@@ -94,7 +92,7 @@ class JSONLogFormatter(logging.Formatter):
             log_obj["trace_id"] = request_id_ctx.get()
 
         # Handle exceptions deeply
-        if record.exc_info:
+        if record.exc_info and record.exc_info[0] and record.exc_info[1]:
             log_obj["exception"] = {
                 "type": record.exc_info[0].__name__,
                 "message": str(record.exc_info[1]),
@@ -103,7 +101,7 @@ class JSONLogFormatter(logging.Formatter):
 
         # Include arbitrary extra attributes passed via `logger.info("...", extra={"user_id": 123})`
         for key, val in record.__dict__.items():
-            if key not in logging.LogRecord(None, None, "", 0, "", (), None).__dict__:
+            if key not in logging.LogRecord("", 0, "", 0, "", (), None).__dict__:
                 log_obj[key] = val
 
         try:
@@ -119,25 +117,25 @@ def setup_logging(env: str = "production", level: int = logging.INFO):
     output structured JSON logs.
     """
     root_logger = logging.getLogger()
-    
+
     # Remove existing handlers
     for handler in root_logger.handlers[:]:
         root_logger.removeHandler(handler)
-        
+
     root_logger.setLevel(level)
 
     console_handler = logging.StreamHandler()
-    
+
     if env == "development":
         # In dev, we might prefer human-readable color logs
         formatter = logging.Formatter("[%(asctime)s] %(levelname)s [%(name)s] %(message)s")
     else:
         # In prod, JSON all the way
         formatter = JSONLogFormatter(env=env)
-        
+
     console_handler.setFormatter(formatter)
     root_logger.addHandler(console_handler)
-    
+
     logging.getLogger("uvicorn.access").setLevel(logging.WARNING) # Reduce noise
-    
+
     return root_logger

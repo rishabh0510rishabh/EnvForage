@@ -1,15 +1,15 @@
 # ==============================================================================
-# EnvForge Generated environment.yml
+# EnvForage Generated environment.yml
 # Profile  : {{ profile.name }}
 # Python   : {{ python_version }}
 {% if cuda_version %}# CUDA     : {{ cuda_version }}
 {% endif %}# Generated: {{ generated_at }}
-# EnvForge : v{{ envforge_version }}
+# EnvForage : v{{ envforage_version }}
 #
 # Install with:
 #   conda env create -f environment.yml
 # =============================================================================={% if warnings %}#
-# ── EnvForge Warnings ─────────────────────────────────────────────────────────
+# ── EnvForage Warnings ─────────────────────────────────────────────────────────
 {% for warning in warnings %}# WARNING: {{ warning }}
 {% endfor %}#
 {% endif %}

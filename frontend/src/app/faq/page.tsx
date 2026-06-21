@@ -6,7 +6,7 @@ export default function FAQPage() {
     },
     {
       question: "How do I install the CLI agent?",
-      answer: "Run: pip install envforge-agent, then use envforge diagnose to scan your hardware."
+      answer: "Run: pip install envforage, then use envforage diagnose to scan your hardware."
     },
     {
       question: "Which GPUs are supported?",

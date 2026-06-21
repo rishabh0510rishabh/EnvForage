@@ -1,4 +1,4 @@
-"""Tests for the --output flag of the envforge diagnose command."""
+"""Tests for the --output flag of the envforage diagnose command."""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 
-from envforge_agent.schemas import DiagnosticReport
+from envforage.schemas import DiagnosticReport
 
 FIXTURES_DIR = Path(__file__).parent / "fixtures"
 
@@ -17,16 +17,16 @@ def load_fixture(name: str) -> dict:
 
 
 class TestDiagnoseOutputFlag:
-    """Tests for the --output flag of the envforge diagnose command."""
+    """Tests for the --output flag of the envforage diagnose command."""
 
     def test_output_flag_creates_json_file(self, tmp_path) -> None:
         """--output saves a valid JSON DiagnosticReport to the given file path."""
-        from envforge_agent.cli import cli
+        from envforage.cli import cli
         from click.testing import CliRunner
 
         output_file = tmp_path / "report.json"
 
-        with patch("envforge_agent.cli.ReportBuilder") as mock_builder:
+        with patch("envforage.cli.ReportBuilder") as mock_builder:
             mock_report = DiagnosticReport.model_validate(load_fixture("linux_gpu.json"))
             mock_builder.return_value.build.return_value = mock_report
 
@@ -42,12 +42,12 @@ class TestDiagnoseOutputFlag:
 
     def test_output_flag_quiet_still_writes_file(self, tmp_path) -> None:
         """--output with --quiet still writes the file even with no terminal output."""
-        from envforge_agent.cli import cli
+        from envforage.cli import cli
         from click.testing import CliRunner
 
         output_file = tmp_path / "report.json"
 
-        with patch("envforge_agent.cli.ReportBuilder") as mock_builder:
+        with patch("envforage.cli.ReportBuilder") as mock_builder:
             mock_report = DiagnosticReport.model_validate(load_fixture("linux_gpu.json"))
             mock_builder.return_value.build.return_value = mock_report
 
@@ -61,12 +61,12 @@ class TestDiagnoseOutputFlag:
 
     def test_output_file_contains_all_report_fields(self, tmp_path) -> None:
         """The saved JSON contains all expected DiagnosticReport top-level fields."""
-        from envforge_agent.cli import cli
+        from envforage.cli import cli
         from click.testing import CliRunner
 
         output_file = tmp_path / "report.json"
 
-        with patch("envforge_agent.cli.ReportBuilder") as mock_builder:
+        with patch("envforage.cli.ReportBuilder") as mock_builder:
             mock_report = DiagnosticReport.model_validate(load_fixture("linux_gpu.json"))
             mock_builder.return_value.build.return_value = mock_report
 
@@ -81,10 +81,10 @@ class TestDiagnoseOutputFlag:
 
     def test_without_output_flag_json_printed_to_stdout(self) -> None:
         """Without --output, the JSON report is echoed to stdout (pipe-friendly)."""
-        from envforge_agent.cli import cli
+        from envforage.cli import cli
         from click.testing import CliRunner
 
-        with patch("envforge_agent.cli.ReportBuilder") as mock_builder:
+        with patch("envforage.cli.ReportBuilder") as mock_builder:
             mock_report = DiagnosticReport.model_validate(load_fixture("linux_gpu.json"))
             mock_builder.return_value.build.return_value = mock_report
 
@@ -97,15 +97,15 @@ class TestDiagnoseOutputFlag:
         assert "os" in parsed
 
     def test_wsl_gpu_passthrough_warning_printed(self) -> None:
-        from envforge_agent.cli import cli
+        from envforage.cli import cli
         from click.testing import CliRunner
 
-        with patch("envforge_agent.cli.ReportBuilder") as mock_builder:
+        with patch("envforage.cli.ReportBuilder") as mock_builder:
             mock_report = DiagnosticReport.model_validate(load_fixture("wsl_cuda.json"))
             mock_builder.return_value.build.return_value = mock_report
 
             with patch(
-                "envforge_agent.cli.detect_wsl_gpu_passthrough",
+                "envforage.cli.detect_wsl_gpu_passthrough",
                 return_value=(False, ["Missing /dev/dxg"]),
             ):
                 runner = CliRunner()

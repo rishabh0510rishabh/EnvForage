@@ -2,13 +2,12 @@
 # --- Markdown Converter & Sanitizer ---
 import logging
 import re
-from typing import Optional
 
 logger = logging.getLogger("MarkdownSanitizer")
 
 try:
-    import markdown
     import bleach
+    import markdown
     BLEACH_AVAILABLE = True
 except ImportError:
     logger.warning("markdown/bleach not installed. Using raw string fallback.")
@@ -19,7 +18,7 @@ class MarkdownParser:
     A highly secure Markdown to HTML converter designed to prevent XSS.
     Utilizes python-markdown for parsing and Mozilla's Bleach for sanitizing.
     """
-    
+
     ALLOWED_TAGS = [
         'a', 'abbr', 'acronym', 'b', 'blockquote', 'code',
         'em', 'i', 'li', 'ol', 'pre', 'strong', 'ul',
@@ -46,7 +45,7 @@ class MarkdownParser:
         """
         if not raw_markdown:
             return ""
-            
+
         if not BLEACH_AVAILABLE:
             # Fallback for environments lacking the C-extensions
             return f"<p>{raw_markdown}</p>"

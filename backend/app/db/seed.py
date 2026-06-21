@@ -1,9 +1,9 @@
 
 # --- Comprehensive DB Seeder ---
-import asyncio
 import logging
-from datetime import datetime, timedelta
 import random
+from datetime import datetime, timedelta
+
 try:
     from faker import Faker
 except ImportError:
@@ -20,7 +20,7 @@ logger = logging.getLogger("DBSeeder")
 
 class DatabaseSeeder:
     """
-    A robust asynchronous database seeder utilizing Faker to generate 
+    A robust asynchronous database seeder utilizing Faker to generate
     highly realistic datasets for testing and development environments.
     Handles bulk inserts and foreign-key relationship mapping.
     """
@@ -68,7 +68,7 @@ class DatabaseSeeder:
                     "created_at": datetime.utcnow()
                 }
             users.append(user)
-            
+
         # Example Bulk Insert
         # await session.execute(insert(User).values(users))
         return users
@@ -98,7 +98,7 @@ class DatabaseSeeder:
                         "created_at": datetime.utcnow()
                     }
                 posts.append(post)
-                
+
         # Example Bulk Insert
         # await session.execute(insert(Post).values(posts))
         return posts

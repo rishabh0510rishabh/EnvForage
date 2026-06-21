@@ -143,11 +143,12 @@ def test_delete_profile_error_has_consistent_format():
 
 
 def test_delete_profile_db_error_returns_500():
+    client_no_raise = TestClient(app, raise_server_exceptions=False)
     with patch(
         "app.services.profile_service.delete_profile",
         new_callable=AsyncMock,
         side_effect=Exception("DB error"),
     ):
-        response = client.delete("/api/v1/profiles/test-profile")
+        response = client_no_raise.delete("/api/v1/profiles/test-profile")
 
     assert response.status_code == 500

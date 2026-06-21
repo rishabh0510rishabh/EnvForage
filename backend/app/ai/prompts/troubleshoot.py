@@ -175,7 +175,7 @@ class TroubleshootPromptBuilder:
 
     def _build_compatibility_context(self, request: TroubleshootRequest) -> str:
         """Inject relevant CUDA matrix data so the LLM has ground truth."""
-        lines = ["## ENVFORGE COMPATIBILITY CONTEXT"]
+        lines = ["## ENVFORAGE COMPATIBILITY CONTEXT"]
         lines.append(f"Supported CUDA versions: {', '.join(SUPPORTED_CUDA_VERSIONS)}")
 
         # If the user has CUDA, show the matrix entry

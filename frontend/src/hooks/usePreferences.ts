@@ -29,6 +29,7 @@ export function usePreferencesStore() {
         try {
             const stored = localStorage.getItem('user-preferences');
             if (stored) {
+                // eslint-disable-next-line react-hooks/set-state-in-effect
                 setPreferences({ ...defaultPreferences, ...JSON.parse(stored) });
             }
         } catch (e) {

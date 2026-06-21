@@ -1,5 +1,5 @@
 # ==============================================================================
-# EnvForge Generated Makefile
+# EnvForage Generated Makefile
 # Profile : {{ profile.name }}
 # OS      : {{ target_os }}
 # Python  : {{ python_version }}
@@ -11,23 +11,23 @@
 ## install: Set up the full {{ profile.name }} environment
 install:
 {% if target_os == "WIN" %}
-	@echo "[EnvForge] Running Windows setup..."
+	@echo "[EnvForage] Running Windows setup..."
 	powershell -ExecutionPolicy Bypass -File setup.ps1
 {% else %}
-	@echo "[EnvForge] Running Linux/WSL setup..."
+	@echo "[EnvForage] Running Linux/WSL setup..."
 	@bash setup.sh
 {% endif %}
 
 ## verify: Verify the installed environment
 verify:
 {% if target_os == "WIN" %}
-	@echo "[EnvForge] Verifying environment..."
+	@echo "[EnvForage] Verifying environment..."
 	@py -{{ python_version }} -c "import sys; print('Python', sys.version)"
 {% for pkg in packages %}
 	@py -{{ python_version }} -c "import {{ pkg.name.split('[')[0].replace('-','_').replace('.','_') }}; print('OK: {{ pkg.name }}')" || echo "MISSING: {{ pkg.name }}"
 {% endfor %}
 {% else %}
-	@echo "[EnvForge] Verifying environment..."
+	@echo "[EnvForage] Verifying environment..."
 	@python{{ python_version }} -c "import sys; print('Python', sys.version)"
 {% for pkg in packages %}
 	@python{{ python_version }} -c "import {{ pkg.name.split('[')[0].replace('-','_').replace('.','_') }}; print('OK: {{ pkg.name }}')" || echo "MISSING: {{ pkg.name }}"
@@ -37,11 +37,11 @@ verify:
 ## clean: Remove virtual environment and cached files
 clean:
 {% if target_os == "WIN" %}
-	@echo "[EnvForge] Cleaning environment..."
+	@echo "[EnvForage] Cleaning environment..."
 	@if exist .venv rmdir /s /q .venv
 	@if exist __pycache__ rmdir /s /q __pycache__
 {% else %}
-	@echo "[EnvForge] Cleaning environment..."
+	@echo "[EnvForage] Cleaning environment..."
 	@rm -rf .venv __pycache__ *.pyc .pytest_cache
 {% endif %}
 
@@ -49,7 +49,7 @@ clean:
 help:
 {% if target_os == "WIN" %}
 	@echo.
-	@echo EnvForge - {{ profile.name }} Environment
+	@echo EnvForage - {{ profile.name }} Environment
 	@echo ===========================================
 	@echo   install  - Set up the environment
 	@echo   verify   - Verify installed packages
@@ -58,7 +58,7 @@ help:
 	@echo.
 {% else %}
 	@echo ""
-	@echo "EnvForge — {{ profile.name }} Environment"
+	@echo "EnvForage — {{ profile.name }} Environment"
 	@echo "==========================================="
 	@grep -E '^## ' $(MAKEFILE_LIST) | sed 's/## /  /'
 	@echo ""

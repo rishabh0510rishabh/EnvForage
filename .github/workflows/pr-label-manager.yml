@@ -28,9 +28,14 @@ jobs:
         with:
           script: |
             // --- CONSTANTS & CONFIGURATION ---
-            const PROGRAM_REGEX = /^(gssoc|ssoc|nsoc)/i;
+            const PROGRAM_REGEX = /^(gssoc)/i;
             
-            const DIFFICULTY_LABELS = ['level1', 'level2', 'level3'];
+            const DIFFICULTY_LABELS = [
+              'level:critical',
+              'level:beginner',
+              'level:intermediate',
+              'level:advanced'
+            ];
             const TYPE_LABELS = [
               'type:bug',
               'type:feature',
@@ -40,12 +45,6 @@ jobs:
               'type:security',
               'type:design',
               'type:refactor'
-            ];
-            const DIFFICULTY2_LABELS = [
-              'level:critical',
-              'level:beginner',
-              'level:intermediate',
-              'level:advanced'
             ];
             
             const STICKY_SIGNATURE = '<!-- PR-LABEL-MANAGER-STICKY-COMMENT -->';
@@ -142,7 +141,6 @@ jobs:
             const foundPrograms = currentLabels.filter(l => PROGRAM_REGEX.test(l));
             const foundDifficulty = currentLabels.filter(l => DIFFICULTY_LABELS.includes(l));
             const foundTypes = currentLabels.filter(l => TYPE_LABELS.includes(l));
-            const foundDifficulty2 = currentLabels.filter(l => DIFFICULTY2_LABELS.includes(l));
 
             const missingCategories = [];
 
@@ -150,40 +148,53 @@ jobs:
             if (!currentLabels.includes('gssoc:approved')) {
               labelsToAdd.push('gssoc:approved');
             }
-            if (!currentLabels.includes("NSoC'26")) {
-              labelsToAdd.push("NSoC'26");
-            }
             
             // Cleanup any other legacy program labels that might interfere
             for (const lbl of foundPrograms) {
-              if (lbl !== 'gssoc:approved' && lbl !== "NSoC'26") {
+              if (lbl !== 'gssoc:approved') {
+                labelsToRemove.push(lbl);
+              }
+            }
+            // Explicitly remove ssoc, nsoc, and NSoC'26 labels
+            for (const lbl of currentLabels) {
+              if (/^(ssoc|nsoc)/i.test(lbl) || lbl === "NSoC'26") {
                 labelsToRemove.push(lbl);
               }
             }
 
-            // Difficulty labels validation (Exclusivity: only ONE allowed)
-            if (foundDifficulty.length === 0) {
-              labelsToAdd.push('level1');
-            } else if (foundDifficulty.length > 1) {
-              const keep = foundDifficulty[0];
-              const remove = foundDifficulty.slice(1);
-              labelsToRemove.push(...remove);
-              console.log(`Difficulty violation: Keeping '${keep}', removing: ${remove.join(', ')}`);
+            // Difficulty labels validation (Exclusivity: only ONE allowed, determined by PR changes size)
+            const totalChanges = (pr.additions || 0) + (pr.deletions || 0);
+            let selectedDifficulty = 'level:beginner';
+            if (totalChanges >= 1000) {
+              selectedDifficulty = 'level:critical';
+            } else if (totalChanges >= 250) {
+              selectedDifficulty = 'level:advanced';
+            } else if (totalChanges >= 50) {
+              selectedDifficulty = 'level:intermediate';
             }
 
-            // Type labels validation
-            if (foundTypes.length === 0) {
-              labelsToAdd.push('type:feature');
+            // Ensure the selected difficulty is added
+            if (!currentLabels.includes(selectedDifficulty)) {
+              labelsToAdd.push(selectedDifficulty);
             }
 
-            // Difficulty2 labels validation (Exclusivity: only ONE allowed)
-            if (foundDifficulty2.length === 0) {
-              labelsToAdd.push('level:beginner');
-            } else if (foundDifficulty2.length > 1) {
-              const keep = foundDifficulty2[0];
-              const remove = foundDifficulty2.slice(1);
-              labelsToRemove.push(...remove);
-              console.log(`Difficulty2 violation: Keeping '${keep}', removing: ${remove.join(', ')}`);
+            // Remove any other conflicting difficulty labels
+            for (const lbl of DIFFICULTY_LABELS) {
+              if (lbl !== selectedDifficulty && currentLabels.includes(lbl)) {
+                labelsToRemove.push(lbl);
+              }
+            }
+
+            // Cleanup legacy difficulty labels
+            const legacyDifficultyLabels = [
+              'level1', 'level2', 'level3',
+              'level:easy', 'level:medium', 'level:med', 'level:hard',
+              'gssoc:beginner', 'gssoc:begginer', 'gssoc:intermediate', 'gssoc:intermidiate', 'gssoc:advanced', 'gssoc:advance', 'gssoc:critical'
+            ];
+            for (const lbl of legacyDifficultyLabels) {
+              if (currentLabels.includes(lbl)) {
+                labelsToRemove.push(lbl);
+              }
             }
 
             // --- 4. MERGEABILITY & CONFLICT DETECTION ---

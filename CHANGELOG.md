@@ -4,8 +4,43 @@ All notable changes to this project will be documented in this file.
  
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
- 
-## [Unreleased]
+
+## [2.1.0] - 2026-06-21
+
+### Added
+- **Windows Installer**: Added a dedicated Windows installer (`envforage-setup.exe`), an upgrade flow, and existing-install detection & repair UI.
+- **Uninstall Feedback Flow**: Built a full end-to-end feedback feature for when users uninstall (API, Database, and frontend UI).
+- **SQLite Cache**: Replaced the legacy in-memory/file fallback cache layer with a robust, persistent SQLite cache mechanism.
+
+### Changed
+- **UI & UX Improvements**: Replaced the `/install` route with `/download` and switched the app to default to Dark Mode. Migrated all documentation to interactive React pages instead of static files.
+- **Mock Replacements**: Replaced massive mock components (e.g., webhook logs) with clean, functional code.
+
+### Fixed
+- **Zero-Lint Codebase**: Cleared over 70 ESLint errors and warnings. The frontend is now strictly typed, completely lint-compliant, and free of dangerous `any` types and `@ts-ignore` statements.
+- **Security & Stability**: Added Gitleaks to the CI pipeline to catch secrets, relaxed overly strict prod safety checks, implemented an in-memory Redis fallback, and fixed severe hydration issues.
+
+
+## [2.0.0] - 2026-06-18
+
+### Added
+- **Database-Backed Compatibility Matrix**: Replaced static YAML compatibility files with a dynamic database schema, robust CLI matrix syncing, and a matrix synchronization service.
+- **AST-Based Script Safety Gates**: Implemented abstract syntax tree (AST) based shell script safety validation and integrated ShellCheck static analysis to automatically scan and block dangerous/destructive commands.
+- **Environment Validation Module**: Added validation checks in both the CLI and backend to verify system prerequisites and tool chains.
+- **Recommendation Engine**: Implemented an automated ML framework and driver recommendation module to suggest optimal profiles based on diagnostic reports.
+- **Sentry Error Tracking**: Integrated Sentry error reporting, error boundaries, and environment-gated logging into the Next.js frontend.
+- **SEO Enhancements**: Added canonical url route tags, automated sitemap.xml, and robots.txt generation.
+- **Get Started Installation Wizard**: Designed and implemented an interactive onboarding and installation page in the frontend web application.
+- **Favorites Support**: Added support for marking ML environment profiles as favorites for quick retrieval.
+- **Diagnostics Formatting**: Added a new `--format markdown` flag output option to `envforge diagnose` for formatted CLI report output.
+- **Automatic Retries**: Implemented client-side API call retries with exponential backoff for GET requests.
+- **Security Validation and Hardening**: Added database-backed admin API key validation, password strength validation, rate limiting to authentication endpoints, and an environment startup guard for `SECRET_KEY`.
+
+### Fixed
+- **Cache Mismatch Engine Crashes**: Resolved several cache-type crashes in `update_profile()` and `generate_scripts()`.
+- **Worker Async Persistence**: Made S3 integration, audit logging, and celery status queries fully async and robust against failure.
+- **Safety Filters**: Hardened AST-based shell script safety filters against provider errors and unbounded stream buffer leaks.
+- **DoS Mitigation in Schemas**: Capped maximum list lengths of GPUs and python installations in `DiagnosticReportSchema` to prevent oversized JSON denial-of-service vectors.
  
 
 ## [1.0.2] - 2026-06-02
@@ -33,7 +68,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Updated `setup_linux.sh.j2` to bootstrap `uv` via `curl` and conditionally use `uv pip install` across all install paths (CUDA, non-CUDA, CPU-only).
 ### Added
 - **Helm Chart for Kubernetes Deployment:**
-  - Added `helm/envforge/` chart with templates for backend Deployment, Redis Deployment, Services, Ingress, and ConfigMap.
+  - Added `helm/envforage/` chart with templates for backend Deployment, Redis Deployment, Services, Ingress, and ConfigMap.
   - Parameterized via `values.yaml` — image, ports, replicas, env vars, and Redis config are all overridable.
   - Non-root `securityContext` (`runAsNonRoot: true`) applied to backend Deployment, consistent with Dockerfile hardening.
   - Liveness and readiness probes configured on `/health`.
@@ -52,7 +87,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
  
 ### Added
 - **v1.0.0 Stable Release.**
-  - Official launch of the stable `v1.0.0` release of the EnvForge platform, consolidating all CLI, backend, frontend, and AI troubleshooting features.
+  - Official launch of the stable `v1.0.0` release of the EnvForage platform, consolidating all CLI, backend, frontend, and AI troubleshooting features.
   - End-to-end integration of AI-assisted environment troubleshooting, system diagnostic reporting, and custom shell setup script generation.
 - **Conda Environment Configuration:**
   - Added support for generating and exporting `environment.yml` files for Anaconda/Miniconda envs.
@@ -98,7 +133,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - **Phase 4 — Part 1**: OpenRouter LLM Provider.
   - `OpenRouterProvider` class implementing `LLMProvider` ABC with async HTTP, JSON mode enforcement, exponential backoff retry (3 attempts), Pydantic response parsing, and token usage tracking.
-  - Provider factory `get_provider()` — reads `ENVFORGE_LLM_PROVIDER` env var and instantiates the correct provider with lazy imports.
+  - Provider factory `get_provider()` — reads `ENVFORAGE_LLM_PROVIDER` env var and instantiates the correct provider with lazy imports.
   - New config fields: `ai_max_tokens` (default 2048), `ai_temperature` (default 0.3).
   - ADR-009: OpenRouter as Primary LLM Gateway.
 - **Phase 4 — Part 2**: Prompt Engineering System.
@@ -165,13 +200,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.2.0] - 2026-05-06
  
 ### Added
-- **Phase 2 Complete:** CLI Diagnostic Agent (`envforge-agent`).
+- **Phase 2 Complete:** CLI Diagnostic Agent (`envforage`).
 - OS detection for Windows, Linux, and WSL2.
 - GPU detection via `nvidia-smi`.
 - CUDA toolkit, cuDNN, and NCCL version detection.
 - Python installation scanner.
 - RAM and CPU profiling.
-- CLI commands: `envforge diagnose`, `envforge verify`, and `envforge fix`.
+- CLI commands: `envforage diagnose`, `envforage verify`, and `envforage fix`.
 - Test suite with multi-platform fixtures.
 - Documentation updates for CLI Agent deep-dive.
 ## [0.1.0] - 2026-05-06

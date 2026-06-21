@@ -46,6 +46,7 @@ export function useWindowSize(): WindowSize {
   }, []);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsMounted(true);
     // Set the actual size immediately once mounted on the client
     handleResize();

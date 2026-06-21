@@ -3,32 +3,32 @@
 services:
   db:
     image: postgres:16-alpine
-    container_name: envforge_db
+    container_name: envforage_db
     restart: unless-stopped
     environment:
-      POSTGRES_USER: envforge
-      POSTGRES_PASSWORD: envforge_dev_secret
-      POSTGRES_DB: envforge
+      POSTGRES_USER: envforage
+      POSTGRES_PASSWORD: envforage_dev_secret
+      POSTGRES_DB: envforage
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U envforge -d envforge"]
+      test: ["CMD-SHELL", "pg_isready -U envforage -d envforage"]
       interval: 5s
       timeout: 5s
       retries: 10
 
   redis:
     image: redis:7-alpine
-    container_name: envforge_redis
+    container_name: envforage_redis
     restart: unless-stopped
     ports:
       - "6379:6379"
 
   llm:
     image: ollama/ollama
-    container_name: envforge_ollama
+    container_name: envforage_ollama
     restart: unless-stopped
     ports:
       - "11434:11434"
@@ -39,7 +39,7 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: envforge_api
+    container_name: envforage_api
     restart: unless-stopped
 
     depends_on:
@@ -53,11 +53,11 @@ services:
 
     environment:
       REDIS_URL: redis://redis:6379
-      DATABASE_URL: postgresql+asyncpg://envforge:envforge_dev_secret@db:5432/envforge
+      DATABASE_URL: postgresql+asyncpg://envforage:envforage_dev_secret@db:5432/envforage
       ENVIRONMENT: development
       DEBUG: "true"
       SECRET_KEY: dev_secret_key_change_in_production
-      ENVFORGE_LLM_PROVIDER: mock
+      ENVFORAGE_LLM_PROVIDER: mock
       OLLAMA_BASE_URL: http://llm:11434
 
     volumes:
@@ -77,7 +77,7 @@ services:
       args:
         - NEXT_PUBLIC_API_URL=http://localhost:8000/api/v1
         - BACKEND_API_URL=http://api:8000
-    container_name: envforge_frontend
+    container_name: envforage_frontend
     restart: unless-stopped
     ports:
       - "3000:3000"

@@ -2,7 +2,7 @@
 
 **Status**: Accepted
 **Date**: 2026-05-06
-**Author**: EnvForge — Phase 1 Implementation
+**Author**: EnvForage — Phase 1 Implementation
 
 ---
 

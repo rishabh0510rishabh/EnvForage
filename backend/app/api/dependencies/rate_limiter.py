@@ -1,8 +1,9 @@
 
 # --- FastApi Rate Limiting Dependency ---
-import time
-from fastapi import Request, HTTPException, status
 import logging
+import time
+
+from fastapi import HTTPException, Request, status
 
 logger = logging.getLogger("RateLimiter")
 
@@ -17,19 +18,18 @@ class RateLimiter:
 
     async def __call__(self, request: Request):
         client_ip = request.client.host if request.client else "127.0.0.1"
-        current_window = int(time.time() / self.window_seconds)
-        redis_key = f"rate_limit:{client_ip}:{current_window}"
-        
+        int(time.time() / self.window_seconds)
+
         try:
             # We assume a global get_redis() utility exists, simulating logic here
             # redis = await get_redis()
             # current_count = await redis.incr(redis_key)
             # if current_count == 1:
             #     await redis.expire(redis_key, self.window_seconds)
-            
+
             # Simulation placeholder for the orchestrator
             current_count = 1
-            
+
             if current_count > self.requests:
                 logger.warning(f"Rate limit exceeded for {client_ip}")
                 raise HTTPException(

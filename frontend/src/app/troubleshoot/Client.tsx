@@ -52,7 +52,7 @@ const severityConfig = {
 
 // Sample diagnostic for the prefill button
 const SAMPLE_DIAGNOSTIC = {
-	agent_version: "1.0.0",
+	agent_version: "2.0.0",
 	os: {
 		name: "Ubuntu 22.04.3 LTS",
 		version: "22.04",
@@ -213,7 +213,7 @@ export default function TroubleshootPage() {
 					targetCuda = parsed?.cuda?.version || targetCuda;
 					targetPython = parsed?.active_python?.version || targetPython;
 				}
-			} catch (e) {
+			} catch {
 				// silently fallback to defaults
 			}
 
@@ -417,7 +417,7 @@ boxShadow: "0 4px 24px rgba(99, 102, 241, 0.3)",
 								value={diagnosticJson}
 								onChange={(e) => setDiagnosticJson(e.target.value)}
 								placeholder={
-									'{\n  "agent_version": "1.0.0",\n  "os": { "name": "Ubuntu 22.04" ... },\n  "gpus": [{ "name": "RTX 4090" ... }],\n  "cuda": { "version": "12.1" ... }\n}'
+									'{\n  "agent_version": "2.0.0",\n  "os": { "name": "Ubuntu 22.04" ... },\n  "gpus": [{ "name": "RTX 4090" ... }],\n  "cuda": { "version": "12.1" ... }\n}'
 								}
 								style={{
 									width: "100%",

@@ -1,6 +1,6 @@
 {
 	"name": "frontend",
-	"version": "1.0.2",
+	"version": "2.1.0",
 	"private": true,
 	"scripts": {
 		"dev": "next dev",
@@ -13,12 +13,15 @@
 		"@types/react-syntax-highlighter": "^15.5.13",
 		"@vercel/analytics": "^2.0.1",
 		"@vercel/speed-insights": "^2.0.0",
+		"axios": "^1.7.9",
 		"framer-motion": "^12.40.0",
 		"lucide-react": "^1.17.0",
 		"next": "16.2.7",
+		"posthog-js": "^1.391.2",
 		"react": "19.2.7",
 		"react-dom": "19.2.7",
-		"react-syntax-highlighter": "^16.1.1"
+		"react-syntax-highlighter": "^16.1.1",
+		"zustand": "^5.0.3"
 	},
 	"devDependencies": {
 		"@types/node": "^25",
@@ -29,6 +32,7 @@
 		"typescript": "^6"
 	},
 	"overrides": {
-		"postcss": "^8.5.10"
+		"postcss": "^8.5.10",
+		"undici": "^6.27.0"
 	}
 }

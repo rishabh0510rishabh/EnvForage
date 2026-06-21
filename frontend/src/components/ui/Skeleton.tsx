@@ -1,5 +1,6 @@
 // Auto-generated implementation for UX Loading Skeletons
 import React from 'react';
+import { motion } from 'framer-motion';
 
 export default function Skeleton() {
   return (
@@ -310,8 +311,6 @@ export default function Skeleton() {
 }
 
 // --- Generic Skeleton Loader ---
-import React from 'react';
-import { motion } from 'framer-motion';
 
 interface SkeletonProps {
     width?: string | number;
@@ -321,7 +320,7 @@ interface SkeletonProps {
     variant?: 'text' | 'circular' | 'rectangular';
 }
 
-export const Skeleton: React.FC<SkeletonProps> = ({
+export const SkeletonLoader: React.FC<SkeletonProps> = ({
     width,
     height,
     borderRadius,

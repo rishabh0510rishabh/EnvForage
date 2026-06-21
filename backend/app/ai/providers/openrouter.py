@@ -101,8 +101,8 @@ class OpenRouterProvider(LLMProvider):
         headers = {
             "Authorization": f"Bearer {self.api_key}",
             "Content-Type": "application/json",
-            "HTTP-Referer": "https://envforge.dev",
-            "X-Title": "EnvForge AI Troubleshooter",
+            "HTTP-Referer": "https://envforage.dev",
+            "X-Title": "EnvForage AI Troubleshooter",
         }
 
         last_error: Exception | None = None
@@ -250,8 +250,8 @@ class OpenRouterProvider(LLMProvider):
         headers = {
             "Authorization": f"Bearer {self.api_key}",
             "Content-Type": "application/json",
-            "HTTP-Referer": "https://envforge.dev",
-            "X-Title": "EnvForge AI Troubleshooter",
+            "HTTP-Referer": "https://envforage.dev",
+            "X-Title": "EnvForage AI Troubleshooter",
         }
 
         async with httpx.AsyncClient(timeout=60.0) as client:

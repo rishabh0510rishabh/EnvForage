@@ -44,7 +44,7 @@ _PROFILE_PAGE_SIZE = 100
     status_code=202,
     summary="Analyze environment compatibility (Async)",
     description=(
-        "Accept a diagnostic report from the EnvForge CLI agent, dispatch a Celery task, "
+        "Accept a diagnostic report from the EnvForage CLI agent, dispatch a Celery task, "
         "and return a task_id for polling."
     ),
     tags=["Diagnostics"],
@@ -106,6 +106,16 @@ async def diagnose(
 )
 async def diagnose_status(task_id: str) -> DiagnoseTaskStatus:
     """Check the status of a queued diagnostic analysis."""
+    # Validate task_id format before querying Celery/Redis
+    try:
+        uuid.UUID(task_id)
+    except ValueError:
+        from fastapi import HTTPException
+        raise HTTPException(
+            status_code=400,
+            detail={"error": "INVALID_TASK_ID", "message": "task_id must be a valid UUID."},
+        )
+
     from app.worker import celery_app
 
     result = celery_app.AsyncResult(task_id)
@@ -172,7 +182,7 @@ async def diagnose_explain(
         )
     except LLMProviderError as exc:
         latency_ms = int((time.monotonic() - start_time) * 1000)
-        _log_explain_audit(
+        await _log_explain_audit(
             db, input_hash, False, str(exc), provider_name, 0, latency_ms
         )
         raise AIServiceUnavailableError(
@@ -188,7 +198,7 @@ async def diagnose_explain(
             validate_rendered_output(step, "ai_explain_step")
     except SafetyViolationError as exc:
         latency_ms = int((time.monotonic() - start_time) * 1000)
-        _log_explain_audit(
+        await _log_explain_audit(
             db, input_hash, False, str(exc), provider_name, 0, latency_ms
         )
         raise InternalServerError(
@@ -196,12 +206,12 @@ async def diagnose_explain(
         ) from exc
 
     latency_ms = int((time.monotonic() - start_time) * 1000)
-    _log_explain_audit(db, input_hash, True, None, provider_name, 0, latency_ms)
+    await _log_explain_audit(db, input_hash, True, None, provider_name, 0, latency_ms)
 
     return llm_result
 
 
-def _log_explain_audit(
+async def _log_explain_audit(
     db: "DB",
     input_hash: str,
     safety_passed: bool,
@@ -224,5 +234,10 @@ def _log_explain_audit(
             created_at=datetime.now(UTC),
         )
         db.add(log)
+        await db.commit()
     except Exception as exc:
         logger.exception("Failed to write explain audit log: %s", exc)
+        try:
+            await db.rollback()
+        except Exception:
+            pass

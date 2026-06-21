@@ -1,0 +1,2 @@
+# Ignore undici CVE bundled inside Next.js/Node that we cannot patch via npm
+CVE-2026-12151

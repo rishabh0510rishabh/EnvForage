@@ -16,7 +16,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -82,3 +84,43 @@ jobs:
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           packages-dir: cli/dist/
+
+  build-windows-exe:
+    name: Build Standalone Windows Executable & GUI Installer
+    runs-on: windows-latest
+    needs: release
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyinstaller build
+          pip install -e cli/
+
+      - name: Compile Executable
+        run: |
+          cd cli
+          pyinstaller --onefile --name envforage envforage/__main__.py
+
+      - name: Compile Windows Installer (Inno Setup)
+        uses: Minionguyjpro/Inno-Setup-Action@v1.2.2
+        with:
+          path: cli/installer/setup.iss
+
+      - name: Upload Installer to GitHub Release
+        uses: softprops/action-gh-release@v3
+        with:
+          files: |
+            cli/dist/envforage.exe
+            cli/installer/Output/envforage-v*-setup.exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

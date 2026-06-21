@@ -1,8 +1,10 @@
 import abc
 import logging
-from typing import Type, Any, Optional
-from sqlalchemy.ext.asyncio import AsyncSession
+from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
+from typing import Any
+
+from sqlalchemy.ext.asyncio import AsyncSession
 
 logger = logging.getLogger("UnitOfWork")
 
@@ -16,7 +18,7 @@ class AbstractRepository(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    async def get(self, id: Any) -> Optional[Any]:
+    async def get(self, id: Any) -> Any | None:
         raise NotImplementedError
 
 class AbstractUnitOfWork(abc.ABC):
@@ -27,7 +29,7 @@ class AbstractUnitOfWork(abc.ABC):
     # Repositories would be defined here as properties
     # profiles: ProfileRepository
     # webhooks: WebhookRepository
-    
+
     async def __aenter__(self) -> 'AbstractUnitOfWork':
         return self
 
@@ -52,12 +54,13 @@ class SQLAlchemyUnitOfWork(AbstractUnitOfWork):
     """
     def __init__(self, session_factory):
         self.session_factory = session_factory
-        self.session: Optional[AsyncSession] = None
+        self.session: AsyncSession | None = None
 
     async def __aenter__(self) -> 'SQLAlchemyUnitOfWork':
         self.session = self.session_factory()
         # Initialize concrete repositories here passing self.session
-        return super().__aenter__()
+        await super().__aenter__()
+        return self
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
         try:
@@ -86,10 +89,10 @@ class SQLAlchemyUnitOfWork(AbstractUnitOfWork):
             await self.session.rollback()
 
 @asynccontextmanager
-async def transaction(session_factory) -> SQLAlchemyUnitOfWork:
+async def transaction(session_factory) -> AsyncIterator[SQLAlchemyUnitOfWork]:
     """
     Syntactic sugar for using the UoW pattern cleanly in FastAPI routes.
-    
+
     Usage:
         async with transaction(AsyncSessionLocal) as uow:
             uow.profiles.add(profile)

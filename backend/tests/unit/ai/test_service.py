@@ -29,7 +29,7 @@ def _dummy_request():
                 "is_venv": False,
                 "venv_path": None,
             },
-            "agent_version": "1.0.0",
+            "agent_version": "2.0.0",
         },
         verification={"torch_cuda": False, "nvcc": True},
         profile={"framework": "pytorch", "version": "2.1.0"},

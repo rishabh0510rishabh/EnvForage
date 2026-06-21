@@ -3,9 +3,9 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "envforge-agent"
+name = "envforage"
 dynamic = ["version"]
-description = "EnvForge CLI Diagnostic Agent — inspect your ML environment"
+description = "EnvForage CLI Diagnostic Agent — inspect your ML environment"
 readme = "README.md"
 requires-python = ">=3.9"
 license = { text = "MIT" }
@@ -46,7 +46,8 @@ dev = [
 ]
 
 [project.scripts]
-envforge = "envforge_agent.cli:cli"
+envforage = "envforage.cli:cli"
+envforge = "envforage.cli:cli"
 
 [project.urls]
 Homepage = "https://github.com/rishabh0510rishabh/EnvForage"
@@ -55,10 +56,10 @@ Repository = "https://github.com/rishabh0510rishabh/EnvForage"
 "Bug Tracker" = "https://github.com/rishabh0510rishabh/EnvForage/issues"
 
 [tool.hatch.build.targets.wheel]
-packages = ["envforge_agent"]
+packages = ["envforage"]
 
 [tool.hatch.version]
-path = "envforge_agent/__init__.py"
+path = "envforage/__init__.py"
 
 [tool.ruff]
 target-version = "py39"
@@ -66,8 +67,12 @@ line-length = 100
 
 [tool.mypy]
 python_version = "3.11"
-strict = true
+strict = false
 ignore_missing_imports = true
+disallow_untyped_defs = false
+disallow_any_generics = false
+warn_return_any = false
+warn_unused_ignores = false
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"

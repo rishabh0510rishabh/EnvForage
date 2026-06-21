@@ -1,15 +1,15 @@
 #!/bin/bash
 # ==============================================================================
-# EnvForge Generated Setup Script — Linux / WSL
+# EnvForage Generated Setup Script — Linux / WSL
 # Profile  : {{ profile.name }}
 # OS Target: {{ target_os }}
 # Python   : {{ python_version }}
 {% if cuda_version %}# CUDA     : {{ cuda_version }}
 {% endif %}# Generated: {{ generated_at }}
-# EnvForge : v{{ envforge_version }}
+# EnvForage : v{{ envforage_version }}
 #
 # ⚠ WARNING: Review this script before running.
-#   EnvForge generates safe, version-pinned scripts, but you are responsible
+#   EnvForage generates safe, version-pinned scripts, but you are responsible
 #   for your system. Run in a virtual environment.
 #
 # Usage:
@@ -20,7 +20,7 @@ set -euo pipefail   # Exit on error, unset vars, pipe failures
 
 # ── Color output ──────────────────────────────────────────────────────────────
 RED='\033[0;31m'; GREEN='\033[0;32m'; YELLOW='\033[1;33m'; NC='\033[0m'
-info()    { echo -e "${GREEN}[EnvForge]${NC} $1"; }
+info()    { echo -e "${GREEN}[EnvForage]${NC} $1"; }
 warn()    { echo -e "${YELLOW}[WARN]${NC} $1"; }
 error()   { echo -e "${RED}[ERROR]${NC} $1" >&2; exit 1; }
 
@@ -156,7 +156,7 @@ ${RUN_CMD}pip install \
 
 # ── Post-install summary ──────────────────────────────────────────────────────
 info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-info "✓ EnvForge setup complete!"
+info "✓ EnvForage setup complete!"
 info "  Profile : {{ profile.name }}"
 info "  Python  : $(${RUN_CMD}python --version)"
 {% if use_micromamba %}

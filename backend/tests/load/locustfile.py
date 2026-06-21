@@ -8,7 +8,7 @@ class TroubleshootUser(HttpUser):
     def troubleshoot_stream(self):
         payload = {
             "diagnostic": {
-                "agent_version": "1.0.0",
+                "agent_version": "2.0.0",
                 "os": {
                     "name": "Ubuntu 22.04",
                     "version": "22.04",

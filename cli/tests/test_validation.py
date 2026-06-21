@@ -1,6 +1,6 @@
 from unittest.mock import patch
 
-from envforge_agent.validation import (
+from envforage.validation import (
     check_python_version,
     check_git_installed,
     check_docker_installed,
@@ -56,15 +56,15 @@ def test_docker_check_passes_when_docker_exists(mock_which) -> None:
     assert result.errors == []
 
 
-@patch("envforge_agent.validation.check_python_version")
-@patch("envforge_agent.validation.check_git_installed")
-@patch("envforge_agent.validation.check_docker_installed")
+@patch("envforage.validation.check_python_version")
+@patch("envforage.validation.check_git_installed")
+@patch("envforage.validation.check_docker_installed")
 def test_validate_environment_aggregates_results(
     mock_docker,
     mock_git,
     mock_python,
 ) -> None:
-    from envforge_agent.validation import ValidationResult
+    from envforage.validation import ValidationResult
 
     py_result = ValidationResult()
     git_result = ValidationResult()

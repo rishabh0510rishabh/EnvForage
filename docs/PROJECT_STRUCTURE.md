@@ -1,10 +1,10 @@
-# EnvForge — Project Structure
+# EnvForage — Project Structure
 
-> **Version**: 1.0.0
+> **Version**: 2.0.0
 > **Status**: Production
-> **Last Updated**: 2026-05-21
+> **Last Updated**: 2026-06-18
 
-This document defines the canonical folder structure for EnvForge.
+This document defines the canonical folder structure for EnvForage.
 All contributors should respect this structure and place new files accordingly.
 
 ---
@@ -12,7 +12,7 @@ All contributors should respect this structure and place new files accordingly.
 ## Complete Folder Structure
 
 ```
-EnvForge/
+EnvForage/
 │
 ├── README.md                          # Project overview + quick start
 ├── CONTRIBUTING.md                    # Contributor guide
@@ -24,7 +24,6 @@ EnvForge/
 ├── docs/                              # All project documentation
 │   ├── ARCHITECTURE.md
 │   ├── FEATURES.md
-│   ├── ROADMAP.md
 │   ├── WORKFLOW.md
 │   ├── API_DESIGN.md
 │   ├── COMPATIBILITY_ENGINE.md
@@ -168,11 +167,11 @@ EnvForge/
 │
 ├── cli/                               # CLI Diagnostic Agent (standalone package)
 │   ├── Dockerfile
-│   ├── pyproject.toml                 # Separate package: envforge-agent
+│   ├── pyproject.toml                 # Separate package: envforage
 │   ├── README.md
-│   └── envforge_agent/
+│   └── envforage/
 │       ├── __init__.py
-│       ├── __main__.py                # Entry: python -m envforge_agent
+│       ├── __main__.py                # Entry: python -m envforage
 │       ├── cli.py                     # Click CLI commands
 │       ├── detectors/
 │       │   ├── __init__.py

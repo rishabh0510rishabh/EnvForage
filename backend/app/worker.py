@@ -1,3 +1,4 @@
+import sys
 from typing import Any, Literal
 
 from celery import Celery
@@ -14,10 +15,24 @@ from app.schemas.diagnostic import CompatibilityIssue, DiagnoseResponse
 
 settings = get_settings()
 
+import logging as _logging
+
+_logger = _logging.getLogger(__name__)
+
+if not settings.redis_url:
+    if "pytest" in sys.modules:
+        pass
+    else:
+        _logger.warning(
+            "REDIS_URL is not configured. Falling back to Celery eager mode. "
+            "All background tasks will run synchronously in-process. "
+            "For production distributed deployments, set the REDIS_URL environment variable."
+        )
+
 celery_app = Celery(
-    "envforge_worker",
-    broker=settings.redis_url or "redis://localhost:6379/0",
-    backend=settings.redis_url or "redis://localhost:6379/0",
+    "envforage_worker",
+    broker=settings.redis_url or "memory://",
+    backend=settings.redis_url or "cache+memory://",
 )
 
 celery_app.conf.update(
@@ -26,7 +41,29 @@ celery_app.conf.update(
     result_serializer="json",
     timezone="UTC",
     enable_utc=True,
+    task_always_eager=not settings.redis_url,
+    task_eager_propagates=not settings.redis_url,
 )
+
+import logging as _logging
+
+_worker_logger = _logging.getLogger("celery.worker.pool")
+
+
+@celery_app.on_after_configure.connect
+def _warn_on_incompatible_pool(sender, **kwargs):  # type: ignore[no-untyped-def]
+    """Log a warning if the worker uses a pool incompatible with asyncio.run()."""
+    try:
+        pool_cls = sender.conf.get("worker_pool", "prefork")
+        if isinstance(pool_cls, str) and pool_cls in ("gevent", "eventlet"):
+            _worker_logger.warning(
+                "EnvForage tasks use asyncio.run() internally. "
+                "Running with --pool=%s will cause RuntimeError. "
+                "Use --pool=prefork (the default).",
+                pool_cls,
+            )
+    except Exception:
+        pass
 
 
 @celery_app.task(name="run_diagnose_task")  # type: ignore[untyped-decorator]

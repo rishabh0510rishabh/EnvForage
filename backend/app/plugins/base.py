@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from typing import Any
 
 
-class EnvForgePlugin(ABC):
+class EnvForagePlugin(ABC):
     @property
     @abstractmethod
     def name(self) -> str:

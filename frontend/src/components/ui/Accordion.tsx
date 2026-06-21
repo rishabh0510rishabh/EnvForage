@@ -1,6 +1,6 @@
 
 // --- Accordion Section Component ---
-import React, { useState, useRef, useEffect, ReactNode } from 'react';
+import React, { useState, useRef, useEffect, useId, ReactNode } from 'react';
 
 export interface AccordionItemProps {
   title: ReactNode;
@@ -65,7 +65,7 @@ export const AccordionItem: React.FC<AccordionItemProps> = ({
     }
   };
 
-  const id = useRef(`accordion-${Math.random().toString(36).substr(2, 9)}`).current;
+  const id = useId();
 
   return (
     <div style={{ borderBottom: '1px solid #e5e7eb', marginBottom: '8px' }}>

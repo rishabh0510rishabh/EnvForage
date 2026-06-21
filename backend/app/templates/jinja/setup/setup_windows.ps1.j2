@@ -1,10 +1,10 @@
 # ==============================================================================
-# EnvForge Generated Setup Script — Windows PowerShell
+# EnvForage Generated Setup Script — Windows PowerShell
 # Profile  : {{ profile.name }}
 # OS Target: {{ target_os }}
 # Python   : {{ python_version }}
 # Generated: {{ generated_at }}
-# EnvForge : v{{ envforge_version }}
+# EnvForage : v{{ envforage_version }}
 #
 # WARNING: Review this script before running.
 # Run in PowerShell 5.1+ or PowerShell 7+.
@@ -17,7 +17,7 @@
 $ErrorActionPreference = "Stop"
 
 # ── Helper functions ──────────────────────────────────────────────────────────
-function Write-Info  { Write-Host "[EnvForge] $args" -ForegroundColor Green }
+function Write-Info  { Write-Host "[EnvForage] $args" -ForegroundColor Green }
 function Write-Warn  { Write-Host "[WARN] $args" -ForegroundColor Yellow }
 function Write-Err   { Write-Host "[ERROR] $args" -ForegroundColor Red; exit 1 }
 
@@ -123,7 +123,7 @@ Invoke-EnvCmd pip install `
 
 # ── Summary ───────────────────────────────────────────────────────────────────
 Write-Info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-Write-Info "✓ EnvForge setup complete!"
+Write-Info "✓ EnvForage setup complete!"
 Write-Info "  Profile: {{ profile.name }}"
 Write-Info "  Python : $(Invoke-EnvCmd python --version)"
 {% if use_micromamba %}

@@ -40,7 +40,7 @@ def test_pyproject_template_renders_basic():
     assert "3.10" in result.content
     # Check TOML format
     assert "[project]" in result.content
-    assert 'name = "envforge-generated"' in result.content
+    assert 'name = "envforage-generated"' in result.content
     assert 'requires-python = ">= 3.10"' in result.content
     assert "dependencies = [" in result.content
     assert '"numpy==1.24.0",' in result.content

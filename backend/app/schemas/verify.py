@@ -103,3 +103,15 @@ class VerificationResponse(BaseModel):
             }
         },
     )
+
+# ── ADD AT THE BOTTOM OF backend/app/schemas/verify.py ──────────────────
+
+
+
+class PaginatedVerificationResponse(BaseModel):
+    total_items: int
+    total_pages: int
+    current_page: int
+    next_page_url: str | None = None
+    prev_page_url: str | None = None
+    results: list[VerificationResponse]

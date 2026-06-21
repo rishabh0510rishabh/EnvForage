@@ -106,7 +106,7 @@ _GATE_FIXES = [
         confidence_score=0.10,  # below LOW_CONFIDENCE_GATE=0.20 → gets suppressed
         is_matrix_backed=False,
         uncertainty_reason="No evidence in diagnostic report supports this fix.",
-        fallback_recommendation="Contact the EnvForge team for manual review.",
+        fallback_recommendation="Contact the EnvForage team for manual review.",
     ),
 ]
 

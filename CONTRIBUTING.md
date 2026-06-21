@@ -1,1194 +1,424 @@
-# Contribute — Add contributing guidance and local dev setup
-This document resolves issue #718 and provides comprehensive guidance.
-
-## Section 1
-Content for section 1 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
-
-## Section 2
-Content for section 2 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
-
-## Section 3
-Content for section 3 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
-
-## Section 4
-Content for section 4 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
-
-## Section 5
-Content for section 5 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
-
-## Section 6
-Content for section 6 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
-
-## Section 7
-Content for section 7 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
-
-## Section 8
-Content for section 8 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
-
-## Section 9
-Content for section 9 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
-
-## Section 10
-Content for section 10 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
-
-## Section 11
-Content for section 11 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
-
-## Section 12
-Content for section 12 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
-
-## Section 13
-Content for section 13 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
-
-## Section 14
-Content for section 14 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
-
-## Section 15
-Content for section 15 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
-
-## Section 16
-Content for section 16 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
-
-## Section 17
-Content for section 17 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
-
-## Section 18
-Content for section 18 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
-
-## Section 19
-Content for section 19 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
-
-## Section 20
-Content for section 20 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
-
-## Section 21
-Content for section 21 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
-
-## Section 22
-Content for section 22 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
-
-## Section 23
-Content for section 23 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
-
-## Section 24
-Content for section 24 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
-
-## Section 25
-Content for section 25 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
-
-## Section 26
-Content for section 26 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
-
-## Section 27
-Content for section 27 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
-
-## Section 28
-Content for section 28 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
-
-## Section 29
-Content for section 29 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
-
-## Section 30
-Content for section 30 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
-
-## Section 31
-Content for section 31 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
-
-## Section 32
-Content for section 32 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
-
-## Section 33
-Content for section 33 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
-
-## Section 34
-Content for section 34 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
-
-## Section 35
-Content for section 35 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
-
-## Section 36
-Content for section 36 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
-
-## Section 37
-Content for section 37 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
-
-## Section 38
-Content for section 38 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
-
-## Section 39
-Content for section 39 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
-
-## Section 40
-Content for section 40 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
-
-## Section 41
-Content for section 41 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
-
-## Section 42
-Content for section 42 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
-
-## Section 43
-Content for section 43 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
-
-## Section 44
-Content for section 44 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
-
-## Section 45
-Content for section 45 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
-
-## Section 46
-Content for section 46 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
-
-## Section 47
-Content for section 47 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
-
-## Section 48
-Content for section 48 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
-
-## Section 49
-Content for section 49 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
-
-## Section 50
-Content for section 50 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
-
-## Section 51
-Content for section 51 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
-
-## Section 52
-Content for section 52 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
-
-## Section 53
-Content for section 53 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
-
-## Section 54
-Content for section 54 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
+# Contributing to EnvForge
 
-## Section 55
-Content for section 55 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
-
-## Section 56
-Content for section 56 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
+First off, thank you for considering contributing to EnvForge! It's people like you that make this tool better for everyone.
 
-## Section 57
-Content for section 57 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
+Please read the [Code of Conduct](./CODE_OF_CONDUCT.md) to keep our community approachable and respectable.
 
-## Section 58
-Content for section 58 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
+## Development Setup
 
-## Section 59
-Content for section 59 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
+1. **Fork & Clone** the repository.
+2. **Start Database**: We use Docker Compose for the PostgreSQL database.
+   ```bash
+   docker-compose up -d
+   ```
+3. **Install Dependencies**:
+   ```bash
+   cd backend
+   python -m venv .venv
+   source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+   pip install -e ".[dev]"
+   cd ..
+   ```
 
-## Section 60
-Content for section 60 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
+4. **Install Pre-commit Hooks**:
+   We recommend installing `pre-commit` globally so it works across all your projects and terminal sessions without needing to activate a virtual environment.
+   ```bash
+   # Recommended: Install globally
+   pipx install pre-commit
+
+   # From the repo root, install the hooks
+   pre-commit install
+   ```
+   > **Note**: If you prefer not to install it globally, you can use the version installed in `backend/.venv`, but you **must** ensure that virtual environment is active whenever you run `git commit`.
 
-## Section 61
-Content for section 61 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
+5. **Run Migrations & Seeds** (from `backend/`):
+   ```bash
+   cd backend
+   alembic upgrade head
+   python -m app.services.seed_service
+   ```
 
-## Section 62
-Content for section 62 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
+## Local Development (No Docker)
 
-## Section 63
-Content for section 63 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
+If you prefer to run the entire application locally without Docker, follow this guide. This is ideal for rapid iteration, debugging, and development work.
 
-## Section 64
-Content for section 64 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
+-💡**Developer Workflow Optimization**
 
-## Section 65
-Content for section 65 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
+- A Makefile is now available at the repository root to standardize common tasks.
+Instead of typing out long manual commands, you can now use these simple shortcuts
+from the root folder.
 
-## Section 66
-Content for section 66 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
+- **Run Tests**: `make test`
+- **Code Linting/Formatting**: `make lint`
+- **Start Development Server**: `make run-dev`
+- **Database Migration & Seeds**: `make db-upgrade`
 
-## Section 67
-Content for section 67 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
+### Prerequisites
 
-## Section 68
-Content for section 68 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
+| Requirement | Version | Notes |
+|-------------|---------|-------|
+| Python | 3.11+ | Required for backend |
+| Node.js | 18+ | Required for frontend |
+| npm or yarn | Latest | Frontend package manager |
+| Git | 2.40+ | Version control |
+| PostgreSQL (optional) | 14+ | For full-featured development; SQLite available for simpler setup |
 
-## Section 69
-Content for section 69 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
+**Installation:**
+- **Python**: [python.org](https://www.python.org/downloads/)
+- **Node.js**: [nodejs.org](https://nodejs.org/) (includes npm)
+- **PostgreSQL** (optional): [postgresql.org](https://www.postgresql.org/download/) or use Homebrew on macOS (`brew install postgresql`)
+- **Git**: [git-scm.com](https://git-scm.com/)
 
-## Section 70
-Content for section 70 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
+### Backend Setup (FastAPI)
 
-## Section 71
-Content for section 71 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
+#### 1. Navigate to Backend Directory
+```bash
+cd backend
 ```
 
-## Section 72
-Content for section 72 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
+#### 2. Create and Activate Virtual Environment
+```bash
+# Create virtual environment
+python -m venv .venv
 
-## Section 73
-Content for section 73 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
+# Activate on macOS/Linux
+source .venv/bin/activate
 
-## Section 74
-Content for section 74 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
+# Activate on Windows
+.venv\Scripts\activate
 ```
 
-## Section 75
-Content for section 75 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
+#### 3. Install Dependencies
+```bash
+pip install -e ".[dev]"
 ```
 
-## Section 76
-Content for section 76 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
+#### 4. Configure Environment Variables
 
-## Section 77
-Content for section 77 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
+Create a `.env` file in the `backend/` directory:
 
-## Section 78
-Content for section 78 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
+**Option A: Using SQLite (Fastest for Development)**
+```bash
+# For development without external database
+DATABASE_URL=sqlite+aiosqlite:///./envforge_dev.db
+ENVIRONMENT=development
+DEBUG=true
+SECRET_KEY=dev-secret-key-change-in-production
+ALLOWED_ORIGINS=http://localhost:3000,http://localhost:8000
+ENVFORGE_LLM_PROVIDER=mock
 ```
 
-## Section 79
-Content for section 79 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
+**Option B: Using PostgreSQL (Recommended)**
+```bash
+# Set up PostgreSQL database first
+# macOS: brew install postgresql && brew services start postgresql
+# Linux: sudo apt-get install postgresql && sudo systemctl start postgresql
+# Windows: Download and run PostgreSQL installer
 
-## Section 80
-Content for section 80 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
+# Create database and user
+psql -U postgres -c "CREATE ROLE envforge WITH LOGIN PASSWORD 'devpass';"
+psql -U postgres -c "CREATE DATABASE envforge OWNER envforge;"
 
-## Section 81
-Content for section 81 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
+# In .env file:
+DATABASE_URL=postgresql+asyncpg://envforge:devpass@localhost:5432/envforge
+ENVIRONMENT=development
+DEBUG=true
+SECRET_KEY=dev-secret-key-change-in-production
+ALLOWED_ORIGINS=http://localhost:3000,http://localhost:8000
+ENVFORGE_LLM_PROVIDER=mock
 ```
 
-## Section 82
-Content for section 82 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
+#### 5. Initialize Database
 
-## Section 83
-Content for section 83 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
+**For SQLite (automatic on first run, but can initialize with):**
+```bash
+alembic upgrade head
 ```
 
-## Section 84
-Content for section 84 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
+**For PostgreSQL:**
+```bash
+alembic upgrade head
+python -m app.services.seed_service
 ```
 
-## Section 85
-Content for section 85 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
+#### 6. Run Backend Server
+```bash
+# From backend/ directory with .venv activated
+uvicorn app.main:create_app --host 0.0.0.0 --port 8000 --reload
 ```
 
-## Section 86
-Content for section 86 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
+The backend API is now running at **`http://localhost:8000`**
 
-## Section 87
-Content for section 87 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
+**Verify it's working:**
+```bash
+curl http://localhost:8000/api/v1/docs
 ```
 
-## Section 88
-Content for section 88 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
+### Frontend Setup (Next.js)
 
-## Section 89
-Content for section 89 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
+#### 1. Navigate to Frontend Directory
+```bash
+cd frontend
 ```
 
-## Section 90
-Content for section 90 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
+#### 2. Install Dependencies
+```bash
+npm install
+# or
+yarn install
 ```
 
-## Section 91
-Content for section 91 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
+#### 3. Configure Environment Variables
 
-## Section 92
-Content for section 92 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
+Create a `.env.local` file in the `frontend/` directory:
+```bash
+NEXT_PUBLIC_API_URL=http://localhost:8000
+NODE_ENV=development
 ```
 
-## Section 93
-Content for section 93 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
+#### 4. Run Development Server
+```bash
+npm run dev
+# or
+yarn dev
 ```
 
-## Section 94
-Content for section 94 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
+The frontend is now running at **`http://localhost:3000`**
 
-## Section 95
-Content for section 95 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
+### Running Both Services Simultaneously
 
-## Section 96
-Content for section 96 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
+**Terminal 1: Backend**
+```bash
+cd backend
+source .venv/bin/activate  # or .venv\Scripts\activate on Windows
+uvicorn app.main:create_app --host 0.0.0.0 --port 8000 --reload
 ```
 
-## Section 97
-Content for section 97 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
+**Terminal 2: Frontend**
+```bash
+cd frontend
+npm run dev
 ```
 
-## Section 98
-Content for section 98 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
+**Terminal 3 (Optional): CLI Agent Testing**
+```bash
+cd cli
+source .venv/bin/activate
+pip install -e ".[dev]"
+python -m envforge_agent diagnose
 ```
 
-## Section 99
-Content for section 99 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
+You now have a complete local development environment running without Docker!
 
-## Section 100
-Content for section 100 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
+### Environment Variables Reference
 
-## Section 101
-Content for section 101 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
+**Backend (.env in backend/ directory):**
+```bash
+# Database
+DATABASE_URL=postgresql+asyncpg://user:pass@localhost:5432/envforge
+# Or SQLite: sqlite+aiosqlite:///./envforge_dev.db
 
-## Section 102
-Content for section 102 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
+# Application
+ENVIRONMENT=development
+DEBUG=true
+SECRET_KEY=your-secret-key-here
+APP_VERSION=1.0.0
 
-## Section 103
-Content for section 103 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
+# CORS
+ALLOWED_ORIGINS=http://localhost:3000,http://localhost:8000
 
-## Section 104
-Content for section 104 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
+# LLM Provider (for AI features)
+ENVFORGE_LLM_PROVIDER=mock              # Options: mock, openai, openrouter, ollama
+# OPENAI_API_KEY=sk-...               # If using OpenAI
+# OPENROUTER_API_KEY=sk-or-...        # If using OpenRouter
+# OLLAMA_BASE_URL=http://localhost:11434  # If using Ollama
 
-## Section 105
-Content for section 105 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
+# Redis (optional, for rate limiting)
+REDIS_URL=redis://localhost:6379/0
 ```
 
-## Section 106
-Content for section 106 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
+**Frontend (.env.local in frontend/ directory):**
+```bash
+NEXT_PUBLIC_API_URL=http://localhost:8000
+NODE_ENV=development
 ```
 
-## Section 107
-Content for section 107 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
+### Troubleshooting
 
-## Section 108
-Content for section 108 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
+#### Backend Issues
 
-## Section 109
-Content for section 109 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
+**Port 8000 already in use:**
+```bash
+# Find and kill process using port 8000
+lsof -ti:8000 | xargs kill -9
 
-## Section 110
-Content for section 110 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
+# Or use a different port
+uvicorn app.main:create_app --port 8001 --reload
 ```
 
-## Section 111
-Content for section 111 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
+**Database connection error:**
+```bash
+# If using PostgreSQL, verify service is running
+# macOS
+brew services list
 
-## Section 112
-Content for section 112 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
+# Linux
+systemctl status postgresql
 
-## Section 113
-Content for section 113 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
+# Test connection
+psql -U envforge -d envforge -c "SELECT 1;"
 ```
 
-## Section 114
-Content for section 114 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
+**Migration errors:**
+```bash
+# Reset database (development only!)
+# For SQLite: delete envforge_dev.db
+# For PostgreSQL: drop database envforge and recreate
 
-## Section 115
-Content for section 115 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
+# Then re-run migrations
+alembic upgrade head
 ```
 
-## Section 116
-Content for section 116 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
+**Import or dependency errors:**
+```bash
+# Ensure venv is activated and reinstall
+pip install -e ".[dev]" --force-reinstall --no-cache-dir
 ```
 
-## Section 117
-Content for section 117 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
+#### Frontend Issues
 
-## Section 118
-Content for section 118 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
+**Port 3000 already in use:**
+```bash
+# Use a different port
+npm run dev -- -p 3001
 ```
 
-## Section 119
-Content for section 119 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
+**Dependencies not found:**
+```bash
+# Clear cache and reinstall
+rm -rf node_modules package-lock.json
+npm install
 ```
 
-## Section 120
-Content for section 120 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
+**API connection issues:**
+Check that:
+1. Backend is running at `http://localhost:8000`
+2. CORS is configured correctly in backend (should include `http://localhost:3000`)
+3. `NEXT_PUBLIC_API_URL` in `.env.local` matches backend URL
 
-## Section 121
-Content for section 121 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
+#### General Issues
 
-## Section 122
-Content for section 122 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
+**"command not found" errors:**
+- Python: Ensure you've installed Python 3.11+ and it's in your PATH
+- Node.js: Install from nodejs.org, verify with `node --version`
+- Ensure virtual environment is activated: `source .venv/bin/activate`
 
-## Section 123
-Content for section 123 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
+**Module import errors:**
+```bash
+# Backend: Reinstall with development dependencies
+cd backend && pip install -e ".[dev]"
 
-## Section 124
-Content for section 124 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
+# Frontend: Clear dependencies
+cd frontend && npm ci  # Uses exact versions from package-lock.json
 ```
 
-## Section 125
-Content for section 125 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
+**"CORS error" when calling API from frontend:**
+Verify in backend `.env`:
+```bash
+ALLOWED_ORIGINS=http://localhost:3000,http://localhost:8000
 ```
 
-## Section 126
-Content for section 126 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
+### Testing Locally
 
-## Section 127
-Content for section 127 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
+**Backend tests:**
+```bash
+cd backend
+pytest tests/
+pytest tests/ -v  # Verbose output
+pytest tests/unit/  # Only unit tests
 ```
 
-## Section 128
-Content for section 128 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
+**Frontend linting:**
+```bash
+cd frontend
+npm run lint
 ```
 
-## Section 129
-Content for section 129 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
+**CLI agent tests:**
+```bash
+cd cli
+pytest tests/
 ```
 
-## Section 130
-Content for section 130 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
+### Next Steps
 
-## Section 131
-Content for section 131 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
+- Read [ARCHITECTURE.md](./docs/ARCHITECTURE.md) to understand the codebase structure
+- Check [API_DESIGN.md](./docs/API_DESIGN.md) for API endpoint documentation
+- See [TESTING.md](./docs/TESTING.md) for comprehensive testing guidelines
+- Review [PROFILE_SPEC.md](./docs/PROFILE_SPEC.md) before adding new profiles
 
-## Section 132
-Content for section 132 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
+## Folder Structure
 
-## Section 133
-Content for section 133 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
 ```
-
-## Section 134
-Content for section 134 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
+EnvForge/
+├── backend/            # FastAPI backend (API, Compatibility Engine, Templates)
+├── cli/                # envforge-agent standalone CLI
+├── docs/               # Architecture, ADRs, Workflows, Specs
+├── .github/            # CI workflows, Issue Templates
+└── docker-compose.yml
 ```
 
-## Section 135
-Content for section 135 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
+## How to Add Profiles
 
-## Section 136
-Content for section 136 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
+To add a new ML environment profile (e.g., JAX, TensorRT):
+1. Review the [PROFILE_SPEC.md](./docs/PROFILE_SPEC.md) for the required schema.
+2. Add your profile to `backend/seeds/profiles.yaml`.
+3. Validate your profile using the validation script:
+   ```bash
+   python -m scripts.validate_profiles backend/seeds/profiles.yaml
+   ```
+4. Run the seed service (`python -m app.services.seed_service`) to test it locally.
+5. Update `docs/FEATURES.md`.
 
-## Section 137
-Content for section 137 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
+## How to Add Templates
 
-## Section 138
-Content for section 138 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
+If you need a new output script format (e.g., `Makefile`):
+1. Create the template in `backend/app/templates/jinja/`.
+2. Register it in `TEMPLATE_MAP` inside `backend/app/templates/engine.py`.
+3. Write a rendering test in `backend/tests/unit/templates/`.
 
-## Section 139
-Content for section 139 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
+## How to Test Scripts
 
-## Section 140
-Content for section 140 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
+We require high test coverage because generated scripts affect real systems.
+- Run backend tests: `pytest tests/`
+- Run CLI agent tests: `cd ../cli && pytest tests/`
+- **Rule**: If you add a new CUDA version to the compatibility matrix, you *must* add a test case for it in `test_resolver.py`.
 
-## Section 141
-Content for section 141 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
+See [TESTING.md](./docs/TESTING.md) for more details.
 
-## Section 142
-Content for section 142 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
+## Pull Request Guidelines
 
-## Section 143
-Content for section 143 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
+1. Ensure all tests pass.
+2. Ensure your code is formatted with `black` and `ruff`. (The pre-commit hooks installed in Step 4 will handle this automatically upon `git commit`).
+3. Ensure type checking passes (`mypy app/`).
+4. Update relevant documentation in the `docs/` folder.
+5. Fill out the Pull Request template completely.
 
-## Section 144
-Content for section 144 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
+## Commit Style
 
-## Section 145
-Content for section 145 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
+We follow [Conventional Commits](https://www.conventionalcommits.org/).
 
-## Section 146
-Content for section 146 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
+Examples:
+- `feat(api): add new profile endpoint`
+- `fix(agent): handle missing WMI gracefully on Windows`
+- `docs: update ROADMAP.md for phase 2`
+- `test(core): add edge cases for CompatibilityResolver`
 
-## Section 147
-Content for section 147 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
+## Branching Strategy
 
-## Section 148
-Content for section 148 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
+- `main` is the primary development branch.
+- Feature branches: `feat/your-feature-name`
+- Bugfix branches: `fix/your-bug-name`
 
-## Section 149
-Content for section 149 describing details deeply relevant to Contribute — Add contributing guidance and local dev setup.
-```python
-# Placeholder code snippet to demonstrate implementation
-def execute_task():
-    return True
-```
+## Getting Help
+If you need help, please open an issue with the `question` label, or check out [SUPPORT.md](./SUPPORT.md).

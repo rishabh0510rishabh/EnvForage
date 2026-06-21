@@ -1,8 +1,8 @@
 # CLI Diagnostic Agent — Feature Deep-Dive
 
-> **Feature**: CLI Diagnostic Agent (`envforge-agent`)
-> **Status**: 🔲 Planned (Phase 2)
-> **Last Updated**: 2026-05-06
+> **Feature**: CLI Diagnostic Agent (`envforage`)
+> **Status**: ✅ Implemented
+> **Last Updated**: 2026-06-18
 
 ---
 
@@ -11,7 +11,7 @@
 The CLI Diagnostic Agent is a standalone Python package that inspects the local
 machine's hardware and software environment and produces a structured JSON report.
 
-This report is the primary input to EnvForge's compatibility analysis and AI
+This report is the primary input to EnvForage's compatibility analysis and AI
 troubleshooting features.
 
 Key design constraints:
@@ -25,9 +25,9 @@ Key design constraints:
 
 ```
 cli/
-└── envforge_agent/
+└── envforage/
     ├── __init__.py
-    ├── __main__.py          # python -m envforge_agent
+    ├── __main__.py          # python -m envforage
     ├── cli.py               # Click CLI: diagnose, verify, fix
     ├── detectors/
     │   ├── os_detector.py   # platform, wsl_version
@@ -54,7 +54,7 @@ and serves as the contract between the CLI agent and the API.
 
 ```python
 class DiagnosticReportSchema(BaseModel):
-    agent_version: str            # "1.0.0"
+    agent_version: str            # "2.0.0"
     os: OSInfo
     cpu: CPUInfo
     ram: RAMInfo
@@ -88,19 +88,19 @@ class CUDAInfo(BaseModel):
 
 ```bash
 # Collect diagnostic report (output to terminal)
-envforge diagnose
+envforage diagnose
 
 # Save to file
-envforge diagnose --output report.json
+envforage diagnose --output report.json
 
-# Send to EnvForge API automatically
-envforge diagnose --send --api-url https://api.envforge.dev
+# Send to EnvForage API automatically
+envforage diagnose --send --api-url https://api.envforage.dev
 
 # Verify a specific installed profile
-envforge verify --profile pytorch-cuda
+envforage verify --profile pytorch-cuda
 
 # Generate a repair script from a saved report
-envforge fix --report report.json
+envforage fix --report report.json
 ```
 
 ---
@@ -152,10 +152,10 @@ import glob, subprocess
 The agent sends its report to `POST /api/v1/diagnose` (already implemented):
 
 ```bash
-envforge diagnose --send
+envforage diagnose --send
 # Equivalent to:
-envforge diagnose --output /tmp/report.json
-curl -X POST https://api.envforge.dev/api/v1/diagnose \
+envforage diagnose --output /tmp/report.json
+curl -X POST https://api.envforage.dev/api/v1/diagnose \
   -H "Content-Type: application/json" \
   -d @/tmp/report.json
 ```
@@ -163,8 +163,8 @@ curl -X POST https://api.envforge.dev/api/v1/diagnose \
 ### Offline Use
 Without `--send`, the agent outputs JSON to stdout. Users can:
 - Inspect it directly
-- Copy it into the EnvForge web UI (Phase 3)
-- Pass it to `envforge fix --report report.json`
+- Copy it into the EnvForage web UI (Phase 3)
+- Pass it to `envforage fix --report report.json`
 
 ---
 
@@ -181,14 +181,14 @@ Without `--send`, the agent outputs JSON to stdout. Users can:
 
 ## Phase 2 Implementation Plan
 
-1. `cli/pyproject.toml` — separate `envforge-agent` PyPI package
+1. `cli/pyproject.toml` — separate `envforage` PyPI package
 2. OS, GPU, CUDA, Python, Driver detectors
 3. `ReportBuilder` — aggregates all detector outputs
 4. Click CLI (`diagnose`, `verify`, `fix` commands)
 5. Unit tests with JSON fixtures for each platform
-6. Integration test: `envforge diagnose` → `POST /api/v1/diagnose` → valid response
+6. Integration test: `envforage diagnose` → `POST /api/v1/diagnose` → valid response
 
-**Exit Criteria**: `envforge diagnose` produces valid `DiagnosticReportSchema`
+**Exit Criteria**: `envforage diagnose` produces valid `DiagnosticReportSchema`
 JSON on Windows, WSL2, and Ubuntu 22.04.
 
 ---

@@ -1,4 +1,4 @@
-"""Unit tests for envforge audit (#181 MVP)."""
+"""Unit tests for envforage audit (#181 MVP)."""
 
 from __future__ import annotations
 
@@ -12,7 +12,7 @@ from click.testing import CliRunner
 import subprocess
 from unittest.mock import patch
 
-from envforge_agent.audit import (
+from envforage.audit import (
     audit_command,
     diff,
     ConfigFileSource,
@@ -20,9 +20,9 @@ from envforge_agent.audit import (
     LockfileSource,
     Package,
 )
-from envforge_agent.audit.formatters import format_json, format_sarif
-from envforge_agent.audit.differ import _classify_version_change
-from envforge_agent.audit.models import AuditResult, _normalize_name
+from envforage.audit.formatters import format_json, format_sarif
+from envforage.audit.differ import _classify_version_change
+from envforage.audit.models import AuditResult, _normalize_name
 
 
 class TestPackageNormalization:
@@ -215,13 +215,13 @@ class TestAuditCommand:
 
 
 class TestLocalEnvironmentErrors:
-    @patch("envforge_agent.audit.sources.subprocess.run")
+    @patch("envforage.audit.sources.subprocess.run")
     def test_timeout_raises_runtime_error(self, mock_run):
         mock_run.side_effect = subprocess.TimeoutExpired(cmd="pip", timeout=30)
         with pytest.raises(RuntimeError, match=r"did not complete"):
             list(LocalEnvironment().packages())
 
-    @patch("envforge_agent.audit.sources.subprocess.run")
+    @patch("envforage.audit.sources.subprocess.run")
     def test_pip_failure_raises_runtime_error(self, mock_run):
         mock_run.side_effect = subprocess.CalledProcessError(
             returncode=1, cmd="pip", stderr="permission denied"
@@ -229,7 +229,7 @@ class TestLocalEnvironmentErrors:
         with pytest.raises(RuntimeError, match=r"failed with exit code 1"):
             list(LocalEnvironment().packages())
 
-    @patch("envforge_agent.audit.sources.subprocess.run")
+    @patch("envforage.audit.sources.subprocess.run")
     def test_malformed_pip_output_raises_runtime_error(self, mock_run):
         mock_run.return_value = subprocess.CompletedProcess(
             args=[], returncode=0, stdout="not valid json", stderr=""
@@ -237,7 +237,7 @@ class TestLocalEnvironmentErrors:
         with pytest.raises(RuntimeError, match=r"malformed JSON"):
             list(LocalEnvironment().packages())
 
-    @patch("envforge_agent.audit.sources.subprocess.run")
+    @patch("envforage.audit.sources.subprocess.run")
     def test_missing_interpreter_raises_runtime_error(self, mock_run):
         mock_run.side_effect = FileNotFoundError("python not found")
         with pytest.raises(RuntimeError, match=r"Could not execute Python interpreter"):
@@ -247,7 +247,7 @@ class TestLocalEnvironmentErrors:
 class TestJsonFormatter:
     def test_format_json_no_drift(self):
         # Use a synthetic empty result via direct construction
-        from envforge_agent.audit.models import AuditResult
+        from envforage.audit.models import AuditResult
 
         result = AuditResult(
             source_a="lockfile:a.txt",
@@ -293,7 +293,7 @@ class TestSarifFormatter:
         assert "runs" in sarif
         assert len(sarif["runs"]) == 1
         run = sarif["runs"][0]
-        assert run["tool"]["driver"]["name"] == "envforge-audit"
+        assert run["tool"]["driver"]["name"] == "envforage-audit"
         assert len(run["results"]) == 1
         assert run["results"][0]["ruleId"] == "drift-major"
         assert run["results"][0]["level"] == "error"

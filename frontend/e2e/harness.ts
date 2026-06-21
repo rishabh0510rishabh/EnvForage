@@ -1,24 +1,28 @@
 
 // --- Automated E2E Testing Harness (Playwright) ---
+/* eslint-disable react-hooks/rules-of-hooks */
 import { test as base, expect, Page } from '@playwright/test';
-import { setupMockBackend, teardownMockBackend } from './mockServer';
+
+interface MockServer {
+    config: { port: number };
+}
 
 // Define custom fixture types
 type E2EFixtures = {
     authenticatedPage: Page;
-    mockBackend: any;
+    mockBackend: MockServer;
 };
 
 // Extend base test with custom fixtures
 export const test = base.extend<E2EFixtures>({
     // Start a mock backend before tests
     mockBackend: [async ({}, use) => {
-        const server = await setupMockBackend({ port: 8080 });
+        const mockServer = await setupMockBackend({ port: 8080 });
         console.log('Mock backend started on port 8080');
         
-        await use(server);
+        await use(mockServer);
         
-        await teardownMockBackend(server);
+        await teardownMockBackend(mockServer);
         console.log('Mock backend stopped');
     }, { scope: 'worker', auto: true }],
 
@@ -73,5 +77,5 @@ test('Dashboard loads critical metrics', async ({ authenticatedPage }) => {
 */
 
 // Mock server placeholder for type correctness
-async function setupMockBackend(config: any) { return { config }; }
-async function teardownMockBackend(server: any) { return true; }
+async function setupMockBackend(config: { port: number }): Promise<MockServer> { return { config }; }
+async function teardownMockBackend() { return true; }

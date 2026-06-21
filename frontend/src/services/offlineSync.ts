@@ -43,7 +43,7 @@ class OfflineSyncService {
     /**
      * Cache an action locally when offline.
      */
-    public async cacheAction(endpoint: string, payload: any): Promise<void> {
+    public async cacheAction(endpoint: string, payload: unknown): Promise<void> {
         if (!this.db) await this.initDB();
         
         return new Promise((resolve, reject) => {

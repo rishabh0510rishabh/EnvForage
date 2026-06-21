@@ -209,8 +209,16 @@ class AITroubleshootService:
         db: AsyncSession,
     ) -> AsyncIterator[str]:
         """
-        Stream the AI troubleshooting response with safety validation.
+        Stream the AI troubleshooting response with real-time safety checks.
+
+        Chunks are yielded immediately as they arrive from the LLM provider.
+        Each chunk is checked against FORBIDDEN_PATTERNS in real-time.
+        A full safety validation runs after the stream completes.
         """
+        import json as _json
+
+        from app.templates.safety import FORBIDDEN_PATTERNS
+
         session_id = str(uuid.uuid4())
         start_time = time.monotonic()
         input_hash = self._hash_input(request)
@@ -225,9 +233,14 @@ class AITroubleshootService:
 
         logger.info("Starting troubleshoot stream (provider=%s)", provider_name)
 
+        import re
+        compiled_patterns = [(re.compile(p, re.IGNORECASE), desc) for p, desc in FORBIDDEN_PATTERNS]
+
         chunks: list[str] = []
         _stream_buffer_limit = 512 * 1024  # 512 KB
         _buffer_size = 0
+        safety_aborted = False
+
         async for chunk in provider.stream(
             system_prompt=TROUBLESHOOT_SYSTEM_PROMPT,
             user_message=user_message,
@@ -238,10 +251,33 @@ class AITroubleshootService:
                 logger.warning(
                     "Stream buffer limit exceeded for session %s", session_id
                 )
-                yield '{"error":"STREAM_LIMIT_EXCEEDED","message":"Response too large — blocked by safety limit."}'
+                yield _json.dumps({
+                    "error": "STREAM_LIMIT_EXCEEDED",
+                    "message": "Response too large — blocked by safety limit.",
+                })
                 return
-            chunks.append(chunk)
 
+            # Real-time safety: check each chunk against forbidden patterns
+            for pattern, description in compiled_patterns:
+                if pattern.search(chunk):
+                    logger.warning(
+                        "Real-time safety violation in chunk (session %s): %s",
+                        session_id, description,
+                    )
+                    safety_aborted = True
+                    yield _json.dumps({
+                        "error": "SAFETY_VIOLATION",
+                        "message": "Response blocked by real-time safety filter.",
+                    })
+                    break
+
+            if safety_aborted:
+                return
+
+            chunks.append(chunk)
+            yield chunk
+
+        # Post-stream full safety validation
         full_response = "".join(chunks)
 
         try:
@@ -259,12 +295,14 @@ class AITroubleshootService:
                 tokens_used=0,
                 latency_ms=latency_ms,
             )
-            logger.warning("Safety violation in streamed response: %s", exc)
-            yield (
-                '{"error":"SAFETY_VIOLATION",'
-                '"message":"Response blocked by safety filter."}'
-            )
+            logger.warning("Post-stream safety violation: %s", exc)
+            yield _json.dumps({
+                "error": "SAFETY_VIOLATION",
+                "message": "Response blocked by post-stream safety filter.",
+            })
             return
+        except Exception:
+            logger.exception("Failed to validate streamed response")
 
         latency_ms = int((time.monotonic() - start_time) * 1000)
         await self._log_audit(
@@ -277,9 +315,6 @@ class AITroubleshootService:
             tokens_used=0,
             latency_ms=latency_ms,
         )
-
-        for chunk in chunks:
-            yield chunk
 
     async def _fetch_session_history(
         self,

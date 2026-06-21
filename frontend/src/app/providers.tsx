@@ -1,7 +1,7 @@
 "use client";
 
+import React, { createContext, useContext, useEffect, useState } from "react";
 import { Moon, Sun } from "lucide-react";
-import { createContext, useContext, useEffect, useState } from "react";
 
 // Create a context to share theme state across components
 const ThemeContext = createContext<{
@@ -19,7 +19,7 @@ export function useTheme() {
 }
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-	const [theme, setTheme] = useState<"dark" | "light" | "system">("light");
+	const [theme, setTheme] = useState<"dark" | "light" | "system">("dark");
 	const [mounted, setMounted] = useState(false);
 
 	const applyTheme = (newTheme: "dark" | "light" | "system") => {
@@ -52,6 +52,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 			applyTheme(storedTheme);
 		} else {
 			// Default to dark mode
+			setTheme("dark");
 			applyTheme("dark");
 		}
 	}, []);
@@ -108,10 +109,11 @@ export function useSystemThemePreference() {
             try {
                 localStorage.setItem('system-theme-snapshot', newTheme);
                 window.dispatchEvent(new Event('system-theme-change'));
-            } catch (err) {}
+            } catch {}
         };
 
         // Initial setup
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setSystemTheme(mediaQuery.matches ? 'dark' : 'light');
         document.documentElement.setAttribute('data-system-theme', mediaQuery.matches ? 'dark' : 'light');
 

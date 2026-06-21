@@ -1,5 +1,5 @@
 {
-	"agent_version": "1.0.0",
+	"agent_version": "2.0.0",
 	"os": {
 		"name": "Windows 11 Home Single Language",
 		"version": "25H2 (Build 26200)",
@@ -36,9 +36,9 @@
 	"python_installations": [
 		{
 			"version": "3.14.3",
-			"path": "C:\\Users\\risha\\Documents\\Projects\\EnvForge\\backend\\.venv\\Scripts\\python.exe",
+			"path": "C:\\Users\\risha\\Documents\\Projects\\EnvForage\\backend\\.venv\\Scripts\\python.exe",
 			"is_venv": true,
-			"venv_path": "C:\\Users\\risha\\Documents\\Projects\\EnvForge\\backend\\.venv",
+			"venv_path": "C:\\Users\\risha\\Documents\\Projects\\EnvForage\\backend\\.venv",
 			"pip_version": "26.1.1"
 		},
 		{
@@ -58,9 +58,9 @@
 	],
 	"active_python": {
 		"version": "3.14.3",
-		"path": "C:\\Users\\risha\\Documents\\Projects\\EnvForge\\backend\\.venv\\Scripts\\python.exe",
+		"path": "C:\\Users\\risha\\Documents\\Projects\\EnvForage\\backend\\.venv\\Scripts\\python.exe",
 		"is_venv": true,
-		"venv_path": "C:\\Users\\risha\\Documents\\Projects\\EnvForge\\backend\\.venv",
+		"venv_path": "C:\\Users\\risha\\Documents\\Projects\\EnvForage\\backend\\.venv",
 		"pip_version": "26.1.1"
 	}
 }

@@ -14,7 +14,7 @@ export default function CondaHubPage() {
         
         <div className="bg-[var(--bg-core)] p-4 rounded-md font-mono text-lg border border-[var(--border-strong)]">
           <div className="text-[var(--text-secondary)]"># 1. Analyze system</div>
-          <div className="text-[var(--text-primary)] mb-2">envforge audit --export=conda</div>
+          <div className="text-[var(--text-primary)] mb-2">envforage audit --export=conda</div>
           <div className="text-[var(--text-secondary)]"># 2. Create environment</div>
           <div className="text-[var(--text-primary)]">conda env create -f environment.yml</div>
         </div>

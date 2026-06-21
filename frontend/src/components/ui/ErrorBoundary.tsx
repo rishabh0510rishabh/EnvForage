@@ -80,7 +80,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
             Something went wrong.
           </h2>
           <p style={{ marginBottom: '24px', color: '#b91c1c' }}>
-            We've encountered an unexpected error. Our team has been notified.
+            We&apos;ve encountered an unexpected error. Our team has been notified.
           </p>
           <div style={{
             backgroundColor: '#fee2e2',

@@ -159,9 +159,9 @@ class DiagnosticReportSchema(BaseModel):
     """
 
     agent_version: str = Field(
-        "1.0.0",
-        description="Version of the envforge-agent CLI.",
-        examples=["1.0.0"],
+        "2.0.0",
+        description="Version of the envforage CLI.",
+        examples=["2.0.0"],
     )
     os: OSInfo
     cpu: CPUInfo
@@ -201,7 +201,7 @@ class DiagnosticReportSchema(BaseModel):
     model_config = {
         "json_schema_extra": {
             "example": {
-                "agent_version": "1.0.0",
+                "agent_version": "2.0.0",
                 "os": {
                     "name": "Ubuntu 22.04",
                     "version": "22.04",

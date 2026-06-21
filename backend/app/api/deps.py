@@ -8,9 +8,10 @@ database session dependency shown in generated OpenAPI documentation.
 import secrets
 from typing import Annotated
 
+import jwt
 from fastapi import Depends, Header, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
-from jose import ExpiredSignatureError, JWTError, jwt
+from jwt.exceptions import ExpiredSignatureError, PyJWTError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import get_settings
@@ -73,7 +74,7 @@ async def get_current_user(
             },
             headers={"WWW-Authenticate": "Bearer"},
         )
-    except JWTError:
+    except PyJWTError:
         raise credentials_exception
 
     return email

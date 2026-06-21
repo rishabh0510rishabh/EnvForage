@@ -83,6 +83,15 @@
 		},
 		{
 			"framework": "torch",
+			"version": "2.3.1",
+			"min_python": "3.8",
+			"max_python": "3.11",
+			"supported_cuda": ["11.8", "12.1"],
+			"supported_rocm": [],
+			"supported_python": ["3.8", "3.9", "3.10", "3.11"]
+		},
+		{
+			"framework": "torch",
 			"version": "2.4.0",
 			"min_python": "3.8",
 			"max_python": "3.13",

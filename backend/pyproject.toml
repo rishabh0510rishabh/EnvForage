@@ -3,9 +3,9 @@ requires = ["setuptools>=68.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "envforge-backend"
-version = "1.0.2"
-description = "EnvForge Backend API — ML Environment Provisioning Platform"
+name = "envforage-backend"
+version = "2.1.0"
+description = "EnvForage Backend API — ML Environment Provisioning Platform"
 requires-python = ">=3.11"
 dependencies = [
     "prometheus-client>=0.20.0",
@@ -25,12 +25,14 @@ dependencies = [
     "aiofiles>=23.2.1",
     "redis>=5.0.0",
     "apscheduler>=3.10.0",
-    "python-jose[cryptography]>=3.3.0",
+    "PyJWT>=2.8.0",
     "passlib>=1.7.4",
     "bcrypt>=4.0.0",
     "celery>=5.4.0",
     "packaging>=23.0",
     "structlog>=24.1.0",
+    "python-magic>=0.4.27",
+    "psutil>=5.9.0",
 ]
 
 [project.optional-dependencies]
@@ -68,7 +70,7 @@ target-version = "py311"
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "N", "W", "UP"]
-ignore = ["E501"]
+ignore = ["E501", "E402", "E701"]
 
 [tool.mypy]
 python_version = "3.11"

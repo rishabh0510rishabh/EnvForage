@@ -1,11 +1,18 @@
 
 # --- Pydantic Validation Suite ---
 import re
-from typing import Optional, List, Dict, Any
-from datetime import datetime, date
+from datetime import date
+from typing import Any
+
 from pydantic import (
-    BaseModel, Field, EmailStr, HttpUrl, 
-    field_validator, model_validator, computed_field, ConfigDict
+    BaseModel,
+    ConfigDict,
+    EmailStr,
+    Field,
+    HttpUrl,
+    computed_field,
+    field_validator,
+    model_validator,
 )
 
 # Robust Regex Patterns
@@ -15,26 +22,26 @@ PHONE_REGEX = re.compile(r"^\+?[1-9]\d{1,14}$")
 
 class UserProfileBase(BaseModel):
     model_config = ConfigDict(from_attributes=True, str_strip_whitespace=True)
-    
+
     username: str = Field(..., pattern=r"^[a-zA-Z0-9_.-]{3,30}$", description="Unique alphanumeric username")
     email: EmailStr = Field(..., description="Valid email address")
-    first_name: Optional[str] = Field(None, min_length=1, max_length=50)
-    last_name: Optional[str] = Field(None, min_length=1, max_length=50)
-    birth_date: Optional[date] = None
-    website: Optional[HttpUrl] = None
-    phone_number: Optional[str] = Field(None, description="E.164 formatted phone number")
-    metadata_tags: List[str] = Field(default_factory=list, max_items=20)
-    
+    first_name: str | None = Field(None, min_length=1, max_length=50)
+    last_name: str | None = Field(None, min_length=1, max_length=50)
+    birth_date: date | None = None
+    website: HttpUrl | None = None
+    phone_number: str | None = Field(None, description="E.164 formatted phone number")
+    metadata_tags: list[str] = Field(default_factory=list, max_length=20)
+
     @field_validator('phone_number')
     @classmethod
-    def validate_phone(cls, v: Optional[str]) -> Optional[str]:
+    def validate_phone(cls, v: str | None) -> str | None:
         if v and not PHONE_REGEX.match(v):
             raise ValueError('Invalid phone number format. Must comply with E.164.')
         return v
-        
+
     @field_validator('birth_date')
     @classmethod
-    def validate_age(cls, v: Optional[date]) -> Optional[date]:
+    def validate_age(cls, v: date | None) -> date | None:
         if v:
             today = date.today()
             age = today.year - v.year - ((today.month, today.day) < (v.month, v.day))
@@ -43,8 +50,8 @@ class UserProfileBase(BaseModel):
             if age > 120:
                 raise ValueError('Invalid birth date.')
         return v
-        
-    @computed_field
+
+    @computed_field  # type: ignore[prop-decorator]
     @property
     def display_name(self) -> str:
         """Dynamically computes a safe display name based on available fields."""
@@ -53,13 +60,12 @@ class UserProfileBase(BaseModel):
         elif self.first_name:
             return self.first_name
         return self.username
-        
-    @computed_field
+
+    @computed_field  # type: ignore[prop-decorator]
     @property
     def profile_completeness_score(self) -> int:
         """Calculates profile completion percentage."""
         score = 0
-        total_fields = 5
         if self.first_name: score += 20
         if self.last_name: score += 20
         if self.birth_date: score += 20
@@ -70,7 +76,7 @@ class UserProfileBase(BaseModel):
 class UserProfileCreate(UserProfileBase):
     password: str = Field(..., description="Strong password")
     password_confirm: str = Field(..., description="Password confirmation")
-    
+
     @field_validator('password')
     @classmethod
     def validate_password_strength(cls, v: str) -> str:
@@ -80,7 +86,7 @@ class UserProfileCreate(UserProfileBase):
                 'one lowercase, one number and one special character.'
             )
         return v
-        
+
     @model_validator(mode='after')
     def verify_passwords_match(self) -> 'UserProfileCreate':
         if self.password != self.password_confirm:
@@ -89,13 +95,13 @@ class UserProfileCreate(UserProfileBase):
 
 class UserProfileUpdate(BaseModel):
     model_config = ConfigDict(str_strip_whitespace=True, extra='forbid')
-    
-    first_name: Optional[str] = Field(None, min_length=1, max_length=50)
-    last_name: Optional[str] = Field(None, min_length=1, max_length=50)
-    website: Optional[HttpUrl] = None
-    metadata_tags: Optional[List[str]] = Field(None, max_items=20)
-    preferences: Optional[Dict[str, Any]] = None
-    
+
+    first_name: str | None = Field(None, min_length=1, max_length=50)
+    last_name: str | None = Field(None, min_length=1, max_length=50)
+    website: HttpUrl | None = None
+    metadata_tags: list[str] | None = Field(None, max_length=20)
+    preferences: dict[str, Any] | None = None
+
     @model_validator(mode='after')
     def check_at_least_one_field(self) -> 'UserProfileUpdate':
         if not any(v is not None for v in self.model_dump().values()):

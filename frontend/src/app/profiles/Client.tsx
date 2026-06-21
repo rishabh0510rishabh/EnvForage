@@ -50,11 +50,12 @@ export default function ProfilesPage() {
 			try {
 				const parsed = JSON.parse(saved);
 				if (Array.isArray(parsed) && parsed.every((i) => typeof i === "string")) {
+					// eslint-disable-next-line react-hooks/set-state-in-effect
 					setFavorites(parsed);
 				} else {
 					setFavorites([]);
 				}
-			} catch (e) {
+			} catch {
 				setFavorites([]);
 			}
 		}
@@ -65,6 +66,7 @@ export default function ProfilesPage() {
 
 			if (saved) {
 				try {
+					// eslint-disable-next-line react-hooks/set-state-in-effect
 					setRecentProfiles(JSON.parse(saved));
 				} catch {
 					setRecentProfiles([]);

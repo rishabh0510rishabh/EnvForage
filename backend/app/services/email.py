@@ -1,17 +1,17 @@
 
 # --- Abstract Email Dispatcher ---
-import smtplib
-import logging
 import asyncio
-from email.message import EmailMessage
-from typing import List, Dict, Any, Optional
+import logging
+import smtplib
 from abc import ABC, abstractmethod
+from email.message import EmailMessage
+from typing import Any
 
 logger = logging.getLogger("EmailDispatcher")
 
 class EmailProvider(ABC):
     @abstractmethod
-    async def send(self, to: List[str], subject: str, html_body: str) -> bool:
+    async def send(self, to: list[str], subject: str, html_body: str) -> bool:
         pass
 
 class SMTPEmailProvider(EmailProvider):
@@ -22,7 +22,7 @@ class SMTPEmailProvider(EmailProvider):
         self.user = user
         self.password = password
 
-    async def send(self, to: List[str], subject: str, html_body: str) -> bool:
+    async def send(self, to: list[str], subject: str, html_body: str) -> bool:
         msg = EmailMessage()
         msg['Subject'] = subject
         msg['From'] = self.user
@@ -48,8 +48,8 @@ class MockSendGridProvider(EmailProvider):
     """Example integration with a 3rd party REST API."""
     def __init__(self, api_key: str):
         self.api_key = api_key
-        
-    async def send(self, to: List[str], subject: str, html_body: str) -> bool:
+
+    async def send(self, to: list[str], subject: str, html_body: str) -> bool:
         logger.info(f"Simulating SendGrid dispatch to {to}")
         await asyncio.sleep(0.5) # Simulate network latency
         return True
@@ -60,25 +60,25 @@ class EmailDispatcher:
     Implements automatic failover (e.g., tries SendGrid, falls back to SMTP)
     and asynchronous retry logic with exponential backoff.
     """
-    def __init__(self, primary: EmailProvider, fallback: Optional[EmailProvider] = None):
+    def __init__(self, primary: EmailProvider, fallback: EmailProvider | None = None):
         self.primary = primary
         self.fallback = fallback
 
-    async def dispatch(self, to: List[str], subject: str, context: Dict[str, Any], template_name: str) -> bool:
+    async def dispatch(self, to: list[str], subject: str, context: dict[str, Any], template_name: str) -> bool:
         html_body = self._render_template(template_name, context)
-        
+
         success = await self._attempt_send(self.primary, to, subject, html_body)
-        
+
         if not success and self.fallback:
             logger.warning(f"Primary provider failed. Attempting fallback for {to}")
             success = await self._attempt_send(self.fallback, to, subject, html_body)
-            
+
         if not success:
             logger.critical(f"All email providers failed to dispatch to {to}")
-            
+
         return success
 
-    async def _attempt_send(self, provider: EmailProvider, to: List[str], subject: str, body: str, retries=2) -> bool:
+    async def _attempt_send(self, provider: EmailProvider, to: list[str], subject: str, body: str, retries=2) -> bool:
         for attempt in range(retries):
             if await provider.send(to, subject, body):
                 return True
@@ -86,6 +86,16 @@ class EmailDispatcher:
             await asyncio.sleep(2 ** attempt)
         return False
 
-    def _render_template(self, template_name: str, context: Dict[str, Any]) -> str:
-        # Simulate Jinja2 templating
-        return f"<h1>Email Template: {template_name}</h1><p>Data: {context}</p>"
+    def _render_template(self, template_name: str, context: dict[str, Any]) -> str:
+        from jinja2 import Environment, select_autoescape
+
+        # Use Jinja2 with autoescape to prevent HTML/XSS injection
+        # from user-controlled context values.
+        env = Environment(autoescape=select_autoescape(["html"]))
+        template = env.from_string(
+            "<h1>{{ template_name }}</h1>"
+            "{% for key, val in data.items() %}"
+            "<p><strong>{{ key }}:</strong> {{ val }}</p>"
+            "{% endfor %}"
+        )
+        return template.render(template_name=template_name, data=context)

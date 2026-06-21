@@ -2,15 +2,15 @@
 
 # Troubleshooting Guide
 
-Common problems and fixes when using EnvForge CLI.
+Common problems and fixes when using EnvForage CLI.
 
 ---
 
-## 1. `EnvForge is not currently supported on macOS`
+## 1. `EnvForage is not currently supported on macOS`
 
 ### Error
 ```bash
-[ERROR] EnvForge is not currently supported on macOS.
+[ERROR] EnvForage is not currently supported on macOS.
 ```
 
 ### Cause
@@ -31,7 +31,7 @@ Use one of the supported environments:
 ```
 
 ### Cause
-Backend API server is not running or `ENVFORGE_API_URL` is incorrect.
+Backend API server is not running or `ENVFORAGE_API_URL` is incorrect.
 
 ### Fix
 Start the backend server first.
@@ -44,13 +44,13 @@ uvicorn app.main:app --reload
 Or set the correct API URL:
 
 ```bash
-export ENVFORGE_API_URL=http://your-server:8000
+export ENVFORAGE_API_URL=http://your-server:8000
 ```
 
 Windows PowerShell:
 
 ```powershell
-$env:ENVFORGE_API_URL="http://your-server:8000"
+$env:ENVFORAGE_API_URL="http://your-server:8000"
 ```
 
 ---
@@ -65,7 +65,7 @@ CUDA: Not detected
 ```
 
 ### Cause
-EnvForge checks CUDA using:
+EnvForage checks CUDA using:
 - `nvcc --version`
 - `/usr/local/cuda/version.txt`
 - `CUDA_PATH` / `CUDA_HOME`
@@ -111,7 +111,7 @@ FAIL: PyTorch import failed — is it installed?
 ```
 
 ### Cause
-`envforge verify` could not import `torch`.
+`envforage verify` could not import `torch`.
 
 ### Fix
 
@@ -173,20 +173,20 @@ Failed to parse report file
 ```
 
 ### Cause
-`envforge fix` received malformed or incompatible JSON.
+`envforage fix` received malformed or incompatible JSON.
 
 ### Fix
 
 Generate a fresh report:
 
 ```bash
-envforge diagnose --output report.json
+envforage diagnose --output report.json
 ```
 
 Then retry:
 
 ```bash
-envforge fix --report report.json --profile pytorch-cuda
+envforage fix --report report.json --profile pytorch-cuda
 ```
 
 ---

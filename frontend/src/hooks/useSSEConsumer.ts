@@ -3,7 +3,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 interface SSEOptions {
     url: string;
     method?: 'GET' | 'POST';
-    body?: any;
+    body?: unknown;
     headers?: Record<string, string>;
     maxRetries?: number;
     retryIntervalMs?: number;
@@ -96,8 +96,8 @@ export function useSSEConsumer() {
                 
                 setState(s => ({ ...s, status: 'done' }));
                 
-            } catch (error: any) {
-                if (error.name === 'AbortError') {
+            } catch (error: unknown) {
+                if (error instanceof Error && error.name === 'AbortError') {
                     console.log('SSE connection aborted manually.');
                     return;
                 }
@@ -106,11 +106,11 @@ export function useSSEConsumer() {
                 
                 if (retryCountRef.current < maxRetries) {
                     retryCountRef.current += 1;
-                    setState(s => ({ ...s, status: 'reconnecting', error }));
+                    setState(s => ({ ...s, status: 'reconnecting', error: error instanceof Error ? error : new Error(String(error)) }));
                     console.log(`Reconnecting in ${retryIntervalMs}ms... (Attempt ${retryCountRef.current}/${maxRetries})`);
                     setTimeout(attemptConnection, retryIntervalMs);
                 } else {
-                    setState(s => ({ ...s, status: 'error', error }));
+                    setState(s => ({ ...s, status: 'error', error: error instanceof Error ? error : new Error(String(error)) }));
                 }
             }
         };

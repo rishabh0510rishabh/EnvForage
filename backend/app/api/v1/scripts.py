@@ -6,6 +6,8 @@ from collections.abc import Iterator
 
 from fastapi import APIRouter, Depends, HTTPException, Path
 from fastapi.responses import StreamingResponse
+from sqlalchemy import select
+from sqlalchemy.orm import selectinload
 
 from app.api.deps import DB
 from app.compatibility.errors import (
@@ -14,8 +16,9 @@ from app.compatibility.errors import (
     UnsupportedOSError,
 )
 from app.middleware.rate_limit import general_rate_limit
+from app.models.profile import EnvironmentProfile
 from app.schemas.script import GenerationRequest, GenerationResponse
-from app.services import profile_service, script_service
+from app.services import script_service
 
 router = APIRouter()
 
@@ -57,7 +60,15 @@ async def generate_scripts(
     Any incompatibility is returned as a structured 409 error.
     """
     # Load profile
-    profile = await profile_service.get_profile_by_slug(db, request.profile_id)
+    # Fetch ORM object directly — NOT from cache. script_service.generate_scripts()
+    # needs a real SQLAlchemy model (not a cached dict).
+    db_result = await db.execute(
+        select(EnvironmentProfile)
+        .where(EnvironmentProfile.slug == request.profile_id)
+        .where(EnvironmentProfile.deleted_at.is_(None))
+        .options(selectinload(EnvironmentProfile.packages))
+    )
+    profile = db_result.scalar_one_or_none()
     if profile is None:
         raise HTTPException(
             status_code=404,
@@ -160,7 +171,7 @@ async def download_scripts(
             zf.writestr(script.filename, script.content)
         # Include a manifest
         manifest = (
-            f"EnvForge Generated Scripts\n"
+            f"EnvForage Generated Scripts\n"
             f"Job: {job.id}\n"
             f"Profile: {job.profile_id}\n"
             f"OS: {job.target_os}\n"
@@ -173,6 +184,6 @@ async def download_scripts(
         _stream_zip(zip_buffer),
         media_type="application/zip",
         headers={
-            "Content-Disposition": (f"attachment; filename=envforge_{job_id[:8]}.zip")
+            "Content-Disposition": (f"attachment; filename=envforage_{job_id[:8]}.zip")
         },
     )

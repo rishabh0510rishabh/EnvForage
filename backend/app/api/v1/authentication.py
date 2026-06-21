@@ -10,8 +10,8 @@ that other routes should use to require an authenticated user.
 
 from datetime import UTC, datetime, timedelta
 
+import jwt
 from fastapi import APIRouter, Depends, HTTPException
-from jose import jwt
 from passlib.context import CryptContext
 from pydantic import BaseModel, EmailStr, Field, field_validator
 from sqlalchemy.exc import IntegrityError

@@ -1,8 +1,8 @@
 #!/bin/bash
 # ==============================================================================
-# EnvForge Repair Script — Pip Package Reinstall
+# EnvForage Repair Script — Pip Package Reinstall
 # Generated: {{ generated_at }}
-# EnvForge : v{{ envforge_version }}
+# EnvForage : v{{ envforage_version }}
 #
 # This script reinstalls specified pip packages with correct versions.
 # It uses --force-reinstall to ensure clean installations.
@@ -16,12 +16,12 @@
 set -euo pipefail
 
 RED='\033[0;31m'; GREEN='\033[0;32m'; YELLOW='\033[1;33m'; NC='\033[0m'
-info()  { echo -e "${GREEN}[EnvForge Repair]${NC} $1"; }
+info()  { echo -e "${GREEN}[EnvForage Repair]${NC} $1"; }
 warn()  { echo -e "${YELLOW}[WARN]${NC} $1"; }
 error() { echo -e "${RED}[ERROR]${NC} $1" >&2; exit 1; }
 
 echo ""
-info "EnvForge Pip Reinstall Repair Script"
+info "EnvForage Pip Reinstall Repair Script"
 echo ""
 
 # ── Step 1: Check we're in a venv ─────────────────────────────────────────────

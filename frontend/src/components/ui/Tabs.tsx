@@ -1,6 +1,6 @@
 
 // --- Tabs Navigation Engine ---
-import React, { useState, ReactNode, useRef, useEffect } from 'react';
+import React, { useState, ReactNode, useRef } from 'react';
 
 export interface TabData {
   id: string;
@@ -102,7 +102,7 @@ export const Tabs: React.FC<TabsProps> = ({
           return (
             <button
               key={tab.id}
-              ref={(el) => (tabRefs.current[index] = el)}
+              ref={(el) => { tabRefs.current[index] = el; }}
               role="tab"
               aria-selected={isActive}
               aria-controls={`panel-${tab.id}`}

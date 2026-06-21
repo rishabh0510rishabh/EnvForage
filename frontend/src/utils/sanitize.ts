@@ -1,4 +1,6 @@
 
+import React from 'react';
+
 // --- DOMPurify HTML Sanitizer ---
 // Note: In a real project, run `npm install dompurify @types/dompurify`
 // import DOMPurify from 'dompurify';
@@ -12,10 +14,6 @@ const DOMPurify = {
     // Highly simplistic mock. Do NOT use this exact regex loop in production.
     // The real DOMPurify uses a complex inert DOM tree to strip malicious execution vectors.
     let clean = html;
-    if (config?.ALLOWED_TAGS) {
-      // Just a mock log
-      console.log('Sanitizing with strict allowed tags:', config.ALLOWED_TAGS);
-    }
     // Very naive mock strip of script tags
     clean = clean.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
     clean = clean.replace(/on\w+="[^"]*"/gi, ''); // mock strip inline handlers
@@ -58,7 +56,7 @@ export function sanitizeHtml(dirtyHtml: string | null | undefined, config: Sanit
     secureLinks = true,
   } = config;
 
-  let purifyConfig: any = {
+  const purifyConfig: { FORCE_BODY: boolean; ALLOWED_TAGS?: string[]; ALLOWED_ATTR?: string[] } = {
     // ALWAYS force body, prevents weird root node bypasses
     FORCE_BODY: true,
   };
@@ -99,11 +97,8 @@ export const SafeHtml: React.FC<{ html: string; className?: string; config?: San
 }) => {
   const safeContent = sanitizeHtml(html, config);
   
-  return (
-    <div 
-      className={className}
-      // eslint-disable-next-line react/no-danger
-      dangerouslySetInnerHTML={{ __html: safeContent }} 
-    />
-  );
+  return React.createElement("div", {
+    className,
+    dangerouslySetInnerHTML: { __html: safeContent }
+  });
 };

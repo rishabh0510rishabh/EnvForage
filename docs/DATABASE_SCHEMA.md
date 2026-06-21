@@ -1,8 +1,8 @@
-# EnvForge — Database Schema Design
+# EnvForage — Database Schema Design
 
-> **Version**: 1.0.0
+> **Version**: 2.0.0
 > **Status**: Production
-> **Last Updated**: 2026-05-21
+> **Last Updated**: 2026-06-18
 
 ---
 

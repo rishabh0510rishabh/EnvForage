@@ -1,0 +1,49 @@
+replicaCount: 1
+
+image:
+  repository: envforage-backend
+  pullPolicy: IfNotPresent
+  tag: "latest"
+
+service:
+  type: ClusterIP
+  port: 8000
+
+ingress:
+  enabled: false
+  className: nginx
+  host: envforage.local
+  tls: false
+
+resources:
+  requests:
+    cpu: 250m
+    memory: 256Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
+
+env:
+  DATABASE_URL: "postgresql+asyncpg://envforage:changeme@envforage-postgres:5432/envforage"
+  REDIS_URL: "redis://envforage-redis:6379/0"
+
+redis:
+  enabled: true
+  image: redis:7-alpine
+  port: 6379
+
+postgres:
+  image: postgres:16-alpine
+  user: envforage
+  password: changeme
+  db: envforage
+  storage: 5Gi
+
+ollama:
+  image: ollama/ollama:latest
+
+frontend:
+  repository: envforage-frontend
+  tag: latest
+  pullPolicy: IfNotPresent
+  apiUrl: "/api/v1"

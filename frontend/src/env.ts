@@ -6,7 +6,7 @@ const envSchema = z.object({
     NEXT_PUBLIC_API_URL: z.string().url().default("http://localhost:8000"),
     NEXT_PUBLIC_WS_URL: z.string().url().default("ws://localhost:8000"),
     NEXT_PUBLIC_ENVIRONMENT: z.enum(["development", "staging", "production"]).default("development"),
-    NEXT_PUBLIC_TELEMETRY_ENABLED: z.string().transform((val) => val === "true").default("false"),
+    NEXT_PUBLIC_TELEMETRY_ENABLED: z.string().default("false").transform((val) => val === "true"),
 });
 
 const _env = envSchema.safeParse({

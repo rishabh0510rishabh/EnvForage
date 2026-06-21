@@ -1,0 +1,33 @@
+# EnvForage Production Caddyfile
+#
+# Caddy automatically obtains TLS certificates from Let's Encrypt.
+# Replace {$DOMAIN} with your actual domain (e.g., envforage.example.com)
+# or set the DOMAIN environment variable.
+#
+# Usage:
+#   DOMAIN=envforage.example.com docker compose -f docker-compose.prod.yml up
+
+{$DOMAIN:localhost} {
+	# API routes → backend
+	handle /api/* {
+		reverse_proxy api:8000
+	}
+
+	handle /health {
+		reverse_proxy api:8000
+	}
+
+	# Everything else → frontend
+	handle {
+		reverse_proxy frontend:3000
+	}
+
+	# Security headers
+	header {
+		X-Frame-Options "DENY"
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+		-Server
+	}
+}

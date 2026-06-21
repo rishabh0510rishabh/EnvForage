@@ -1,16 +1,16 @@
 from typing import Any
 
-from app.plugins.base import EnvForgePlugin
+from app.plugins.base import EnvForagePlugin
 
 
-class SampleAuditPlugin(EnvForgePlugin):
+class SampleAuditPlugin(EnvForagePlugin):
     @property
     def name(self) -> str:
         return "sample-audit-plugin"
 
     @property
     def version(self) -> str:
-        return "1.0.0"
+        return "2.0.0"
 
     async def initialize(self) -> None:
         print(f"[{self.name}] Initialized version {self.version}")

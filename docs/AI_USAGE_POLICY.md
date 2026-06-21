@@ -2,7 +2,7 @@
 
 > **Philosophy**: Deterministic logic > AI generation.
 
-Because EnvForge generates executable scripts that modify a user's operating system, environment, and hardware drivers, we enforce strict boundaries on how Artificial Intelligence (LLMs) can be utilized within the platform.
+Because EnvForage generates executable scripts that modify a user's operating system, environment, and hardware drivers, we enforce strict boundaries on how Artificial Intelligence (LLMs) can be utilized within the platform.
 
 This document outlines the allowed scope, restricted actions, and safety mechanisms for AI features.
 

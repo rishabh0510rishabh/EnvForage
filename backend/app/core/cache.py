@@ -1,16 +1,16 @@
 
 # --- Distributed Caching Abstraction ---
 import json
-import random
 import logging
-from typing import Any, Optional, Callable
-from datetime import timedelta
+import random
+from collections.abc import Callable
+from typing import Any
 
 logger = logging.getLogger("CacheService")
 
 class CacheService:
     """
-    A robust distributed caching service that attempts to use Redis, 
+    A robust distributed caching service that attempts to use Redis,
     but falls back transparently to an in-memory dictionary if Redis is unavailable.
     Includes cache stampede protection via TTL jitter.
     """
@@ -25,14 +25,14 @@ class CacheService:
         jitter = random.uniform(0.9, 1.1)
         return int(ttl_seconds * jitter)
 
-    async def get(self, key: str) -> Optional[Any]:
+    async def get(self, key: str) -> Any | None:
         if self.redis:
             try:
                 val = await self.redis.get(key)
                 return json.loads(val) if val else None
             except Exception as e:
                 logger.warning(f"Redis get failed for {key}: {e}. Falling back to memory.")
-                
+
         # Memory fallback
         if key in self._memory_fallback:
             item = self._memory_fallback[key]
@@ -70,13 +70,13 @@ class CacheService:
         cached = await self.get(key)
         if cached is not None:
             return cached
-            
+
         logger.debug(f"Cache miss for {key}, executing fetch func.")
         import asyncio
         if asyncio.iscoroutinefunction(fetch_func):
             fresh_data = await fetch_func()
         else:
             fresh_data = fetch_func()
-            
+
         await self.set(key, fresh_data, ttl_seconds)
         return fresh_data

@@ -42,7 +42,7 @@ export default function TerminalLoader({
 	// Generate logs dynamic configuration
 	const logSequence: LogItem[] = [
 		{
-			text: `envforge compile --profile="${profileName}" --os="${targetOs}" --python="${pythonVersion}"${
+			text: `envforage compile --profile="${profileName}" --os="${targetOs}" --python="${pythonVersion}"${
 				cudaVersion ? ` --cuda="${cudaVersion}"` : ""
 			}`,
 			type: "input",
@@ -413,7 +413,7 @@ export default function TerminalLoader({
 									<span
 										style={{ color: "var(--brand-accent)", fontWeight: "bold" }}
 									>
-										guest@envforge:~$
+										guest@envforage:~$
 									</span>
 								)}
 								<span>{log.text}</span>

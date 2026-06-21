@@ -1,12 +1,12 @@
 # Script Safety Policy
 
-Because EnvForge generates executable shell (`.sh`) and PowerShell (`.ps1`) scripts that run on real hardware, script safety is our highest priority. 
+Because EnvForage generates executable shell (`.sh`) and PowerShell (`.ps1`) scripts that run on real hardware, script safety is our highest priority. 
 
 This document defines the strict boundaries of what our scripts are allowed to do.
 
 ## 1. Prohibited Commands (The "Never" List)
 
-EnvForge scripts will **never** include or generate the following commands. These are actively blocked by the `SafetyFilter` in the Template Engine:
+EnvForage scripts will **never** include or generate the following commands. These are actively blocked by the `SafetyFilter` in the Template Engine:
 
 - **Delete system files**: No recursive deletions of the root directory (`rm -rf /`) or user home directories (`rm -rf ~`). The safety regex uses a negative lookahead (`(?!\w)`) to allow standard Docker cleanup patterns like `rm -rf /var/lib/apt/lists/*`. See [ADR-008](./decisions/ADR-008-safety-filter-negative-lookahead.md).
 - **Modify boot configs**: No modifications to GRUB, Windows Boot Manager, or kernel parameters.
@@ -18,7 +18,7 @@ EnvForge scripts will **never** include or generate the following commands. Thes
 
 ## 2. Allowed Automation Scope
 
-EnvForge scripts are scoped to *user-space ML environment provisioning*.
+EnvForage scripts are scoped to *user-space ML environment provisioning*.
 
 **Allowed actions include:**
 - Creating and activating Python virtual environments (`venv`, `conda`).
@@ -29,7 +29,7 @@ EnvForge scripts are scoped to *user-space ML environment provisioning*.
 
 ## 3. Safety Checks (Pre-Flight)
 
-Every EnvForge `setup.sh` or `setup.ps1` script must include pre-flight checks before making any changes.
+Every EnvForage `setup.sh` or `setup.ps1` script must include pre-flight checks before making any changes.
 
 **Required Checks:**
 1. **OS Check**: Verify the current OS matches the script's intended target.

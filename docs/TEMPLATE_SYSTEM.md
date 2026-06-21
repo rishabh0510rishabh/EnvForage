@@ -1,8 +1,8 @@
-# EnvForge — Template System Design
+# EnvForage — Template System Design
 
-> **Version**: 1.0.0
-> **Status**: Planning
-> **Last Updated**: 2026-05-06
+> **Version**: 2.0.0
+> **Status**: Production
+> **Last Updated**: 2026-06-18
 
 ---
 
@@ -44,7 +44,7 @@ class TemplateContext(BaseModel):
     resolved: ResolvedEnvironment
     target_os: OSTarget
     generated_at: datetime
-    envforge_version: str
+    envforage_version: str
     warnings: list[str]
 ```
 
@@ -59,12 +59,12 @@ class TemplateContext(BaseModel):
 ```jinja2
 #!/bin/bash
 # ============================================================
-# EnvForge Generated Setup Script
+# EnvForage Generated Setup Script
 # Profile  : {{ profile.name }}
 # OS Target: Linux / WSL
 # Generated: {{ generated_at.strftime('%Y-%m-%d %H:%M UTC') }}
-# EnvForge : v{{ envforge_version }}
-# WARNING  : Do not modify — regenerate from EnvForge instead
+# EnvForage : v{{ envforage_version }}
+# WARNING  : Do not modify — regenerate from EnvForage instead
 # ============================================================
 
 set -euo pipefail  # Exit on error, undefined vars, pipe failures
@@ -91,14 +91,14 @@ pip3 install \
     {{ pkg.name }}=={{ pkg.version }} \
 {%- endfor %}
 
-echo "✓ EnvForge setup complete for profile: {{ profile.name }}"
+echo "✓ EnvForage setup complete for profile: {{ profile.name }}"
 ```
 
 ### `requirements.j2` (Skeleton)
 
 ```jinja2
 # ============================================================
-# EnvForge Generated requirements.txt
+# EnvForage Generated requirements.txt
 # Profile  : {{ profile.name }}
 # Generated: {{ generated_at.strftime('%Y-%m-%d') }}
 # ============================================================
@@ -200,7 +200,7 @@ API returns download URL
 | `resolved.packages` | list | `[{name, version}]` |
 | `target_os` | OSTarget | `LINUX`, `WSL`, `WIN` |
 | `generated_at` | datetime | UTC generation timestamp |
-| `envforge_version` | str | EnvForge version |
+| `envforage_version` | str | EnvForage version |
 | `warnings` | list[str] | Non-fatal compatibility warnings |
 
 ---

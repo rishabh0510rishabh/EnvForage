@@ -13,7 +13,7 @@ export default function DevcontainerHubPage() {
         <p className="mb-6 text-[var(--text-secondary)]">Run this command in your project root to generate a `.devcontainer` directory customized for your hardware.</p>
         
         <div className="bg-[var(--bg-core)] p-4 rounded-md font-mono text-lg border border-[var(--border-strong)] flex justify-between">
-          <span className="text-[var(--text-primary)]">envforge init --template=devcontainer</span>
+          <span className="text-[var(--text-primary)]">envforage init --template=devcontainer</span>
           <span className="text-[var(--brand-secondary)] cursor-pointer">Copy</span>
         </div>
         

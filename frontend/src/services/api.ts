@@ -202,6 +202,23 @@ export const api = {
 		if (!response.ok) throw new Error("Failed to fetch repair templates");
 		return response.json();
 	},
+
+	submitUninstallFeedback: async (request: {
+		rating?: number | null;
+		reasons: string[];
+		comments?: string;
+		email?: string;
+	}): Promise<unknown> => {
+		const response = await fetch(`${API_BASE_URL}/uninstall/feedback`, {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify(request),
+		});
+		if (!response.ok) throw new Error("Failed to submit feedback");
+		return response.json();
+	},
 };
 
 // --- Axios Retry Interceptor ---
@@ -218,7 +235,7 @@ export const apiClient = axios.create({
 apiClient.interceptors.response.use(
     (response) => response,
     async (error: AxiosError) => {
-        const config = error.config as any;
+        const config = error.config as typeof error.config & { retryCount?: number };
         
         if (!config || !config.retryCount) {
             config.retryCount = 0;

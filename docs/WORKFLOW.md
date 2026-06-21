@@ -1,8 +1,8 @@
-# EnvForge — Workflow Documentation
+# EnvForage — Workflow Documentation
 
-> **Version**: 1.0.0
-> **Status**: Phase 1 & 3 Implemented
-> **Last Updated**: 2026-05-14
+> **Version**: 2.1.0
+> **Status**: Stable v2.1.0
+> **Last Updated**: 2026-06-18
 
 ---
 
@@ -25,7 +25,7 @@ compatibility resolution, template rendering, safety filtering, and ZIP download
 — is operational via the API.
 
 ```
-User opens EnvForge Web App (Phase 3: Implemented and deployed to Vercel)
+User opens EnvForage Web App (Phase 3: Implemented and deployed to Vercel)
     │
     ▼
 GET /api/v1/profiles
@@ -99,11 +99,11 @@ provides a web UI for pasting, parsing, and verifying reports against profiles.
 ### Current (Phase 3) — Web Diagnostic Dashboard
 
 ```
-User opens /diagnose in the EnvForge Web App
+User opens /diagnose in the EnvForage Web App
     │
     ▼
 Paste DiagnosticReport JSON into the text area
-(output of `envforge diagnose --quiet` or manually constructed)
+(output of `envforage diagnose --quiet` or manually constructed)
     │
     ▼
 Click "Analyze Report" → Client-side JSON parse + validation
@@ -117,7 +117,7 @@ Select Target Profile from dropdown → Click "Run Check"
     ▼
 POST /api/v1/diagnose
 Body: DiagnosticReportSchema {
-  "agent_version": "1.0.0",
+  "agent_version": "2.1.0",
   "os": { "name": "Ubuntu 22.04", "version": "22.04", "architecture": "x86_64" },
   "cpu": { "brand": "Intel Core i9", "cores": 12, "threads": 24 },
   "ram": { "total_gb": 32.0, "available_gb": 20.0 },
@@ -154,10 +154,10 @@ Response 201:
 ### Phase 2 — CLI Agent Flow (Planned)
 
 ```
-pip install envforge-agent
+pip install envforage
     │
     ▼
-envforge diagnose
+envforage diagnose
     ├── OS detection (platform, wsl_version)
     ├── CPU detection (cpuinfo / wmi)
     ├── RAM detection (psutil)
@@ -245,7 +245,7 @@ Response 201:
 {
   "template_id": "repair_cuda_upgrade",
   "filename": "repair_cuda_upgrade.sh",
-  "content": "#!/bin/bash\n# EnvForge Repair Script...",
+  "content": "#!/bin/bash\n# EnvForage Repair Script...",
   "size_bytes": 2048,
   "disclaimer": "Review carefully before executing."
 }
@@ -261,7 +261,7 @@ Response 201:
 | `repair_venv_recreate` | Back up and recreate Python virtual environment |
 | `repair_pip_reinstall` | Force-reinstall pip packages with correct versions |
 
-### AI Providers (Pluggable via `ENVFORGE_LLM_PROVIDER` env var)
+### AI Providers (Pluggable via `ENVFORAGE_LLM_PROVIDER` env var)
 
 | Provider | Status | Use Case |
 |----------|--------|---------|
@@ -315,8 +315,8 @@ This workflow is fully operational for Phase 1.
 
 ```bash
 # 1. Clone
-git clone https://github.com/your-org/envforge
-cd EnvForge
+git clone https://github.com/your-org/envforage
+cd EnvForage
 
 # 2. Start dev stack (API + PostgreSQL)
 docker-compose up -d
@@ -382,7 +382,4 @@ pytest tests/unit/ -v
 | Unit test | `backend/tests/unit/` |
 | Integration test | `backend/tests/integration/` |
 
-### Documentation Rule
-
-> Every implemented feature must have its status updated in `docs/FEATURES.md`
-> and `docs/ROADMAP.md` before the PR is merged.
+> Every implemented feature must have its status updated in `docs/FEATURES.md` before the PR is merged.

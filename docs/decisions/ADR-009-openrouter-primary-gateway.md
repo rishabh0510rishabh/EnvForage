@@ -4,7 +4,7 @@
 Accepted
 
 ## Context
-EnvForge's AI Troubleshooting Layer requires access to LLM models for structured
+EnvForage's AI Troubleshooting Layer requires access to LLM models for structured
 diagnosis and repair suggestion generation. The design doc (`AI_LAYER.md`)
 originally planned three provider implementations:
 
@@ -33,7 +33,7 @@ The `MockProvider` remains available for testing and development.
 
 - **Provider**: `app/ai/providers/openrouter.py`
 - **Factory**: `app/ai/providers/__init__.py` → `get_provider()`
-- **Config**: `ENVFORGE_LLM_PROVIDER=openrouter` + `OPENROUTER_API_KEY` + `OPENROUTER_MODEL`
+- **Config**: `ENVFORAGE_LLM_PROVIDER=openrouter` + `OPENROUTER_API_KEY` + `OPENROUTER_MODEL`
 - **Features**: JSON mode, retry with exponential backoff, Pydantic parsing, token tracking
 
 ## Consequences

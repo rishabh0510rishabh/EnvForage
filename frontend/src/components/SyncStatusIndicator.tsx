@@ -8,8 +8,9 @@ export default function SyncStatusIndicator() {
     const [isSyncing, setIsSyncing] = useState<boolean>(false);
 
     useEffect(() => {
-        // Initial state
+        // Initial state — must be set in an effect to guard against SSR mismatch
         if (typeof window !== "undefined") {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setIsOnline(navigator.onLine);
         }
 

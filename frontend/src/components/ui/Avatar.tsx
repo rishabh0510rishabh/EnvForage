@@ -1,5 +1,6 @@
 
 // --- Avatar Fallback System ---
+/* eslint-disable @next/next/no-img-element */
 import React, { useState } from 'react';
 
 export type AvatarSize = 'sm' | 'md' | 'lg' | 'xl' | number;

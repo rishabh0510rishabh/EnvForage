@@ -11,7 +11,7 @@ export default function PyPIDownloadsPage() {
       <div className="bg-[var(--bg-tertiary)] border border-[var(--border-subtle)] p-8 rounded-xl max-w-3xl">
         <h3 className="text-lg font-bold mb-4 uppercase tracking-wider text-[var(--brand-secondary)]">Latest Release</h3>
         <div className="flex items-center justify-between bg-[var(--bg-core)] p-4 rounded-md font-mono text-lg border border-[var(--border-strong)]">
-          <span>pip install envforge-agent</span>
+          <span>pip install envforage</span>
           <button className="text-[var(--brand-secondary)] hover:text-white transition-colors">Copy</button>
         </div>
         

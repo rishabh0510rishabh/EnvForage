@@ -76,7 +76,8 @@ class MetricsMiddleware(BaseHTTPMiddleware):
         for route in request.app.routes:
             match, _ = route.matches(request.scope)
             if match == Match.FULL:
-                return str(getattr(route, "path", route.path))
+                if hasattr(route, "path"):
+                    return str(route.path)
         return request.url.path
 
 
