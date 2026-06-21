@@ -1182,6 +1182,8 @@ def upgrade() -> None:
 
 
 cli.add_command(audit_command)
+from envforge_agent.env_scan.command import env_scan_command
+cli.add_command(env_scan_command)
 
 
 # ── envforage rollback ──────────────────────────────────────────────────────────
