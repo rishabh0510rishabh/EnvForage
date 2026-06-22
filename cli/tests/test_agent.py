@@ -457,7 +457,7 @@ class TestReportBuilder:
 
         report = ReportBuilder().build()
         assert isinstance(report, DiagnosticReport)
-        assert report.agent_version == "2.1.0"
+        assert report.agent_version == "2.2.0"
         assert report.os.name
         assert report.cpu.cores >= 1
 
