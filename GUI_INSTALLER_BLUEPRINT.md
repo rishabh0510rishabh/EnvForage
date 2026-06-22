@@ -15,8 +15,8 @@ EnvForage is an intelligent environment provisioning platform that automates ML 
 *   **FastAPI Backend (`backend/`):** The server that hosts the Compatibility Engine, ML Profiles registry, Webhooks dispatcher, and the AI troubleshooting layer (integrating with OpenRouter, OpenAI, Anthropic, or local Ollama).
 *   **Next.js Frontend (`frontend/`):** The web user interface for running diagnostics, browsing ML profiles, and generating provisioning setup scripts.
 
-### Current Version State: `v2.1.0`
-The project version is unified repository-wide at `v2.1.0` (in `pyproject.toml`, `package.json`, Helm `Chart.yaml`, and documentation). 
+### Current Version State: `v2.2.0`
+The project version is unified repository-wide at `v2.2.0` (in `pyproject.toml`, `package.json`, Helm `Chart.yaml`, and documentation). 
 *   **Executable Verified:** Standalone compilation of the CLI agent has been verified using PyInstaller. Running `pyinstaller --onefile --name envforage envforage/__main__.py` compiles successfully into a single `envforage.exe` that executes offline on Windows AMD64 systems with zero external Python requirements.
 *   **Integrity:** All 774 backend tests and 154 CLI tests pass with 100% success rate. All core application code is clean of ruff linting violations.
 

@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.2.0] - 2026-06-22
+
+### Added
+- **CLI Enhancements:** Added `--format` choices (`table`, `json`, `minimal`) to the `diagnose` command, dynamic verification checks for TensorFlow/JAX profiles, and a warning if active Python is inside an isolated virtual environment.
+- **Storage & Troubleshooting:** Added database persistence for streaming troubleshooting AI sessions. Generated script content is now automatically compressed using `zlib` to save storage space.
+
+### Changed
+- **Sync Service Refactoring:** Greatly improved synchronization performance by reusing a single ordered query for existing versions and inheritance mapping, and hoisted the closest-entry database query out of the per-version loop.
+
+### Fixed
+- **Security & CVE Patches:** Bumped frontend Dockerfile base image to `node:22-alpine` and overridden `undici` version to resolve HIGH vulnerability.
+- **Backend & AI:** Fixed syntax issues in `client.stream` for Ollama, added missing `await` statements on async render calls, validated `session_id` format, fixed `SyntaxError` crashes in audit sources, and registered `Makefile` correctly.
+- **Frontend:** Removed a dead fetch to a nonexistent route and fixed the Theme FOUC (Flash of Unstyled Content).
+- **CI/CD & Maintenance:** Explicitly named `standalone` and `installer` binaries in release pipeline, untracked `.env.prod`, and resolved various `ruff` lint errors.
+
 ## [2.1.0] - 2026-06-21
 
 ### Added
