@@ -3,7 +3,11 @@
 import { useState } from "react";
 import { Terminal, Copy, Check, Info } from "lucide-react";
 
+import { useDocsVersion } from "../DocsVersionContext";
+
 export default function QuickStartPage() {
+	const versionWithV = useDocsVersion();
+	const version = versionWithV.replace(/^v/, "");
 	const [activeOS, setActiveOS] = useState<"linux" | "windows" | "macos">("linux");
 	const [activeStep, setActiveStep] = useState<1 | 2 | 3>(1);
 	const [copiedId, setCopiedId] = useState<string>("");
@@ -15,9 +19,9 @@ export default function QuickStartPage() {
 	};
 
 	const installCommands = {
-		linux: "pip install envforage",
-		windows: "pip install envforage",
-		macos: "brew install envforage || pip install envforage",
+		linux: `pip install envforage==${version}`,
+		windows: `pip install envforage==${version}`,
+		macos: `brew install envforage || pip install envforage==${version}`,
 	};
 
 	const auditCommands = {
@@ -36,13 +40,13 @@ export default function QuickStartPage() {
 	const terminalOutputs = {
 		1: {
 			cmd: installCommands[activeOS],
-			output: `Collecting envforage
-  Downloading envforage-2.0.0-py3-none-any.whl (42 kB)
+			output: `Collecting envforage==${version}
+  Downloading envforage-${version}-py3-none-any.whl (42 kB)
      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 42.1/42.1 kB 1.2 MB/s eta 0:00:00
 Collecting psutil>=5.9.0 (from envforage)
   Downloading psutil-5.9.8-cp310-cp310-manylinux_2_12_x86_64.manylinux2010_x86_64.whl (278 kB)
 Installing collected packages: psutil, envforage
-Successfully installed envforage-2.0.0 psutil-5.9.8`,
+Successfully installed envforage-${version} psutil-5.9.8`,
 		},
 		2: {
 			cmd: auditCommands[activeOS],

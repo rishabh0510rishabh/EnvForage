@@ -8,9 +8,9 @@ Create Date: 2026-06-21
 
 import zlib
 
-from alembic import op
 import sqlalchemy as sa
 
+from alembic import op
 
 revision = "compress_generated_scripts"
 down_revision = "f113b99acf31"

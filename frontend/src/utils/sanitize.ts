@@ -10,7 +10,7 @@ import React from 'react';
  * In production, this uses the actual DOMPurify library.
  */
 const DOMPurify = {
-  sanitize: (html: string, config?: any) => {
+  sanitize: (html: string, _config?: unknown) => {
     // Highly simplistic mock. Do NOT use this exact regex loop in production.
     // The real DOMPurify uses a complex inert DOM tree to strip malicious execution vectors.
     let clean = html;

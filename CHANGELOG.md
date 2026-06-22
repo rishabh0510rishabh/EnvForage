@@ -5,6 +5,29 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.3.1] - 2026-06-22
+
+### Fixed
+- **Backend Quality:** Applied automated code quality and linting fixes across the backend:
+  - Upgraded deprecated `Union[X, None]` to `X | None` type annotations in Alembic migrations.
+  - Upgraded deprecated `typing.Sequence` to `collections.abc.Sequence` in Alembic migrations.
+  - Sorted and organized import blocks in migration scripts and maintenance scripts.
+  - Removed unused imports (`alembic.op`, `sqlalchemy`).
+  - Fixed missing trailing newlines at end of files.
+
+## [2.3.0] - 2026-06-22
+
+### Added
+- **UI/UX:** Added direct download buttons for executables and moved them to the Navbar.
+- **Documentation:** Implemented dynamic documentation versioning based on `package.json` to streamline releases.
+
+### Changed
+- **UI/UX:** Improved mobile and desktop hero section layout.
+
+### Fixed
+- **Frontend CI:** Resolved strict ESLint warnings (`any` typing and unused variables) that were causing CI pipeline failures.
+- **Docker CI:** Corrected relative import path for `package.json` resolving Turbopack build failures in Docker container.
+
 ## [2.2.0] - 2026-06-22
 
 ### Added

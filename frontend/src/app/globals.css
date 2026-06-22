@@ -482,5 +482,6 @@ a:hover {
   .footer-links {
     justify-content: flex-start;
     gap: 2rem;
+    flex-direction: column;
   }
 }

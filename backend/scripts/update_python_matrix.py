@@ -1,5 +1,6 @@
 import json
 import logging
+
 logging.basicConfig(level=logging.INFO)
 import sys
 from pathlib import Path

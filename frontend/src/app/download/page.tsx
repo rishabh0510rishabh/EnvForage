@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import React, { useState } from "react";
+import packageJson from "../../../package.json";
 
 export default function InstallPage() {
 	const [copied, setCopied] = useState(false);
@@ -80,84 +81,173 @@ export default function InstallPage() {
 				</motion.div>
 			</div>
 
-			{/* Installation Command Card */}
-			<motion.div
-				initial={{ opacity: 0, y: 15 }}
-				animate={{ opacity: 1, y: 0 }}
-				transition={{ delay: 0.1, duration: 0.5 }}
-				className="glass-panel"
-				style={{ padding: "2rem", marginBottom: "3rem" } as React.CSSProperties}
+			{/* Installation Options */}
+			<div
+				style={{
+					display: "grid",
+					gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
+					gap: "1.5rem",
+					marginBottom: "3rem",
+				}}
 			>
-				<div
-					style={{
-						display: "flex",
-						alignItems: "center",
-						gap: "0.5rem",
-						marginBottom: "1rem",
-						color: "var(--brand-primary)",
-						fontSize: "0.85rem",
-						fontWeight: 700,
-						textTransform: "uppercase",
-						letterSpacing: "0.05em",
-					} as React.CSSProperties}
+				{/* Windows Installer */}
+				<motion.div
+					initial={{ opacity: 0, y: 15 }}
+					animate={{ opacity: 1, y: 0 }}
+					transition={{ delay: 0.1, duration: 0.5 }}
+					className="glass-panel"
+					style={{ padding: "1.5rem", display: "flex", flexDirection: "column", height: "100%" } as React.CSSProperties}
 				>
-					<Terminal size={16} /> Installation
-				</div>
-				<h2 style={{ fontSize: "1.35rem", marginBottom: "1.25rem" }}>
-					Install via pip
-				</h2>
-
-				<div
-					style={{
-						display: "flex",
-						alignItems: "center",
-						justifyContent: "space-between",
-						background: "rgba(0, 0, 0, 0.25)",
-						border: "1px solid var(--border-strong)",
-						borderRadius: "8px",
-						padding: "1rem 1.25rem",
-						fontFamily: "var(--font-mono)",
-						fontSize: "1rem",
-						marginBottom: "1rem",
-					}}
-				>
-					<code style={{ color: "var(--text-primary)" }}>
-						<span style={{ color: "var(--text-muted)", marginRight: "0.5rem" }}>
-							$
-						</span>
-						{installCommand}
-					</code>
-					<button
-						onClick={handleCopy}
+					<div
 						style={{
-							background: "none",
-							border: "none",
-							cursor: "pointer",
-							color: copied ? "var(--brand-accent)" : "var(--text-secondary)",
 							display: "flex",
 							alignItems: "center",
-							gap: "0.4rem",
+							gap: "0.5rem",
+							marginBottom: "1rem",
+							color: "var(--brand-primary)",
 							fontSize: "0.85rem",
-							fontWeight: 600,
-							transition: "color var(--transition-fast)",
-						}}
-						title="Copy to clipboard"
+							fontWeight: 700,
+							textTransform: "uppercase",
+							letterSpacing: "0.05em",
+						} as React.CSSProperties}
 					>
-						{copied ? (
-							<>
-								<Check size={16} /> Copied
-							</>
-						) : (
-							<>
-								<Copy size={16} /> Copy
-							</>
-						)}
-					</button>
-				</div>
-				<p style={{ fontSize: "0.85rem", color: "var(--text-muted)" }}>
-					Requires Python 3.8+ and pip. EnvForage CLI is fully supported on Linux, WSL2, and Windows.
-				</p>
-			</motion.div>
+						<Cpu size={16} /> Recommended
+					</div>
+					<h2 style={{ fontSize: "1.2rem", marginBottom: "0.75rem" }}>
+						Windows Installer
+					</h2>
+					<p style={{ fontSize: "0.85rem", color: "var(--text-secondary)", marginBottom: "1.5rem", flexGrow: 1 }}>
+						Full GUI setup. Adds EnvForage to your PATH and creates convenient right-click context menus.
+					</p>
+					<a
+						href={`https://github.com/rishabh0510rishabh/EnvForage/releases/download/v${packageJson.version}/envforage-v${packageJson.version}-setup.exe`}
+						target="_blank"
+						rel="noopener noreferrer"
+						className="btn btn-primary"
+						style={{ width: "100%", justifyContent: "center", fontSize: "0.9rem" }}
+					>
+						Download Setup (.exe) <ArrowRight size={16} style={{ marginLeft: "0.5rem" }} />
+					</a>
+				</motion.div>
+
+				{/* Standalone Executable */}
+				<motion.div
+					initial={{ opacity: 0, y: 15 }}
+					animate={{ opacity: 1, y: 0 }}
+					transition={{ delay: 0.2, duration: 0.5 }}
+					className="glass-panel"
+					style={{ padding: "1.5rem", display: "flex", flexDirection: "column", height: "100%" } as React.CSSProperties}
+				>
+					<div
+						style={{
+							display: "flex",
+							alignItems: "center",
+							gap: "0.5rem",
+							marginBottom: "1rem",
+							color: "var(--brand-accent)",
+							fontSize: "0.85rem",
+							fontWeight: 700,
+							textTransform: "uppercase",
+							letterSpacing: "0.05em",
+						} as React.CSSProperties}
+					>
+						<Sparkles size={16} /> Portable
+					</div>
+					<h2 style={{ fontSize: "1.2rem", marginBottom: "0.75rem" }}>
+						Standalone Executable
+					</h2>
+					<p style={{ fontSize: "0.85rem", color: "var(--text-secondary)", marginBottom: "1.5rem", flexGrow: 1 }}>
+						A single portable file. No installation required—just download and run it directly from your command line.
+					</p>
+					<a
+						href={`https://github.com/rishabh0510rishabh/EnvForage/releases/download/v${packageJson.version}/envforage.exe`}
+						target="_blank"
+						rel="noopener noreferrer"
+						className="btn btn-secondary"
+						style={{ width: "100%", justifyContent: "center", fontSize: "0.9rem", textAlign: "center" }}
+					>
+						Download Binary (.exe)
+					</a>
+				</motion.div>
+
+				{/* PIP Install */}
+				<motion.div
+					initial={{ opacity: 0, y: 15 }}
+					animate={{ opacity: 1, y: 0 }}
+					transition={{ delay: 0.3, duration: 0.5 }}
+					className="glass-panel"
+					style={{ padding: "1.5rem", display: "flex", flexDirection: "column", height: "100%", gridColumn: "1 / -1" } as React.CSSProperties}
+				>
+					<div
+						style={{
+							display: "flex",
+							alignItems: "center",
+							gap: "0.5rem",
+							marginBottom: "1rem",
+							color: "var(--text-primary)",
+							fontSize: "0.85rem",
+							fontWeight: 700,
+							textTransform: "uppercase",
+							letterSpacing: "0.05em",
+						} as React.CSSProperties}
+					>
+						<Terminal size={16} /> Cross-Platform
+					</div>
+					<h2 style={{ fontSize: "1.2rem", marginBottom: "1rem" }}>
+						Install via pip
+					</h2>
+					<div
+						style={{
+							display: "flex",
+							alignItems: "center",
+							justifyContent: "space-between",
+							background: "rgba(0, 0, 0, 0.25)",
+							border: "1px solid var(--border-strong)",
+							borderRadius: "8px",
+							padding: "0.75rem 1rem",
+							fontFamily: "var(--font-mono)",
+							fontSize: "0.95rem",
+							marginBottom: "0.75rem",
+						}}
+					>
+						<code style={{ color: "var(--text-primary)" }}>
+							<span style={{ color: "var(--text-muted)", marginRight: "0.5rem" }}>
+								$
+							</span>
+							{installCommand}
+						</code>
+						<button
+							onClick={handleCopy}
+							style={{
+								background: "none",
+								border: "none",
+								cursor: "pointer",
+								color: copied ? "var(--brand-accent)" : "var(--text-secondary)",
+								display: "flex",
+								alignItems: "center",
+								gap: "0.4rem",
+								fontSize: "0.85rem",
+								fontWeight: 600,
+								transition: "color var(--transition-fast)",
+							}}
+							title="Copy to clipboard"
+						>
+							{copied ? (
+								<>
+									<Check size={16} /> Copied
+								</>
+							) : (
+								<>
+									<Copy size={16} /> Copy
+								</>
+							)}
+						</button>
+					</div>
+					<p style={{ fontSize: "0.85rem", color: "var(--text-muted)", margin: 0 }}>
+						Requires Python 3.8+. Fully supported on Linux, WSL2, macOS, and Windows.
+					</p>
+				</motion.div>
+			</div>
 
 			{/* Usage Guide */}
 			<div style={{ marginBottom: "4rem" }}>

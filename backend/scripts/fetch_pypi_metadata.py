@@ -1,6 +1,7 @@
 import json
-import sys
 import logging
+import sys
+
 logging.basicConfig(level=logging.INFO)
 import urllib.error
 import urllib.request

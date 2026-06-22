@@ -14,6 +14,7 @@ import {
 	Terminal,
 	X,
 } from "lucide-react";
+import { DocsVersionContext } from "./DocsVersionContext";
 
 interface NavItem {
 	title: string;
@@ -82,10 +83,22 @@ const docsNavigation: NavSection[] = [
 	},
 ];
 
-const versions = [
-	{ id: "v2.0.0", label: "v2.0.0 (Latest)" },
+import packageJson from "../../../package.json";
+
+const latestVersion = `v${packageJson.version}`;
+
+const historicalVersions = [
+	{ id: "v2.3.0", label: "v2.3.0" },
+	{ id: "v2.2.0", label: "v2.2.0" },
+	{ id: "v2.1.0", label: "v2.1.0" },
+	{ id: "v2.0.0", label: "v2.0.0" },
 	{ id: "v1.9.0", label: "v1.9.0" },
 	{ id: "v1.8.0", label: "v1.8.0" },
+];
+
+const versions = [
+	{ id: latestVersion, label: `${latestVersion} (Latest)` },
+	...historicalVersions.filter(v => v.id !== latestVersion)
 ];
 
 export default function DocsLayout({
@@ -94,7 +107,7 @@ export default function DocsLayout({
 	children: React.ReactNode;
 }) {
 	const pathname = usePathname();
-	const [selectedVersion, setSelectedVersion] = useState("v2.0.0");
+	const [selectedVersion, setSelectedVersion] = useState(latestVersion);
 	const [isVersionDropdownOpen, setIsVersionDropdownOpen] = useState(false);
 	const [searchQuery, setSearchQuery] = useState("");
 	const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -634,7 +647,9 @@ export default function DocsLayout({
 							margin-bottom: 1.75rem;
 						}
 					` }} />
-					{children}
+					<DocsVersionContext.Provider value={selectedVersion}>
+						{children}
+					</DocsVersionContext.Provider>
 				</article>
 
 				{/* Help / Footer CTA */}

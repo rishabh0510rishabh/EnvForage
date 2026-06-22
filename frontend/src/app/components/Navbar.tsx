@@ -137,6 +137,13 @@ export default function Navbar() {
 					>
 						<span style={{ color: "var(--brand-secondary)" }}>★</span> GitHub
 					</a>
+					<Link
+						href="/download"
+						className="btn btn-primary hide-on-mobile"
+						style={{ padding: "0.5rem 1.25rem", fontSize: "0.9rem" }}
+					>
+						Download Now
+					</Link>
 					<button
 						className="mobile-menu-btn"
 						onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -191,6 +198,14 @@ export default function Navbar() {
 					>
 						<span style={{ color: "var(--brand-secondary)", marginRight: "0.5rem" }}>★</span> GitHub
 					</a>
+					<Link
+						href="/download"
+						className="btn btn-primary"
+						style={{ marginTop: "1rem", width: "100%", textAlign: "center", padding: "0.75rem", fontSize: "1.1rem" }}
+						onClick={() => setIsMobileMenuOpen(false)}
+					>
+						Download Now
+					</Link>
 				</div>
 			)}
 		</header>

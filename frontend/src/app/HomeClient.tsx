@@ -3,6 +3,8 @@
 import { motion, useScroll, useTransform } from "framer-motion";
 import {
 	CheckCircle2,
+	ChevronDown,
+	Mouse,
 	Package,
 	Search,
 	Sparkles,
@@ -94,7 +96,7 @@ export default function HomePage() {
 						display: "flex",
 						alignItems: "center",
 						zIndex: 1,
-						padding: "4rem 0",
+						padding: "2rem 0",
 						background: "transparent",
 					}}
 				>
@@ -119,61 +121,60 @@ export default function HomePage() {
 					</div>
 
 					<div className="container" style={{ maxWidth: "1200px", position: "relative", zIndex: 2 }}>
-						<div>
-							<h1
-								className="hero-title"
-								style={{
-									fontSize: "clamp(4rem, 8vw, 7.5rem)",
-									fontWeight: 900,
-									lineHeight: 1.05,
-									letterSpacing: "-0.04em",
-									color: "var(--text-primary)",
-									marginBottom: "2rem",
-								}}
-							>
-								End AI <br />
-								<span style={{ position: "relative", display: "inline-block" }}>
-									dependency hell.
-									<span
-										className="highlight-strip"
-										style={{
-											position: "absolute",
-											bottom: "10%",
-											left: "-2%",
-											right: "-2%",
-											height: "40%",
-											zIndex: -1,
-											background: "var(--brand-secondary)",
-										}}
-									/>
-								</span>
-							</h1>
-
-							<div
-								className="hero-subtitle"
-								style={{
-									fontSize: "1.25rem",
-									color: "var(--text-secondary)",
-									marginBottom: "3rem",
-									lineHeight: 1.6,
-									maxWidth: "700px",
-								}}
-							>
+						<h1
+							className="hero-title"
+							style={{
+								fontSize: "clamp(4rem, 8vw, 7.5rem)",
+								fontWeight: 900,
+								lineHeight: 1.05,
+								letterSpacing: "-0.04em",
+								color: "var(--text-primary)",
+								marginBottom: "2rem",
+							}}
+						>
+							End AI <br />
+							<span style={{ position: "relative", display: "inline-block" }}>
+								dependency hell.
 								<span
+									className="highlight-strip"
 									style={{
-										background: "rgba(15, 23, 42, 0.08)",
-										padding: "0.2rem 0.5rem",
-										borderRadius: "4px",
+										position: "absolute",
+										bottom: "10%",
+										left: "-2%",
+										right: "-2%",
+										height: "40%",
+										zIndex: -1,
+										background: "var(--brand-secondary)",
 									}}
-								>
-									EnvForage generates 100% deterministic, hardware-aware setup
-								</span>{" "}
-								scripts for <strong>PyTorch, CUDA</strong>, and your GPU drivers.
-								Validated against a strict compatibility matrix and repaired by an
-								integrated LLM — so your stack just works on the first try.
-							</div>
+								/>
+							</span>
+						</h1>
 
-							<div className="flex-col-mobile" style={{ display: "flex", gap: "2.5rem", borderTop: "1px solid var(--border-strong)", paddingTop: "2.5rem" }}>
+						<div
+							className="hero-subtitle"
+							style={{
+								fontSize: "1.25rem",
+								color: "var(--text-secondary)",
+								marginBottom: "3rem",
+								lineHeight: 1.6,
+								maxWidth: "700px",
+							}}
+						>
+							<span
+								style={{
+									background: "rgba(15, 23, 42, 0.08)",
+									padding: "0.2rem 0.5rem",
+									borderRadius: "4px",
+								}}
+							>
+								EnvForage generates 100% deterministic, hardware-aware setup
+							</span>{" "}
+							scripts for <strong>PyTorch, CUDA</strong>, and your GPU drivers.
+							Validated against a strict compatibility matrix and repaired by an
+							integrated LLM — so your stack just works on the first try.
+						</div>
+
+							<div className="flex-col-mobile" style={{ display: "flex", gap: "2.5rem", borderTop: "1px solid var(--border-strong)", paddingTop: "1.5rem" }}>
 								<div>
 									<h3 style={{ fontSize: "2.5rem", fontWeight: 800, color: "var(--text-primary)", marginBottom: "0.25rem", letterSpacing: "-0.03em" }}>18k+</h3>
 									<p style={{ fontSize: "0.75rem", letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--text-secondary)", fontWeight: 600 }}>Known-good builds</p>
@@ -187,8 +188,15 @@ export default function HomePage() {
 									<p style={{ fontSize: "0.75rem", letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--text-secondary)", fontWeight: 600 }}>Saved per setup</p>
 								</div>
 							</div>
+
+							<div style={{ display: "flex", justifyContent: "center", marginTop: "2rem", color: "var(--text-muted)" }}>
+								<div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem" }}>
+									<Mouse size={24} />
+									<span style={{ fontSize: "0.85rem", textTransform: "uppercase", letterSpacing: "0.1em" }}>Scroll to explore</span>
+									<ChevronDown size={20} />
+								</div>
+							</div>
 						</div>
-					</div>
 				</section>
 
 				{/* OVERLAPPING CONTENT LAYER */}
@@ -325,7 +333,7 @@ export default function HomePage() {
 					display: "flex",
 					alignItems: "center",
 					zIndex: 1,
-					padding: "4rem 0",
+					padding: "2rem 0",
 					background: "transparent",
 					backfaceVisibility: "hidden",
 				}}
@@ -405,7 +413,7 @@ export default function HomePage() {
 							integrated LLM — so your stack just works on the first try.
 						</div>
 
-						<div className="flex-col-mobile" style={{ display: "flex", gap: "2.5rem", borderTop: "1px solid var(--border-strong)", paddingTop: "2.5rem" }}>
+						<div className="flex-col-mobile" style={{ display: "flex", gap: "2.5rem", borderTop: "1px solid var(--border-strong)", paddingTop: "1.5rem" }}>
 							<div>
 								<h3 style={{ fontSize: "2.5rem", fontWeight: 800, color: "var(--text-primary)", marginBottom: "0.25rem", letterSpacing: "-0.03em" }}>18k+</h3>
 								<p style={{ fontSize: "0.75rem", letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--text-secondary)", fontWeight: 600 }}>Known-good builds</p>
@@ -419,6 +427,23 @@ export default function HomePage() {
 								<p style={{ fontSize: "0.75rem", letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--text-secondary)", fontWeight: 600 }}>Saved per setup</p>
 							</div>
 						</div>
+
+						<motion.div 
+							initial={{ opacity: 0 }} 
+							animate={{ opacity: 1 }} 
+							transition={{ delay: 1, duration: 1 }}
+							style={{ display: "flex", justifyContent: "center", marginTop: "2rem", color: "var(--text-muted)" }}
+						>
+							<motion.div 
+								animate={{ y: [0, 10, 0] }} 
+								transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
+								style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem" }}
+							>
+								<Mouse size={24} />
+								<span style={{ fontSize: "0.85rem", textTransform: "uppercase", letterSpacing: "0.1em" }}>Scroll to explore</span>
+								<ChevronDown size={20} />
+							</motion.div>
+						</motion.div>
 					</motion.div>
 				</div>
 			</motion.section>
