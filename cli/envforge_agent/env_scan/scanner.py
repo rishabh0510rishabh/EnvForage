@@ -1,10 +1,17 @@
 from pathlib import Path
 import re
 
+EXCLUDED_DIRS = {
+    ".venv",
+    "venv",
+    "__pycache__",
+    "site-packages",
+    ".git",
+}
 
 ENV_PATTERNS = [
-    r'os\.getenv\(["\']([A-Z0-9_]+)["\']',
-    r'os\.environ\.get\(["\']([A-Z0-9_]+)["\']',
+    r'os\.getenv\(\s*["\']([A-Z0-9_]+)["\']',
+    r'os\.environ\.get\(\s*["\']([A-Z0-9_]+)["\']',
     r'os\.environ\[\s*["\']([A-Z0-9_]+)["\']\s*\]',
 ]
 
@@ -13,6 +20,9 @@ def find_used_variables(project_path: str) -> set[str]:
     used = set()
 
     for py_file in Path(project_path).rglob("*.py"):
+        if any(part in EXCLUDED_DIRS for part in py_file.parts):
+            continue
+
         try:
             content = py_file.read_text(encoding="utf-8")
         except Exception:
