@@ -607,3 +607,41 @@ class TestVerifyCommand:
         data = json.loads(result.output)
         assert data["status"] == "FAIL"
         assert "CUDA not available" in data["message"]
+
+    @patch("subprocess.run")
+    def test_verify_tensorflow_pass(self, mock_run: MagicMock) -> None:
+        from envforage.cli import cli
+        from click.testing import CliRunner
+
+        mock_proc = MagicMock()
+        mock_proc.returncode = 0
+        mock_proc.stdout = '{"framework": "TensorFlow", "import_ok": true, "cuda_ok": true, "error": null}'
+        mock_run.return_value = mock_proc
+
+        runner = CliRunner()
+        result = runner.invoke(cli, ["verify", "--profile", "tensorflow-cuda", "-q"])
+
+        assert result.exit_code == 0
+        data = json.loads(result.output)
+        assert data["status"] == "PASS"
+        assert "TensorFlow imported successfully" in data["message"]
+        assert "with CUDA support" in data["message"]
+
+    @patch("subprocess.run")
+    def test_verify_jax_pass(self, mock_run: MagicMock) -> None:
+        from envforage.cli import cli
+        from click.testing import CliRunner
+
+        mock_proc = MagicMock()
+        mock_proc.returncode = 0
+        mock_proc.stdout = '{"framework": "JAX", "import_ok": true, "cuda_ok": true, "error": null}'
+        mock_run.return_value = mock_proc
+
+        runner = CliRunner()
+        result = runner.invoke(cli, ["verify", "--profile", "jax-cuda", "-q"])
+
+        assert result.exit_code == 0
+        data = json.loads(result.output)
+        assert data["status"] == "PASS"
+        assert "JAX imported successfully" in data["message"]
+        assert "with CUDA support" in data["message"]

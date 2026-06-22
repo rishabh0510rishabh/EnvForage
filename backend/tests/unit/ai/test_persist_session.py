@@ -178,3 +178,83 @@ async def test_troubleshoot_audit_marked_passed_when_persist_succeeds():
         call_kwargs = mock_log_audit.call_args.kwargs
         assert call_kwargs["safety_passed"] is True
         assert call_kwargs["safety_violation"] is None
+
+
+@pytest.mark.asyncio
+async def test_stream_troubleshoot_persists_session():
+    """stream_troubleshoot must persist the session and log audit with safety_passed=True."""
+    service = AITroubleshootService()
+
+    llm_result = _make_llm_result()
+    llm_result_json = '{"root_cause":"test","suggested_fixes":[],"confidence":0.9,"session_id":"abc","repair_script_available":false}'
+
+    async def mock_stream(*args, **kwargs):
+        yield llm_result_json
+
+    with (
+        patch.object(service, "_fetch_session_history", new=AsyncMock(return_value=[])),
+        patch.object(service._prompt_builder, "build", return_value="prompt"),
+        patch("app.ai.service.get_provider") as mock_get_provider,
+        patch.object(service, "_persist_session", new=AsyncMock()) as mock_persist,
+        patch.object(service, "_log_audit", new=AsyncMock()) as mock_log_audit,
+        patch.object(service, "_validate_response_safety", return_value=None),
+        patch("app.ai.models.TroubleshootResponse.model_validate_json", return_value=llm_result),
+    ):
+        mock_provider = MagicMock()
+        mock_provider.stream = mock_stream
+        mock_provider.__class__.__name__ = "MockProvider"
+        mock_get_provider.return_value = mock_provider
+
+        request = _make_request()
+        db = _make_mock_db()
+
+        # Consume the stream generator
+        chunks = [c async for c in service.stream_troubleshoot(request, db)]
+        assert chunks == [llm_result_json]
+
+        # Verify database persistence was invoked
+        mock_persist.assert_awaited_once()
+        mock_log_audit.assert_awaited_once()
+        call_kwargs = mock_log_audit.call_args.kwargs
+        assert call_kwargs["safety_passed"] is True
+        assert call_kwargs["safety_violation"] is None
+
+
+@pytest.mark.asyncio
+async def test_stream_troubleshoot_persists_session_failure():
+    """stream_troubleshoot must handle DB persistence failures gracefully without dropping the stream, recording safety_passed=False in audit."""
+    service = AITroubleshootService()
+
+    llm_result = _make_llm_result()
+    llm_result_json = '{"root_cause":"test","suggested_fixes":[],"confidence":0.9,"session_id":"abc","repair_script_available":false}'
+
+    async def mock_stream(*args, **kwargs):
+        yield llm_result_json
+
+    with (
+        patch.object(service, "_fetch_session_history", new=AsyncMock(return_value=[])),
+        patch.object(service._prompt_builder, "build", return_value="prompt"),
+        patch("app.ai.service.get_provider") as mock_get_provider,
+        patch.object(service, "_persist_session", new=AsyncMock(side_effect=Exception("DB connection error"))) as mock_persist,
+        patch.object(service, "_log_audit", new=AsyncMock()) as mock_log_audit,
+        patch.object(service, "_validate_response_safety", return_value=None),
+        patch("app.ai.models.TroubleshootResponse.model_validate_json", return_value=llm_result),
+    ):
+        mock_provider = MagicMock()
+        mock_provider.stream = mock_stream
+        mock_provider.__class__.__name__ = "MockProvider"
+        mock_get_provider.return_value = mock_provider
+
+        request = _make_request()
+        db = _make_mock_db()
+
+        # Consume the stream generator (should still yield chunks despite persistence error)
+        chunks = [c async for c in service.stream_troubleshoot(request, db)]
+        assert chunks == [llm_result_json]
+
+        # Verify database persistence was called and error logged
+        mock_persist.assert_awaited_once()
+        mock_log_audit.assert_awaited_once()
+        call_kwargs = mock_log_audit.call_args.kwargs
+        assert call_kwargs["safety_passed"] is False
+        assert call_kwargs["safety_violation"] == "DB persistence failure"

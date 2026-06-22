@@ -783,13 +783,6 @@ export class GenerateErrorBoundary extends Component<{ children: React.ReactNode
 
     componentDidCatch(error: Error, errorInfo: ErrorInfo) {
         console.error("Generate Module Error:", error, errorInfo);
-        try {
-            fetch('/api/telemetry/errors', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ error: error.message, stack: errorInfo.componentStack })
-            }).catch(() => {});
-        } catch {}
     }
 
     render() {

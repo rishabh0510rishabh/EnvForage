@@ -12,6 +12,7 @@ Changes (Confidence Scoring Issue):
 
 from __future__ import annotations
 
+import uuid
 from enum import StrEnum
 from typing import Any, Literal
 
@@ -166,7 +167,7 @@ class TroubleshootRequest(BaseModel):
     target_os: str | None = None
     python_version: str | None = None
     cuda_version: str | None = None
-    session_id: str | None = None
+    session_id: uuid.UUID | None = None
     user_description: str = Field(default="", max_length=500)
     max_words: int = Field(default=500, ge=50, le=2000)
     repair_script_available: bool = False

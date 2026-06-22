@@ -80,9 +80,11 @@ async def diagnose(
         gpu_name=report.gpus[0].name if report.gpus else None,
         cuda_version=report.cuda.version if report.cuda else None,
         rocm_version=report.rocm.version if report.rocm else None,
-        python_version=".".join(report.active_python.version.split(".")[:2])
-        if report.active_python
-        else None,
+        python_version=(
+            ".".join(report.active_python.version.split(".")[:2])
+            if report.active_python
+            else None
+        ),
         driver_version=report.gpus[0].driver_version if report.gpus else None,
         created_at=datetime.now(UTC),
     )
@@ -192,10 +194,10 @@ async def diagnose_explain(
 
     # Safety filter: validate all text fields before returning to user
     try:
-        validate_rendered_output(llm_result.issue_summary, "ai_explain_summary")
-        validate_rendered_output(llm_result.root_cause, "ai_explain_root_cause")
+        await validate_rendered_output(llm_result.issue_summary, "ai_explain_summary")
+        await validate_rendered_output(llm_result.root_cause, "ai_explain_root_cause")
         for step in llm_result.suggested_steps:
-            validate_rendered_output(step, "ai_explain_step")
+            await validate_rendered_output(step, "ai_explain_step")
     except SafetyViolationError as exc:
         latency_ms = int((time.monotonic() - start_time) * 1000)
         await _log_explain_audit(

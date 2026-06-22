@@ -135,7 +135,7 @@ async def generate_repair(
     in the ``repair_template_id`` field of a SuggestedFix.
     """
     try:
-        result = _repair_service.render_repair(
+        result = await _repair_service.render_repair(
             template_id=request.template_id,
             params=request.params,
         )

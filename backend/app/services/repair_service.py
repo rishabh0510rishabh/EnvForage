@@ -177,7 +177,7 @@ class RepairService:
         })
     """
 
-    def render_repair(
+    async def render_repair(
         self,
         template_id: str,
         params: dict[str, Any] | None = None,
@@ -221,7 +221,7 @@ class RepairService:
         rendered = template.render(**context)
 
         # Safety filter
-        safe_content = validate_rendered_output(
+        safe_content = await validate_rendered_output(
             rendered, template_name=f"repair/{template_filename}"
         )
 

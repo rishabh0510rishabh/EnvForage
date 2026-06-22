@@ -1,15 +1,38 @@
 """SQLAlchemy ORM models for script generation jobs."""
 
 import uuid
+import zlib
 from datetime import datetime
 from typing import Any
 
-from sqlalchemy import DateTime, ForeignKey, String, Text, func
+import sqlalchemy as sa
+from sqlalchemy import DateTime, ForeignKey, LargeBinary, String, Text, func
 from sqlalchemy.dialects.postgresql import JSONB, UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base
 
+
+class CompressedText(sa.TypeDecorator):
+    """
+    Automatically compress text before storing in DB
+    and decompress when reading.
+    """
+
+    impl = LargeBinary
+    cache_ok = True
+
+    def process_bind_param(self, value, dialect):
+        if value is None:
+            return None
+
+        return zlib.compress(value.encode("utf-8"))
+
+    def process_result_value(self, value, dialect):
+        if value is None:
+            return None
+
+        return zlib.decompress(value).decode("utf-8")
 
 class ScriptGenerationJob(Base):
     __tablename__ = "script_generation_jobs"
@@ -56,7 +79,10 @@ class GeneratedScript(Base):
         nullable=False,
     )
     filename: Mapped[str] = mapped_column(String(128), nullable=False)
-    content: Mapped[str] = mapped_column(Text, nullable=False)
+    content: Mapped[str] = mapped_column(
+    CompressedText,
+    nullable=False,
+)
     size_bytes: Mapped[int | None] = mapped_column()
 
     created_at: Mapped[datetime] = mapped_column(

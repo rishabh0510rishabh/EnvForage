@@ -289,3 +289,53 @@ async def test_pypi_and_cuda_sync(db_session):
     res_cuda = await db_session.execute(stmt_cuda)
     cuda_entry = res_cuda.scalars().first()
     assert cuda_entry is not None
+
+async def test_sync_pypi_preserves_same_run_inheritance(db_session):
+    """Regression test for #1017.
+
+    The closest-entry query was hoisted out of the per-version loop to avoid
+    an O(N) full table scan per version. To keep behaviour identical, entries
+    created during the same sync run are appended to the in-memory list so a
+    later version can still inherit CUDA/ROCm from an earlier same-run version
+    of the same major.minor. This test would fail if the query were naively
+    hoisted without the in-memory append (2.9.5 would not see 2.9.0).
+    """
+    await seed_compatibility_matrices(db_session)
+
+    # Two brand-new torch versions sharing major.minor 2.9, neither seeded.
+    mock_pypi_response = {
+        "releases": {
+            "2.9.0": [{"requires_python": ">=3.9"}],
+            "2.9.5": [{"requires_python": ">=3.9"}],
+        }
+    }
+
+    with patch("httpx.AsyncClient.get", new_callable=AsyncMock) as mock_get:
+        mock_pypi = MagicMock()
+        mock_pypi.status_code = 200
+        mock_pypi.json.return_value = mock_pypi_response
+
+        def get_side_effect(url, *args, **kwargs):
+            if "pypi.org" in url:
+                return mock_pypi
+            return MagicMock(status_code=404)
+
+        mock_get.side_effect = get_side_effect
+
+        await sync_pypi_releases(db_session)
+
+    # Both versions were inserted
+    res = await db_session.execute(
+        select(PythonMatrixEntry).where(
+            (PythonMatrixEntry.framework == "torch")
+            & (PythonMatrixEntry.version.in_(["2.9.0", "2.9.5"]))
+        )
+    )
+    entries = {e.version: e for e in res.scalars().all()}
+    assert "2.9.0" in entries
+    assert "2.9.5" in entries
+
+    # 2.9.5 must inherit the CUDA/ROCm of 2.9.0 (same major.minor), which was
+    # created earlier in the SAME run — proving the in-memory append works.
+    assert entries["2.9.5"].supported_cuda == entries["2.9.0"].supported_cuda
+    assert entries["2.9.5"].supported_rocm == entries["2.9.0"].supported_rocm

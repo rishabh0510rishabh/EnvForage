@@ -89,7 +89,7 @@ class TestDiagnoseOutputFlag:
             mock_builder.return_value.build.return_value = mock_report
 
             runner = CliRunner()
-            result = runner.invoke(cli, ["diagnose", "--quiet"])
+            result = runner.invoke(cli, ["diagnose", "--quiet", "--format", "json"])
 
         assert result.exit_code == 0
         parsed = json.loads(result.output)

@@ -54,7 +54,7 @@ class OllamaProvider(LLMProvider):
         }
 
         try:
-            async with httpx.AsyncClient(timeout=120.0) as client:
+            async with httpx.AsyncClient(timeout=httpx.Timeout(30.0)) as client:
                 response = await client.post(self._generate_url, json=payload)
                 response.raise_for_status()
 
@@ -91,6 +91,12 @@ class OllamaProvider(LLMProvider):
                 f"Could not connect to Ollama at {self.base_url}. "
                 f"Ensure Ollama is running: ollama serve",
             )
+
+        except httpx.TimeoutException:
+            raise LLMProviderError(
+                 "ollama",
+                 "Ollama request timed out. The provider may be overloaded or unavailable."
+            )
         except httpx.HTTPStatusError as e:
             raise LLMProviderError(
                 "ollama",
@@ -120,7 +126,7 @@ class OllamaProvider(LLMProvider):
         }
 
         try:
-            async with httpx.AsyncClient(timeout=120.0) as client:
+            async with httpx.AsyncClient(timeout=httpx.Timeout(30.0))as client:
                 async with client.stream(
                     "POST", self._generate_url, json=payload
                 ) as response:
@@ -148,6 +154,12 @@ class OllamaProvider(LLMProvider):
                 "ollama",
                 f"Could not connect to Ollama at {self.base_url}. "
                 f"Ensure Ollama is running: ollama serve",
+            )
+
+        except httpx.TimeoutException:
+            raise LLMProviderError(
+                "ollama",
+                "Ollama streaming request timed out."
             )
         except httpx.HTTPStatusError as e:
             raise LLMProviderError(

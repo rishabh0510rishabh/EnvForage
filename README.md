@@ -207,7 +207,7 @@ kubectl port-forward svc/envforage-frontend 3000:3000
 
 🚀 The API is now running at `http://localhost:8000`.
 
-### 3. Generate a Script
+### 4. Generate a Script
 Generate a PyTorch CUDA setup script for Linux:
 ```bash
 curl -X POST http://localhost:8000/api/v1/scripts/generate \

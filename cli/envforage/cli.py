@@ -186,10 +186,10 @@ def cli(ctx: click.Context, no_color: bool) -> None:
     "--format",
     "-f",
     "output_format",
-    type=click.Choice(["json", "yaml", "markdown"], case_sensitive=False),
-    default="json",
+    type=click.Choice(["table", "json", "minimal"], case_sensitive=False),
+    default="table",
     show_default=True,
-    help="Output format for the diagnostic report (json, yaml, markdown).",
+    help="Output format: table (default Rich table), json (structured JSON), minimal (one-liner).",
 )
 @click.option(
     "--timeout",
@@ -205,7 +205,7 @@ def diagnose(
     quiet: bool,
     sarif: bool,
     timeout: int | None,
-    output_format: str = "json",
+    output_format: str = "table",
 ) -> None:
     config = load_config()
     final_api_url = api_url or config.api_url
@@ -258,22 +258,23 @@ async def _diagnose(
         click.echo(_json.dumps(report.to_sarif(), indent=2))
         return
 
-    if send and output_format != "json":
+    if send and output_format not in ("json", "table"):
         err_console.print(
-            f"[ERROR] --send requires JSON; --format {output_format} is incompatible."
+            f"[ERROR] --send requires JSON format; --format {output_format} is incompatible."
         )
-        err_console.print("  Hint: Remove --format or drop --send.")
+        err_console.print("  Hint: Use --format json or drop --send.")
         sys.exit(1)
 
-    if output_format == "yaml":
-        import yaml
-
-        report_output = yaml.dump(
-            report.model_dump(mode="json"), default_flow_style=False, sort_keys=False
+    if output_format == "minimal":
+        report_output = (
+            f"OS={report.os.name} {report.os.version} | "
+            f"CPU={report.cpu.cores}C/{report.cpu.threads}T | "
+            f"RAM={report.ram.total_gb}GB | "
+            f"GPU={'None' if not report.gpus else report.gpus[0].name} | "
+            f"CUDA={report.cuda.version or 'None'} | "
+            f"Python={report.active_python.version if report.active_python else 'None'}"
         )
-    elif output_format == "markdown":
-        report_output = report.to_markdown()
-    else:
+    else:  # table or json both save/echo as JSON
         report_output = report.to_json(indent=2)
 
     # ── Output to file ──────────────────────────────────────────────────────
@@ -281,8 +282,7 @@ async def _diagnose(
         Path(output).write_text(report_output, encoding="utf-8")
         if not quiet:
             console.print(f"\n[green][+][/] Report saved to [bold]{output}[/]")
-    elif not send:
-        # Print JSON to stdout (pipe-friendly)
+    elif not send and output_format != "table":
         click.echo(report_output)
 
     # ── Send to API ─────────────────────────────────────────────────────────
@@ -348,7 +348,13 @@ def _print_report_summary(report: DiagnosticReport) -> None:
     if report.active_python:
         py = report.active_python
         venv = " [dim](venv)[/]" if py.is_venv else ""
-        table.add_row("Python", f"{py.version} at {py.path}{venv}")
+        py_str = f"{py.version} at {py.path}{venv}"
+        if py.is_venv:
+            py_str += (
+                "  [yellow]⚠ Running inside a venv — CUDA detection via torch "
+                "may be inaccurate if torch is not installed in this environment.[/]"
+            )
+        table.add_row("Python", py_str)
 
     if len(report.python_installations) > 1:
         others = [
@@ -552,20 +558,57 @@ def verify(
     active_py = report.active_python
     py_executable = active_py.path if active_py else sys.executable
 
-    # 2. Run inline Python script to test torch import and CUDA
+    # Determine target framework based on profile
+    target_framework = "torch"
+    if profile:
+        p_lower = profile.lower()
+        if "tensorflow" in p_lower or "tf" in p_lower:
+            target_framework = "tensorflow"
+        elif "jax" in p_lower:
+            target_framework = "jax"
+
+    # 2. Run inline Python script to test framework import and CUDA/GPU
     inspector_script = (
         "import sys\n"
         "import json\n"
-        "result = {'import_ok': False, 'cuda_ok': False, 'error': None}\n"
+        "result = {'framework': 'PyTorch', 'import_ok': False, 'version': None, 'cuda_ok': False, 'cuda_version': None, 'error': None}\n"
+        f"target = '{target_framework}'\n"
         "try:\n"
-        "    import torch\n"
-        "    result['import_ok'] = True\n"
-        "    result['torch_version'] = torch.__version__\n"
-        "    try:\n"
+        "    if target == 'tensorflow':\n"
+        "        import tensorflow as tf\n"
+        "        result['framework'] = 'TensorFlow'\n"
+        "        result['import_ok'] = True\n"
+        "        result['version'] = tf.__version__\n"
+        "        gpus = tf.config.list_physical_devices('GPU')\n"
+        "        result['cuda_ok'] = len(gpus) > 0\n"
+        "        try:\n"
+        "            from tensorflow.python.platform import build_info as tf_build_info\n"
+        "            result['cuda_version'] = tf_build_info.build_info.get('cuda_version', 'unknown')\n"
+        "        except Exception:\n"
+        "            pass\n"
+        "    elif target == 'jax':\n"
+        "        import jax\n"
+        "        result['framework'] = 'JAX'\n"
+        "        result['import_ok'] = True\n"
+        "        result['version'] = jax.__version__\n"
+        "        try:\n"
+        "            devices = jax.devices()\n"
+        "            result['cuda_ok'] = any(d.platform == 'gpu' for d in devices)\n"
+        "            try:\n"
+        "                import jaxlib\n"
+        "                result['cuda_version'] = getattr(jaxlib, '__version__', 'unknown')\n"
+        "            except Exception:\n"
+        "                pass\n"
+        "        except Exception as e:\n"
+        "            result['cuda_ok'] = False\n"
+        "            result['error'] = f'JAX devices call failed: {str(e)}'\n"
+        "    else:\n"
+        "        import torch\n"
+        "        result['framework'] = 'PyTorch'\n"
+        "        result['import_ok'] = True\n"
+        "        result['version'] = torch.__version__\n"
         "        result['cuda_ok'] = torch.cuda.is_available()\n"
         "        result['cuda_version'] = torch.version.cuda\n"
-        "    except Exception as e:\n"
-        "        result['cuda_ok'] = False\n"
         "except Exception as e:\n"
         "    result['import_ok'] = False\n"
         "    result['error'] = f'{type(e).__name__}: {str(e)}'\n"
@@ -588,12 +631,13 @@ def verify(
         data = json.loads(proc.stdout.strip())
 
         # 3. Analyze checks
+        framework_name = data.get("framework", "PyTorch")
         if not data["import_ok"]:
             if not quiet and not json_output:
                 _print_verification_summary(data, is_gpu_profile=False)
             res = {
                 "status": "FAIL",
-                "message": "PyTorch import failed — is it installed?",
+                "message": f"{framework_name} import failed — is it installed?",
                 "error": data["error"],
             }
             click.echo(json.dumps(res, indent=2))
@@ -611,14 +655,14 @@ def verify(
                 _print_verification_summary(data, is_gpu_profile=is_gpu_profile)
             res = {
                 "status": "FAIL",
-                "message": "PyTorch installed but CUDA not available",
-                "error": "torch.cuda.is_available() returned False",
+                "message": f"{framework_name} installed but CUDA not available",
+                "error": "GPU device check returned False",
             }
             click.echo(json.dumps(res, indent=2))
             sys.exit(1)
 
         # All required checks passed!
-        msg = "Environment works: PyTorch imported successfully"
+        msg = f"Environment works: {framework_name} imported successfully"
         if data["cuda_ok"]:
             msg += " with CUDA support"
         else:
@@ -656,14 +700,16 @@ def _print_verification_summary(data: dict, is_gpu_profile: bool) -> None:
     table.add_column("Status", width=12, justify="center")
     table.add_column("Details")
 
-    # PyTorch import check
+    framework = data.get("framework", "PyTorch")
+    version = data.get("version", "Unknown")
+
+    # Core import check
     if data.get("import_ok"):
-        torch_v = data.get("torch_version", "Unknown")
         table.add_row(
-            "PyTorch Core Import", "[bold green]PASS[/]", f"Framework loaded cleanly (v{torch_v})."
+            f"{framework} Core Import", "[bold green]PASS[/]", f"Framework loaded cleanly (v{version})."
         )
     else:
-        table.add_row("PyTorch Core Import", "[bold red]FAIL[/]", f"[red]{data.get('error')}[/]")
+        table.add_row(f"{framework} Core Import", "[bold red]FAIL[/]", f"[red]{data.get('error')}[/]")
 
     # CUDA compute engine check
     if data.get("cuda_ok"):

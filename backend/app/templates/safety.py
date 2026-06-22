@@ -7,12 +7,10 @@ no script passes without this validation.
 """
 
 import asyncio
-import concurrent.futures
 import json
 import logging
 import os
 import re
-import subprocess
 from typing import Any
 
 import bashlex
@@ -44,11 +42,11 @@ FORBIDDEN_PATTERNS: list[tuple[str, str]] = [
         "Wget-pipe-to-shell (untrusted exec)",
     ),
     (
-        r"wget\s+[^;\|&]+?(-O\s+\S+).*(?:&&|;|\||\|\||\n)\s*(?:ba)?sh\s+\1",
+        r"wget\s+.*?(-O\s+(\S+))[\s\S]*?(?:&&|;|\||\|\||\n)\s*(?:ba)?sh\s+\2",
         "Wget download-and-execute pattern (sequential/chained)",
     ),
     (
-        r"wget\s+[^;\|&]+?(-O\s+(\S+)).*(?:&&|;|\||\|\||\n)\s*(?:ba)?sh\s+\2",
+       r"wget\s+.*?(-O\s+(\S+))[\s\S]*?(?:&&|;|\||\|\||\n)\s*(?:ba)?sh\s+\2",
         "Wget download-and-execute pattern (explicit target)",
     ),
     (
@@ -237,7 +235,9 @@ def _validate_bash_ast(content: str, template_name: str = "") -> None:
                                                             is_whitelisted = True
                                                             break
                                                     except Exception as e:
-                                                        logger.error(f"Safety parse error: {e}")
+                                                        logger.error(
+                                                            f"Safety parse error: {e}"
+                                                        )
                                                         pass
                             if not is_whitelisted:
                                 violations.append(
@@ -320,8 +320,8 @@ def _validate_bash_ast(content: str, template_name: str = "") -> None:
         )
 
 
-def _validate_shellcheck(content: str, template_name: str = "") -> None:
-    """Run shellcheck static analysis on the rendered content."""
+async def _validate_shellcheck(content: str, template_name: str = "") -> None:
+    """Run shellcheck static analysis on the rendered content (async, non-blocking)."""
     try:
         args = ["shellcheck", "--severity=warning", "--format=json"]
         first_line = content.splitlines()[0].strip() if content.strip() else ""
@@ -329,17 +329,29 @@ def _validate_shellcheck(content: str, template_name: str = "") -> None:
             args.append("--shell=bash")
         args.append("-")
 
-        process = subprocess.run(
-            args,
-            input=content,
-            text=True,
-            capture_output=True,
-            check=False,
-            timeout=5.0,
+        process = await asyncio.create_subprocess_exec(
+            *args,
+            stdin=asyncio.subprocess.PIPE,
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE,
         )
+
+        try:
+            stdout, stderr = await asyncio.wait_for(
+                process.communicate(input=content.encode()),
+                timeout=5.0,
+            )
+        except TimeoutError:
+            process.kill()
+            await process.wait()
+            logger.warning(
+                f"shellcheck timed out for {template_name}. Skipping static analysis."
+            )
+            return
+
         if process.returncode != 0:
             try:
-                results = json.loads(process.stdout)
+                results = json.loads(stdout.decode())
                 if results:
                     violations_desc = []
                     for item in results:
@@ -359,8 +371,9 @@ def _validate_shellcheck(content: str, template_name: str = "") -> None:
                             context=f"Template: {template_name}",
                         )
             except json.JSONDecodeError:
-                if process.stderr:
-                    logger.error(f"shellcheck error: {process.stderr}")
+                decoded_stderr = stderr.decode()
+                if decoded_stderr:
+                    logger.error(f"shellcheck error: {decoded_stderr}")
     except SafetyViolationError:
         raise
     except Exception as e:
@@ -369,18 +382,19 @@ def _validate_shellcheck(content: str, template_name: str = "") -> None:
         )
 
 
-def validate_rendered_output(
+async def validate_rendered_output(
     content: str,
     template_name: str = "",
     llm_client: LLMProvider | None = None,
 ) -> str:
     """
-    Scan rendered template output for forbidden patterns using Regex, AST validation, Shellcheck, and an optional AI engine.
+    Scan rendered template output for forbidden patterns using Regex, AST validation,
+    Shellcheck, and an optional AI engine.
 
     Raises:
         SafetyViolationError: If any checks fail or the AI flags a malicious script.
     """
-    # 1. Regex Checks
+    # 1. Regex Checks (CPU-bound but fast — stays synchronous)
     for compiled_pattern, description in _COMPILED:
         if compiled_pattern.search(content):
             raise SafetyViolationError(
@@ -404,8 +418,11 @@ def validate_rendered_output(
             is_bash = True
 
     if is_bash and content.strip():
-        _validate_bash_ast(content, template_name)
-        _validate_shellcheck(content, template_name)
+        # _validate_bash_ast is CPU-bound (bashlex parsing) — offload to thread pool
+        # to avoid blocking the event loop on large scripts
+        loop = asyncio.get_running_loop()
+        await loop.run_in_executor(None, _validate_bash_ast, content, template_name)
+        await _validate_shellcheck(content, template_name)
 
     # 3. AI Safety Checks
     if llm_client:
@@ -427,30 +444,13 @@ def validate_rendered_output(
                     "LLM client does not implement a recognized completion method."
                 )
 
-            try:
-                loop = asyncio.get_running_loop()
-            except RuntimeError:
-                loop = None
-
-            if loop and loop.is_running():
-                with concurrent.futures.ThreadPoolExecutor() as pool:
-                    future = pool.submit(
-                        asyncio.run,
-                        method_to_call(
-                            system_prompt=system_prompt,
-                            user_message=user_message,
-                            response_model=AISafetyVerdict,
-                        ),
-                    )
-                    verdict = future.result()
-            else:
-                verdict = asyncio.run(
-                    method_to_call(
-                        system_prompt=system_prompt,
-                        user_message=user_message,
-                        response_model=AISafetyVerdict,
-                    )
-                )
+            # With an async validate_rendered_output, we're always inside an
+            # async context — no loop detection dance needed anymore.
+            verdict = await method_to_call(
+                system_prompt=system_prompt,
+                user_message=user_message,
+                response_model=AISafetyVerdict,
+            )
 
             if not verdict.is_safe:
                 raise SafetyViolationError(
@@ -464,6 +464,5 @@ def validate_rendered_output(
             logger.warning(
                 f"AI Safety check failed due to provider error — degrading to regex-only: {str(e)}"
             )
-
 
     return content

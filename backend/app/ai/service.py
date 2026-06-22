@@ -112,7 +112,7 @@ class AITroubleshootService:
         # ── Step 3: Safety filter ─────────────────────────────────────────
         safety_violation: str | None = None
         try:
-            self._validate_response_safety(llm_result)
+            await self._validate_response_safety(llm_result)
         except SafetyViolationError as exc:
             safety_violation = str(exc)
             latency_ms = int((time.monotonic() - start_time) * 1000)
@@ -282,7 +282,7 @@ class AITroubleshootService:
 
         try:
             llm_result = TroubleshootResponse.model_validate_json(full_response)
-            self._validate_response_safety(llm_result)
+            await self._validate_response_safety(llm_result)
         except SafetyViolationError as exc:
             latency_ms = int((time.monotonic() - start_time) * 1000)
             await self._log_audit(
@@ -304,13 +304,27 @@ class AITroubleshootService:
         except Exception:
             logger.exception("Failed to validate streamed response")
 
+        model_name = getattr(provider, "model", "unknown")
+        persist_failed = False
+        try:
+            await self._persist_session(
+                db,
+                session_id,
+                request,
+                llm_result,
+                provider_name,
+                model_name,
+            )
+        except Exception:
+            persist_failed = True
+
         latency_ms = int((time.monotonic() - start_time) * 1000)
         await self._log_audit(
             db,
             session_id=session_id,
             input_hash=input_hash,
-            safety_passed=True,
-            safety_violation=None,
+            safety_passed=not persist_failed,
+            safety_violation="DB persistence failure" if persist_failed else None,
             provider=provider_name,
             tokens_used=0,
             latency_ms=latency_ms,
@@ -319,13 +333,13 @@ class AITroubleshootService:
     async def _fetch_session_history(
         self,
         db: AsyncSession,
-        session_id: str,
+        session_id: uuid.UUID,
     ) -> list[AISuggestion]:
         """Fetch previous AI suggestions for a given session ID."""
         try:
             stmt = (
                 select(AISuggestion)
-                .where(AISuggestion.session_id == uuid.UUID(session_id))
+                .where(AISuggestion.session_id == session_id)
                 .order_by(AISuggestion.step_number.asc())
             )
             result = await db.execute(stmt)
@@ -356,15 +370,15 @@ class AITroubleshootService:
         raw = request.model_dump_json()
         return hashlib.sha256(raw.encode()).hexdigest()[:64]
 
-    def _validate_response_safety(self, response: TroubleshootResponse) -> None:
+    async def _validate_response_safety(self, response: TroubleshootResponse) -> None:
         """Run all text fields through the template SafetyFilter."""
-        validate_rendered_output(response.root_cause, "ai_root_cause")
+        await validate_rendered_output(response.root_cause, "ai_root_cause")
 
         for fix in response.suggested_fixes:
-            validate_rendered_output(fix.title, "ai_fix_title")
-            validate_rendered_output(fix.description, "ai_fix_description")
+            await validate_rendered_output(fix.title, "ai_fix_title")
+            await validate_rendered_output(fix.description, "ai_fix_description")
             for cmd in fix.safe_commands:
-                validate_rendered_output(cmd, "ai_safe_command")
+                await validate_rendered_output(cmd, "ai_safe_command")
 
     async def _persist_session(
         self,

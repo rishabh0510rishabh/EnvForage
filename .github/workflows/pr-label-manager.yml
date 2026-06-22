@@ -155,9 +155,9 @@ jobs:
                 labelsToRemove.push(lbl);
               }
             }
-            // Explicitly remove ssoc, nsoc, and NSoC'26 labels
+            // Explicitly remove nsoc, and NSoC'26 labels
             for (const lbl of currentLabels) {
-              if (/^(ssoc|nsoc)/i.test(lbl) || lbl === "NSoC'26") {
+              if (/^(nsoc)/i.test(lbl) || lbl === "NSoC'26") {
                 labelsToRemove.push(lbl);
               }
             }

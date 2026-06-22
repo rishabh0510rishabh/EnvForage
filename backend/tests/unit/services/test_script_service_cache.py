@@ -36,7 +36,7 @@ class FakeRedis:
 
 
 class FakeRenderer:
-    def render_all(self, output_formats, ctx):
+    async def render_all(self, output_formats, ctx):
         package = ctx.resolved.packages[0]
         return [
             SimpleNamespace(

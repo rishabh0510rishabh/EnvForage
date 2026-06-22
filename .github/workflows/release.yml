@@ -116,11 +116,16 @@ jobs:
         with:
           path: cli/installer/setup.iss
 
+      - name: Rename binaries for release
+        run: |
+          Move-Item -Path cli\dist\envforage.exe -Destination cli\dist\envforage-standalone.exe
+          Get-ChildItem cli\installer\Output\envforage-v*-setup.exe | Rename-Item -NewName { $_.Name -replace '-setup.exe', '-installer.exe' }
+
       - name: Upload Installer to GitHub Release
         uses: softprops/action-gh-release@v3
         with:
           files: |
-            cli/dist/envforage.exe
-            cli/installer/Output/envforage-v*-setup.exe
+            cli/dist/envforage-standalone.exe
+            cli/installer/Output/envforage-v*-installer.exe
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

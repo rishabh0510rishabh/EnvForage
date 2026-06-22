@@ -1,5 +1,7 @@
 """Tests for AI Pydantic models."""
 
+import uuid
+
 import pytest
 from pydantic import ValidationError
 
@@ -30,6 +32,20 @@ class TestTroubleshootRequest:
         )
         assert req.profile_slug == "pytorch-cuda"
         assert req.cuda_version == "12.1"
+
+    def test_session_id_is_validated_as_uuid(self):
+        req = TroubleshootRequest(
+            diagnostic={"os": {"name": "Ubuntu"}},
+            session_id="550e8400-e29b-41d4-a716-446655440000",
+        )
+        assert req.session_id == uuid.UUID("550e8400-e29b-41d4-a716-446655440000")
+
+    def test_session_id_rejects_invalid_uuid(self):
+        with pytest.raises(ValidationError):
+            TroubleshootRequest(
+                diagnostic={"os": {"name": "Ubuntu"}},
+                session_id="invalid-uuid",
+            )
 
     def test_user_description_max_length(self):
         with pytest.raises(ValidationError):

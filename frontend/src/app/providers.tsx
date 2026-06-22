@@ -18,8 +18,32 @@ export function useTheme() {
 	return context;
 }
 
+function getInitialTheme(): "dark" | "light" | "system" {
+	if (typeof window === "undefined") {
+		return "light";
+	}
+
+	const storedTheme = localStorage.getItem("theme");
+
+	if (
+		storedTheme === "dark" ||
+		storedTheme === "light" ||
+		storedTheme === "system"
+	) {
+		return storedTheme;
+	}
+
+	const currentTheme = document.documentElement.getAttribute("data-theme");
+
+	if (currentTheme === "dark" || currentTheme === "light") {
+		return currentTheme;
+	}
+
+	return "light";
+}
+
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-	const [theme, setTheme] = useState<"dark" | "light" | "system">("dark");
+	const [theme, setTheme] = useState<"dark" | "light" | "system">("light");
 	const [mounted, setMounted] = useState(false);
 
 	const applyTheme = (newTheme: "dark" | "light" | "system") => {

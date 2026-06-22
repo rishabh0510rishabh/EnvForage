@@ -192,7 +192,7 @@ async def generate_scripts(
         use_uv=request.use_uv,
         use_micromamba=request.use_micromamba,
     )
-    render_results = _renderer.render_all(request.output_formats, ctx)
+    render_results = await _renderer.render_all(request.output_formats, ctx)
 
     # Step 4: Persist job + scripts
     job = ScriptGenerationJob(
