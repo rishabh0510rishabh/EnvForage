@@ -11,9 +11,12 @@ from pathlib import Path
 from typing import Literal
 
 from dotenv import load_dotenv
+from pydantic import model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 load_dotenv()
+
+_DEV_SECRET_KEY = "dev-secret-key-change-in-production"
 
 
 class Settings(BaseSettings):
@@ -27,7 +30,7 @@ class Settings(BaseSettings):
     # ── Application ───────────────────────────────────────────
     environment: Literal["development", "staging", "production"] = "development"
     debug: bool = False
-    secret_key: str = "dev-secret-key-change-in-production"
+    secret_key: str = _DEV_SECRET_KEY
     app_name: str = "EnvForage"
     app_version: str = "1.0.0"
     custom_template_dir: Path | None = None
@@ -67,6 +70,38 @@ class Settings(BaseSettings):
     rate_limit_ai_rpm: int = 10       # AI troubleshoot: requests per minute
     rate_limit_repair_rpm: int = 20   # Repair endpoint: requests per minute
     rate_limit_general_rpm: int = 60  # General API: requests per minute
+
+    @model_validator(mode="after")
+    def validate_secret_key(self) -> "Settings":
+        """Reject weak or default SECRET_KEY outside development.
+
+        The default value is committed to the public repository. Any deployment
+        that omits SECRET_KEY in staging or production will silently sign JWTs
+        with this known-public string, allowing trivial token forgery.
+
+        A short, low-entropy key is equally dangerous: it can be recovered via
+        brute force, giving an attacker the ability to mint arbitrary JWTs.
+        """
+        if self.environment == "development":
+            return self
+
+        if self.secret_key == _DEV_SECRET_KEY:
+            raise ValueError(
+                f"A strong SECRET_KEY is required when environment='{self.environment}'. "
+                "Set the SECRET_KEY environment variable to a cryptographically random value. "
+                "The default key is committed to the public repository and must never be "
+                "used outside local development."
+            )
+
+        if len(self.secret_key) < 32:
+            raise ValueError(
+                f"A strong SECRET_KEY is required when environment='{self.environment}'. "
+                "The configured SECRET_KEY is shorter than the 32 character minimum. "
+                "Generate a cryptographically random value with: "
+                'python -c "from secrets import token_urlsafe; print(token_urlsafe(32))"'
+            )
+
+        return self
 
 
 @lru_cache
