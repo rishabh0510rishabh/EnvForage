@@ -152,6 +152,7 @@ def test_short_secret_key_allowed_in_development():
     config = Settings(environment="development", secret_key="short-dev-key")
     assert config.secret_key == "short-dev-key"
 
+
 @pytest.mark.parametrize("environment", ["staging", "production"])
 def test_missing_admin_api_key_rejected_outside_development(environment):
     """ADMIN_API_KEY is required outside development to protect admin endpoints."""
