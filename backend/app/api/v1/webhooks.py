@@ -1,17 +1,40 @@
 from typing import Any
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 
 from app.api.deps import DB, require_admin
+from app.schemas.webhook import WebhookListResponse, WebhookSummarySchema
+from app.services.webhook_service import list_webhooks_paginated
 
 router = APIRouter(dependencies=[Depends(require_admin)])
 
 
-@router.get("/webhooks", response_model=list[Any])
-async def list_webhooks(db: DB) -> list[Any]:
-    # Retrieve all webhooks for the authorized user/context
-    # Placeholder for actual implementation
-    return []
+@router.get("/webhooks", response_model=WebhookListResponse)
+async def list_webhooks(
+    db: DB,
+    page: int = Query(
+        1,
+        ge=1,
+        description="Page number for paginated results.",
+        examples=[1],
+    ),
+    limit: int = Query(
+        20,
+        ge=1,
+        le=100,
+        description="Maximum number of webhooks returned per page.",
+        examples=[20],
+    ),
+) -> WebhookListResponse:
+    """List webhooks with pagination, ordered by most recently created."""
+    webhooks, total = await list_webhooks_paginated(db, page, limit)
+
+    return WebhookListResponse(
+        webhooks=[WebhookSummarySchema.model_validate(w) for w in webhooks],
+        total=total,
+        page=page,
+        page_size=limit,
+    )
 
 
 @router.post("/webhooks", status_code=201)
