@@ -112,7 +112,7 @@ jobs:
           pyinstaller --onefile --name envforage envforage/__main__.py
 
       - name: Compile Windows Installer (Inno Setup)
-        uses: Minionguyjpro/Inno-Setup-Action@v1.2.2
+        uses: Minionguyjpro/Inno-Setup-Action@v1.2.8
         with:
           path: cli/installer/setup.iss
 
