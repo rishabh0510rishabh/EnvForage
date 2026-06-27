@@ -1,7 +1,7 @@
 
 // --- Avatar Fallback System ---
-/* eslint-disable @next/next/no-img-element */
 import React, { useState } from 'react';
+import Image from 'next/image';
 
 export type AvatarSize = 'sm' | 'md' | 'lg' | 'xl' | number;
 export type AvatarShape = 'circle' | 'square' | 'rounded';
@@ -85,9 +85,11 @@ export const Avatar: React.FC<AvatarProps> = ({
       aria-label={alt || name || 'User Avatar'}
     >
       {!showFallback ? (
-        <img
+        <Image
           src={src as string}
           alt={alt}
+          width={pixelSize}
+          height={pixelSize}
           onError={() => setImgError(true)}
           style={{
             width: '100%',

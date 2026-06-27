@@ -4,6 +4,14 @@ import { withSentryConfig } from "@sentry/nextjs";
 const nextConfig: NextConfig = {
 																output: "standalone",
 																allowedDevOrigins: ["192.168.1.14", "192.168.1.37", "192.168.1.48"],
+images: {
+remotePatterns: [
+{
+protocol: "https",
+hostname: "**",
+},
+],
+},
 																async redirects() {
 																								return [
 																																{

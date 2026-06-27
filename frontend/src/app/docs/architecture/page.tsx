@@ -1,5 +1,5 @@
 "use client";
-
+import Image from "next/image";
 import { Layers, ShieldCheck, Database, Cpu, Terminal, GitMerge, FileText } from "lucide-react";
 
 export default function ArchitecturePage() {
@@ -81,10 +81,12 @@ export default function ArchitecturePage() {
 					backgroundColor: "rgba(255, 255, 255, 0.01)",
 				}}
 			>
-				{/* eslint-disable-next-line @next/next/no-img-element */}
-				<img
+				<Image
 					src="/architecture_diagram.png"
 					alt="EnvForage System Architecture Diagram"
+					width={1024}
+					height={1024}
+					placeholder="empty"
 					style={{
 						width: "100%",
 						height: "auto",
