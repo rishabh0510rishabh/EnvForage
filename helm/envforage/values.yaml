@@ -23,6 +23,13 @@ resources:
     cpu: 500m
     memory: 512Mi
 
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 80
+
 env:
   DATABASE_URL: "postgresql+asyncpg://envforage:changeme@envforage-postgres:5432/envforage"
   REDIS_URL: "redis://envforage-redis:6379/0"
