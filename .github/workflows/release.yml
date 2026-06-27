@@ -111,10 +111,36 @@ jobs:
           cd cli
           pyinstaller --onefile --name envforage envforage/__main__.py
 
+      - name: Sign executable
+        if: ${{ env.WINDOWS_CERT_BASE64 != '' }}
+        env:
+          WINDOWS_CERT_BASE64: ${{ secrets.WINDOWS_CERT_BASE64 }}
+          WINDOWS_CERT_PASSWORD: ${{ secrets.WINDOWS_CERT_PASSWORD }}
+        run: |
+          $certBytes = [System.Convert]::FromBase64String($env:WINDOWS_CERT_BASE64)
+          $certPath = Join-Path $env:RUNNER_TEMP "codesign.pfx"
+          [System.IO.File]::WriteAllBytes($certPath, $certBytes)
+          & signtool sign /f $certPath /p $env:WINDOWS_CERT_PASSWORD /fd SHA256 /tr http://timestamp.digicert.com /td SHA256 cli\dist\envforage.exe
+          Remove-Item $certPath
+
       - name: Compile Windows Installer (Inno Setup)
         uses: Minionguyjpro/Inno-Setup-Action@v1.2.8
         with:
           path: cli/installer/setup.iss
+
+      - name: Sign installer
+        if: ${{ env.WINDOWS_CERT_BASE64 != '' }}
+        env:
+          WINDOWS_CERT_BASE64: ${{ secrets.WINDOWS_CERT_BASE64 }}
+          WINDOWS_CERT_PASSWORD: ${{ secrets.WINDOWS_CERT_PASSWORD }}
+        run: |
+          $certBytes = [System.Convert]::FromBase64String($env:WINDOWS_CERT_BASE64)
+          $certPath = Join-Path $env:RUNNER_TEMP "codesign.pfx"
+          [System.IO.File]::WriteAllBytes($certPath, $certBytes)
+          Get-ChildItem cli\installer\Output\envforage-v*-setup.exe | ForEach-Object {
+            & signtool sign /f $certPath /p $env:WINDOWS_CERT_PASSWORD /fd SHA256 /tr http://timestamp.digicert.com /td SHA256 $_.FullName
+          }
+          Remove-Item $certPath
 
       - name: Rename binaries for release
         run: |
