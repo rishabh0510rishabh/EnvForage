@@ -1,4 +1,7 @@
 {{- if .Values.autoscaling.enabled }}
+{{- if and (not .Values.autoscaling.targetCPUUtilizationPercentage) (not .Values.autoscaling.targetMemoryUtilizationPercentage) }}
+{{- fail "autoscaling.enabled is true but neither targetCPUUtilizationPercentage nor targetMemoryUtilizationPercentage is set; at least one is required for a valid HPA" }}
+{{- end }}
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
