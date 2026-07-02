@@ -6,7 +6,8 @@
 		"dev": "next dev",
 		"build": "next build",
 		"start": "next start",
-		"lint": "eslint . --ext .js,.jsx,.ts,.tsx"
+		"lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+		"test:unit": "jest"
 	},
 	"dependencies": {
 		"@sentry/nextjs": "^10.61.0",
@@ -24,11 +25,15 @@
 		"zustand": "^5.0.3"
 	},
 	"devDependencies": {
+		"@types/jest": "^30.0.0",
 		"@types/node": "^25",
 		"@types/react": "^19",
 		"@types/react-dom": "^19",
 		"eslint": "^9.39.4",
 		"eslint-config-next": "16.2.7",
+		"jest": "^30.4.2",
+		"jest-environment-jsdom": "^30.4.1",
+		"ts-node": "^10.9.2",
 		"typescript": "^6"
 	},
 	"overrides": {
