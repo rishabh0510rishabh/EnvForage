@@ -864,6 +864,7 @@ width: "100%",
 																				$ {cmd}
 																			</code>
 																			<button
+																			    aria-label="Copy command" 
 																				onClick={() =>
 																					handleCopy(cmd, `cmd-${idx}-${ci}`)
 																				}
@@ -873,7 +874,7 @@ width: "100%",
 																					cursor: "pointer",
 																					padding: "0.25rem",
 																					color: "var(--text-muted)",
-																				}}
+																				}} 
 																			>
 																				{copiedId === `cmd-${idx}-${ci}` ? (
 																					<Check

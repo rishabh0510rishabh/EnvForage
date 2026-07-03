@@ -170,6 +170,8 @@ export default function DocsLayout({
 				{/* Version Selector */}
 				<div style={{ position: "relative", marginBottom: "2rem" }}>
 					<button
+					    aria-label="Toggle version selector"
+                        aria-expanded={isVersionDropdownOpen}
 						onClick={() => setIsVersionDropdownOpen(!isVersionDropdownOpen)}
 						style={{
 							width: "100%",
@@ -413,6 +415,7 @@ export default function DocsLayout({
 								Navigation
 							</span>
 							<button
+							    aria-label="Close navigation menu"
 								onClick={() => setIsMobileMenuOpen(false)}
 								style={{ background: "none", border: "none", color: "var(--text-primary)", cursor: "pointer", padding: "0.25rem" }}
 							>

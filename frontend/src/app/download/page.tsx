@@ -217,8 +217,9 @@ export default function InstallPage() {
 							{installCommand}
 						</code>
 						<button
+						    aria-label="Copy install command"
 							onClick={handleCopy}
-							style={{
+							style={{ 
 								background: "none",
 								border: "none",
 								cursor: "pointer",
