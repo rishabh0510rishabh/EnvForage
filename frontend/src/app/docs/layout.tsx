@@ -170,7 +170,7 @@ export default function DocsLayout({
 				{/* Version Selector */}
 				<div style={{ position: "relative", marginBottom: "2rem" }}>
 					<button
-					    aria-label="Toggle version selector"
+					    aria-label={`Toggle version selector, current version: ${selectedVersion}`} 
                         aria-expanded={isVersionDropdownOpen}
 						onClick={() => setIsVersionDropdownOpen(!isVersionDropdownOpen)}
 						style={{
