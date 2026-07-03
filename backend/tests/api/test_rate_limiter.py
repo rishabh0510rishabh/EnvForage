@@ -180,18 +180,27 @@ class TestRateLimiterDependency:
         assert "Retry-After" in exc_info.value.headers
 
     @pytest.mark.asyncio
-    async def test_falls_back_to_in_memory_on_redis_connection_error(self):
-        broken_backend = AsyncMock()
-        broken_backend.is_allowed.side_effect = RedisConnError("connection refused")
-        limiter = RateLimiter(max_requests=5, window_seconds=60, backend=broken_backend)
-        await limiter(make_request())
+    @pytest.mark.parametrize(
+        ("exc", "message"),
+        [
+            (RedisConnError, "connection refused"),
+            (RedisTimeout, "timed out"),
+        ],
+    )
+    async def test_redis_failures_use_in_memory_fallback(self, monkeypatch, exc, message):
+        fallback_backend = InMemoryBackend()
+        monkeypatch.setattr("app.middleware.rate_limit._fallback_backend", fallback_backend)
 
-    @pytest.mark.asyncio
-    async def test_falls_back_to_in_memory_on_redis_timeout(self):
         broken_backend = AsyncMock()
-        broken_backend.is_allowed.side_effect = RedisTimeout("timed out")
-        limiter = RateLimiter(max_requests=5, window_seconds=60, backend=broken_backend)
-        await limiter(make_request())
+        broken_backend.is_allowed.side_effect = exc(message)
+        limiter = RateLimiter(max_requests=1, window_seconds=60, backend=broken_backend)
+        request = make_request()
+
+        # First request: fallback allows it (quota=1, now exhausted)
+        await limiter(request)
+        # Second request: fallback blocks it — proving fallback is actually used
+        with pytest.raises(HTTPException):
+            await limiter(request)
 
     @pytest.mark.asyncio
     async def test_non_redis_exception_is_reraised(self):
