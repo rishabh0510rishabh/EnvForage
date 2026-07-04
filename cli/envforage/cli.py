@@ -1334,7 +1334,7 @@ def rollback(quiet: bool) -> None:
 def troubleshoot(api_url: str | None, quiet: bool, timeout: int | None) -> None:
     config = load_config()
     final_api_url = api_url or config.api_url
-    final_timeout = timeout or config.timeout
+    final_timeout = timeout if timeout is not None else config.timeout
     asyncio.run(_troubleshoot(final_api_url, quiet, final_timeout))
 
 

@@ -125,7 +125,7 @@ class TestTroubleshootCommand:
                           "--api-url", "http://localhost:8000"]
                 )
 
-        assert "EnvForge AI Troubleshooter" not in result.output
+        assert "EnvForage AI Troubleshooter" not in result.output
         assert "Traceback" not in result.output
 
 
