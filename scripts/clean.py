@@ -2,9 +2,9 @@
 """Remove locally generated build/test/cache artifacts.
 
 Mirrors the generated paths in .gitignore so a developer can clean a working
-tree without deleting environment or state. Virtualenvs, .env files, databases,
-and Docker volumes are intentionally left alone, since those are environment or
-state rather than build artifacts.
+tree without deleting environment or state. Virtualenvs, node_modules, .env
+files, databases, and Docker volumes are intentionally left alone, since those
+are environment or state rather than build artifacts.
 
 Usage:
     python scripts/clean.py
@@ -12,12 +12,27 @@ Usage:
 
 from __future__ import annotations
 
+import fnmatch
+import os
 import shutil
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 
-# Directory names removed wherever they occur in the tree.
+# Directories we never descend into: virtualenvs, dependencies, VCS, and state.
+# Pruned in-place during the walk so installed packages (e.g. compiled .pyd
+# files inside a venv) are never touched and the tree is traversed only once.
+PRUNE_DIRS = {
+    ".venv",
+    "venv",
+    "env",
+    "ENV",
+    "node_modules",
+    ".git",
+    "postgres_data",
+}
+
+# Directory names removed wherever they occur (outside pruned dirs).
 DIR_NAMES = {
     "__pycache__",
     ".pytest_cache",
@@ -27,7 +42,7 @@ DIR_NAMES = {
     ".eggs",
 }
 
-# Directory-name glob patterns removed wherever they occur (e.g. foo.egg-info).
+# Directory-name glob patterns removed wherever they occur.
 DIR_PATTERNS = ("*.egg-info",)
 
 # File glob patterns removed wherever they occur.
@@ -62,20 +77,19 @@ def _rm(path: Path) -> None:
 
 
 def main() -> None:
-    for name in DIR_NAMES:
-        for path in ROOT.rglob(name):
-            if path.is_dir():
-                _rm(path)
+    # Single top-down walk: prune ignored directories in place so we never
+    # descend into them, and remove matching artifact dirs/files as we go.
+    for dirpath, dirnames, filenames in os.walk(ROOT, topdown=True):
+        dirnames[:] = [d for d in dirnames if d not in PRUNE_DIRS]
 
-    for pattern in DIR_PATTERNS:
-        for path in ROOT.rglob(pattern):
-            if path.is_dir():
-                _rm(path)
+        for d in list(dirnames):
+            if d in DIR_NAMES or any(fnmatch.fnmatch(d, p) for p in DIR_PATTERNS):
+                _rm(Path(dirpath) / d)
+                dirnames.remove(d)  # don't descend into a dir we just removed
 
-    for pattern in FILE_PATTERNS:
-        for path in ROOT.rglob(pattern):
-            if path.is_file():
-                _rm(path)
+        for f in filenames:
+            if any(fnmatch.fnmatch(f, p) for p in FILE_PATTERNS):
+                _rm(Path(dirpath) / f)
 
     for rel in EXACT_PATHS:
         _rm(ROOT / rel)
