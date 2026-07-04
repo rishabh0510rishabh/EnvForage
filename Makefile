@@ -1,4 +1,4 @@
-.PHONY: test lint run-dev db-upgrade
+.PHONY: test lint run-dev db-upgrade clean
 
 # Run backend tests
 test:
@@ -15,3 +15,7 @@ run-dev:
 # Run database migrations and seed development data
 db-upgrade:
 		cd backend && alembic upgrade head && python -m app.services.seed_service
+
+# Remove locally generated artifacts (caches, test outputs, build dirs)
+clean:
+		python scripts/clean.py
