@@ -2,6 +2,14 @@
 import Image from "next/image";
 import { Layers, ShieldCheck, Database, Cpu, Terminal, GitMerge, FileText } from "lucide-react";
 
+/**
+ * Architecture documentation page.
+ *
+ * Renders a visual overview of the EnvForage system architecture,
+ * including the optimized architecture diagram (served via next/image
+ * to prevent CLS) and a step-by-step flow timeline of the provisioning
+ * pipeline.
+ */
 export default function ArchitecturePage() {
 	const flowSteps = [
 		{

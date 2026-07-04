@@ -26,6 +26,21 @@ export interface AvatarProps {
  * - If `src` fails (404) or is null, falls back to generating initials from `name`.
  * - If `name` is missing, falls back to a generic SVG user icon.
  */
+/**
+ * A robust Avatar component with automatic fallback handling.
+ *
+ * Attempts to load the provided `src` URL using next/image for optimized
+ * delivery. Falls back to initials derived from `name` if the image fails
+ * to load or is absent. If `name` is also missing, renders a generic SVG
+ * user icon. Dimensions are fixed to prevent Cumulative Layout Shift (CLS).
+ *
+ * @param src - URL of the avatar image to load (may be null/undefined)
+ * @param alt - Accessible alt text for the image
+ * @param name - Display name used to generate initials fallback
+ * @param size - Avatar size: preset string or pixel number
+ * @param shape - Border-radius shape: circle, rounded, or square
+ * @param fallbackColor - Background colour used in the fallback state
+ */
 export const Avatar: React.FC<AvatarProps> = ({
   src,
   alt = 'Avatar',
@@ -52,6 +67,11 @@ export const Avatar: React.FC<AvatarProps> = ({
     square: '0px',
   };
 
+  /**
+   * Derive up to two initials from a display name string.
+   * Returns the first character of the first two words, or the first two
+   * characters of a single-word name.
+   */
   const getInitials = (str?: string) => {
     if (!str) return '';
     const parts = str.trim().split(' ');
