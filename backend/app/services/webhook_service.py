@@ -18,7 +18,10 @@ async def list_webhooks_paginated(
     total = total_result.scalar_one()
 
     result = await db.execute(
-        select(Webhook).order_by(Webhook.created_at.desc()).offset(offset).limit(limit)
+        select(Webhook)
+        .order_by(Webhook.created_at.desc(), Webhook.id.desc())
+        .offset(offset)
+        .limit(limit)
     )
     webhooks = list(result.scalars().all())
 

@@ -3,8 +3,13 @@ from typing import Any
 from fastapi import APIRouter, Depends, Query
 
 from app.api.deps import DB, require_admin
+from app.config import get_settings
 from app.schemas.webhook import WebhookListResponse, WebhookSummarySchema
 from app.services.webhook_service import list_webhooks_paginated
+
+_settings = get_settings()
+_DEFAULT_PAGE_SIZE: int = _settings.default_page_size
+_MAX_PAGE_SIZE: int = _settings.max_page_size
 
 router = APIRouter(dependencies=[Depends(require_admin)])
 
@@ -19,11 +24,11 @@ async def list_webhooks(
         examples=[1],
     ),
     limit: int = Query(
-        20,
+        _DEFAULT_PAGE_SIZE,
         ge=1,
-        le=100,
+        le=_MAX_PAGE_SIZE,
         description="Maximum number of webhooks returned per page.",
-        examples=[20],
+        examples=[_DEFAULT_PAGE_SIZE],
     ),
 ) -> WebhookListResponse:
     """List webhooks with pagination, ordered by most recently created."""

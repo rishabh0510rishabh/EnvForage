@@ -11,11 +11,19 @@ import pytest
 from fastapi.testclient import TestClient
 
 from app.api.deps import require_admin
+from app.config import get_settings
 from app.main import app
 from app.models.webhook import Webhook
 
-client = TestClient(app)
 BASE = "/api/v1/webhooks"
+_settings = get_settings()
+
+
+@pytest.fixture
+def client():
+    """Fixture that yields a TestClient with lifespan events properly handled."""
+    with TestClient(app) as c:
+        yield c
 
 
 def _stub_require_admin() -> None:
@@ -42,7 +50,7 @@ def make_webhook(target_url: str = "https://example.com/hook") -> Webhook:
     )
 
 
-def test_list_webhooks_returns_paginated_shape():
+def test_list_webhooks_returns_paginated_shape(client):
     webhooks = [make_webhook(f"https://example.com/hook{i}") for i in range(3)]
     with patch(
         "app.api.v1.webhooks.list_webhooks_paginated",
@@ -55,11 +63,11 @@ def test_list_webhooks_returns_paginated_shape():
     body = res.json()
     assert body["total"] == 3
     assert body["page"] == 1
-    assert body["page_size"] == 20
+    assert body["page_size"] == _settings.default_page_size
     assert len(body["webhooks"]) == 3
 
 
-def test_list_webhooks_respects_custom_page_and_limit():
+def test_list_webhooks_respects_custom_page_and_limit(client):
     webhooks = [make_webhook()]
     with patch(
         "app.api.v1.webhooks.list_webhooks_paginated",
@@ -79,7 +87,7 @@ def test_list_webhooks_respects_custom_page_and_limit():
     assert called_limit == 10
 
 
-def test_list_webhooks_empty_result():
+def test_list_webhooks_empty_result(client):
     with patch(
         "app.api.v1.webhooks.list_webhooks_paginated",
         new_callable=AsyncMock,
@@ -93,17 +101,17 @@ def test_list_webhooks_empty_result():
     assert body["total"] == 0
 
 
-def test_list_webhooks_rejects_limit_over_100():
-    res = client.get(BASE, params={"limit": 101})
+def test_list_webhooks_rejects_limit_over_max(client):
+    res = client.get(BASE, params={"limit": _settings.max_page_size + 1})
     assert res.status_code == 422
 
 
-def test_list_webhooks_rejects_page_below_1():
+def test_list_webhooks_rejects_page_below_1(client):
     res = client.get(BASE, params={"page": 0})
     assert res.status_code == 422
 
 
-def test_list_webhooks_default_page_and_limit():
+def test_list_webhooks_default_page_and_limit(client):
     with patch(
         "app.api.v1.webhooks.list_webhooks_paginated",
         new_callable=AsyncMock,
@@ -114,4 +122,4 @@ def test_list_webhooks_default_page_and_limit():
     mock_list.assert_awaited_once()
     _, called_page, called_limit = mock_list.call_args[0]
     assert called_page == 1
-    assert called_limit == 20
+    assert called_limit == _settings.default_page_size
