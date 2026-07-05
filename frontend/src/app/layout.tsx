@@ -4,6 +4,7 @@ import Script from "next/script";
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 import Footer from "./components/Footer";
 import Navbar from "./components/Navbar";
 import ScrollToTop from "./components/ScrollToTop";
@@ -102,11 +103,11 @@ export default function RootLayout({
 			>
 				<ThemeProvider>
 					<Navbar />
-					<main
-						style={{ minHeight: "calc(100vh - 140px)", paddingTop: "76px" }}
-					>
-						{children}
-					</main>
+						<main
+							style={{ minHeight: "calc(100vh - 140px)", paddingTop: "76px" }}
+						>
+							<ErrorBoundary>{children}</ErrorBoundary>
+						</main>
 					<Footer />
 					<ScrollToTop />
 				</ThemeProvider>
