@@ -33,7 +33,7 @@ from envforage.detectors import detect_wsl_gpu_passthrough
 
 from envforage.utils import _map_os_to_target, _extract_python_version, check_for_updates, run_upgrade
 from envforage.audit import audit_command
-from envforage.config import load_config
+from envforage.config import load_config, init_config
 
 console = Console()
 err_console = Console(stderr=True, style="bold red")
@@ -1180,6 +1180,27 @@ def upgrade() -> None:
     """Upgrade EnvForage CLI to the latest version."""
     run_upgrade(interactive=True)
 
+@cli.command("config")
+@click.option(
+    "--init",
+    "do_init",
+    is_flag=True,
+    default=False,
+    help="Create ~/.envforage/config.toml with default settings.",
+)
+@click.option(
+    "--force",
+    is_flag=True,
+    default=False,
+    help="Overwrite existing config file.",
+)
+def config_cmd(do_init: bool, force: bool) -> None:
+    """Manage EnvForage CLI configuration."""
+    if do_init:
+        init_config(force=force)
+    else:
+        click.echo("Usage: envforge config --init")
+        click.echo("       envforge config --init --force")
 
 cli.add_command(audit_command)
 from envforge_agent.env_scan.command import env_scan_command
