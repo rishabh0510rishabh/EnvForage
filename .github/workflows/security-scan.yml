@@ -25,8 +25,8 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Install Poetry
-        run: pip install poetry
+      - name: Install Poetry and Plugins
+        run: pip install poetry poetry-plugin-export
 
       - name: Run pip-audit
         run: |
