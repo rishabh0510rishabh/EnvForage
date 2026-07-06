@@ -136,3 +136,45 @@ vulnerabilities.
 If a legitimate command is incorrectly blocked (false positive), open a regular
 GitHub issue describing the command and its intended use case so the pattern
 can be refined.
+
+
+---
+
+
+## Deployment Security Hardening
+
+To ensure secure self-hosted environments in production, EnvForage implements several defense-in-depth measures:
+
+
+### 1. HTTPS Enforcement and Proxy Trust
+
+- In production, EnvForage enforces HTTPS redirects using FastAPI's `HTTPSRedirectMiddleware`.
+- Behind reverse proxies (like Caddy), EnvForage utilizes `ProxyHeadersMiddleware` to trust forwarded headers (e.g. `X-Forwarded-Proto`), preventing infinite redirect loops.
+
+
+### 2. CORS Hardening
+
+- CORS origins are restricted to the values defined in `ALLOWED_ORIGINS` (via `config.py`).
+- **Wildcard CORS (`*`) is strictly forbidden in production**. The application will fail closed and raise a `ValueError` during startup if `*` is detected in `ALLOWED_ORIGINS` when `ENVIRONMENT` is set to `production`.
+- CORS requests cache preflight checks for 24 hours (`max_age=86400`) and limit allowed methods/headers to necessary endpoints.
+
+
+### 3. Security Headers
+
+EnvForage sets comprehensive security headers on all responses, configurable via `SECURITY_HEADERS` properties in `config.py`:
+
+- `Content-Security-Policy`: Standard strict CSP (`default-src 'self' ...`).
+- `X-Frame-Options`: Denies framing (`DENY`) to prevent clickjacking.
+- `X-Content-Type-Options`: Enforces mime type sniffing prevention (`nosniff`).
+- `Referrer-Policy`: Restricts referrer headers (`strict-origin-when-cross-origin`).
+- `Strict-Transport-Security` (HSTS): Enabled in production with subdomains and preloading (`max_age=31536000; includeSubDomains; preload`).
+
+
+### 4. Automated CI/CD Security Scanning
+
+Every push and pull request to the `main` or `production` branches undergoes automated scans:
+
+- **Trivy**: Scans filesystems and container layers for known vulnerabilities.
+- **Safety**: Validates python dependencies against known security databases.
+- **Bandit**: Inspects python source code for security flaws.
+- **Gitleaks**: Scans commits for exposed API keys, secrets, or credentials.

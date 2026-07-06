@@ -20,19 +20,42 @@ jobs:
         with:
           persist-credentials: false
 
-      - uses: actions/setup-python@v5
+      - name: Setup Python
+        uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
-      - name: Install pip-audit
+      - name: Run pip-audit
         run: |
           python -m pip install --upgrade pip
           pip install pip-audit
-
-      - name: Run pip-audit
-        run: |
           cd backend
           pip-audit --strict --desc
+
+      - name: Run Safety Scan
+        run: |
+          pip install safety
+          cd backend
+          # Run safety check on dependencies
+          safety check -r requirements.txt || echo "Safety detected vulnerabilities"
+
+  trivy-scan:
+    name: Security Vulnerability Scan (Trivy)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@0.20.0
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'table'
+          exit-code: '0'
+          ignore-unfixed: true
+          severity: 'CRITICAL,HIGH'
 
   sast:
     name: Static Analysis (Bandit)

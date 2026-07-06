@@ -59,14 +59,26 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
 
         # Skip Content-Security-Policy for API documentation endpoints to allow Swagger/ReDoc CDN assets
         is_docs_path = request.url.path in ("/api/docs", "/api/redoc", "/api/openapi.json")
+        settings = get_settings()
 
-        for header, value in _COMMON_HEADERS.items():
+        # Headers applied unconditionally
+        common_headers: dict[str, str] = {
+            "X-Frame-Options": settings.security_x_frame_options,
+            "X-Content-Type-Options": settings.security_x_content_type_options,
+            "Referrer-Policy": settings.security_referrer_policy,
+            "Permissions-Policy": "camera=(), microphone=(), geolocation=()",
+            "Cross-Origin-Opener-Policy": "same-origin",
+            "X-DNS-Prefetch-Control": "off",
+            "Content-Security-Policy": settings.security_csp_directives,
+        }
+
+        for header, value in common_headers.items():
             if header == "Content-Security-Policy" and is_docs_path:
                 continue
             response.headers.setdefault(header, value)
 
-        if get_settings().environment == "production":
-            response.headers.setdefault("Strict-Transport-Security", _HSTS_HEADER)
+        if settings.environment == "production":
+            response.headers.setdefault("Strict-Transport-Security", settings.security_hsts_header)
 
         return response
 

@@ -126,6 +126,14 @@ def create_app() -> FastAPI:
     register_exception_handlers(app)
     # ── CORS & Security ──────────────────────────────────────
     if _is_prod:
+        # Enforce no wildcard CORS in production
+        if "*" in settings.allowed_origins_list:
+            raise ValueError(
+                "Wildcard '*' is not allowed in ALLOWED_ORIGINS in production environment for security hardening."
+            )
+        # Trust forwarded headers from reverse proxies (like Caddy) to prevent redirect loops
+        from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
+        app.add_middleware(ProxyHeadersMiddleware, trusted_hosts="*")
         # Enforce HTTPS redirects in production
         app.add_middleware(HTTPSRedirectMiddleware)
 
