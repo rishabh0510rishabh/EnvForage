@@ -475,9 +475,12 @@ async def validate_rendered_output(
 
     if is_bash and content.strip():
         # _validate_bash_ast is CPU-bound (bashlex parsing) — offload to thread pool
-        # to avoid blocking the event loop on large scripts
-        loop = asyncio.get_running_loop()
-        security_score = await loop.run_in_executor(None, _validate_bash_ast, content, template_name)
+        # to avoid blocking the event loop on large scripts, or execute synchronously if no loop exists
+        try:
+            loop = asyncio.get_running_loop()
+            security_score = await loop.run_in_executor(None, _validate_bash_ast, content, template_name)
+        except RuntimeError:
+            security_score = _validate_bash_ast(content, template_name)
         await _validate_shellcheck(content, template_name)
 
     # 3. AI Safety Checks
