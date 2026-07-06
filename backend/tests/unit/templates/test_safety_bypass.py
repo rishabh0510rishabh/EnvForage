@@ -1,6 +1,7 @@
 import pytest
 
-from app.templates.safety import validate_rendered_output, SafetyViolationError
+from app.templates.safety import validate_rendered_output
+
 
 @pytest.mark.asyncio
 async def test_safety_filter_evasion_caught():

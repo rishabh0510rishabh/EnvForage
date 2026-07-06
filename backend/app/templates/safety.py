@@ -11,7 +11,7 @@ import json
 import logging
 import os
 import re
-from typing import Any
+from typing import Any, Literal
 
 import bashlex
 from pydantic import BaseModel
@@ -100,7 +100,7 @@ class SafetyViolationError(Exception):
         )
 
 
-def _validate_bash_ast(content: str, template_name: str = "") -> str:
+def _validate_bash_ast(content: str, template_name: str = "") -> Literal["Low", "Medium", "High"]:
     """Parse and validate shell scripts using bashlex AST parsing. Returns risk score (Low, Medium, High)."""
     try:
         nodes = bashlex.parse(content)
@@ -318,9 +318,9 @@ def _validate_bash_ast(content: str, template_name: str = "") -> str:
             description="AST validation failed: " + "; ".join(violations),
             context=f"Template: {template_name}",
         )
-        
+
     # --- AST Analysis for Security Score ---
-    SAFE_COMMANDS = {
+    safe_commands = {
         "echo", "cd", "mkdir", "rm", "cp", "mv", "apt-get", "apt", "yum", "dnf",
         "pacman", "zypper", "apk", "brew", "pip", "pip3", "python", "python3",
         "conda", "mamba", "micromamba", "uv", "poetry", "curl", "wget", "tar",
@@ -339,7 +339,7 @@ def _validate_bash_ast(content: str, template_name: str = "") -> str:
             cmd_word = ""
             if parts and hasattr(parts[0], "word"):
                 cmd_word = parts[0].word.replace('"', '').replace("'", '').replace("\\", "")
-            
+
             # Check for eval, exec, base64
             if cmd_word in ("eval", "exec"):
                 self.risk_score += 2
@@ -353,9 +353,9 @@ def _validate_bash_ast(content: str, template_name: str = "") -> str:
                         arg_word = part.word.replace('"', '').replace("'", '').replace("\\", "")
                         if "r" in arg_word and "f" in arg_word and arg_word.startswith("-"):
                             self.risk_score += 5  # High risk for rm -rf
-            elif cmd_word and cmd_word not in SAFE_COMMANDS and not cmd_word.startswith("-") and "=" not in cmd_word:
+            elif cmd_word and cmd_word not in safe_commands and not cmd_word.startswith("-") and "=" not in cmd_word:
                 self.risk_score += 1
-            
+
         def visitcommandsubstitution(self, n, command):
             self.risk_score += 1
 
@@ -440,7 +440,7 @@ async def validate_rendered_output(
     content: str,
     template_name: str = "",
     llm_client: LLMProvider | None = None,
-) -> tuple[str, str]:
+) -> tuple[str, Literal["Low", "Medium", "High"]]:
     """
     Scan rendered template output for forbidden patterns using Regex, AST validation,
     Shellcheck, and an optional AI engine.
@@ -448,7 +448,7 @@ async def validate_rendered_output(
     Raises:
         SafetyViolationError: If any checks fail or the AI flags a malicious script.
     """
-    security_score = "Low"
+    security_score: Literal["Low", "Medium", "High"] = "Low"
 
     # 1. Regex Checks (CPU-bound but fast — stays synchronous)
     for compiled_pattern, description in _COMPILED:
