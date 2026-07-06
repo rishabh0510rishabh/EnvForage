@@ -126,8 +126,8 @@ class ScriptPreview(BaseModel):
         examples=["#!/usr/bin/env bash"],
     )
 
-    size_bytes: int = Field(
-        ...,
+    size_bytes: int | None = Field(
+        default=None,
         description="Size of the generated file in bytes.",
         examples=[512],
     )
