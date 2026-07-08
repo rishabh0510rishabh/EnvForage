@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.3.2] - Unreleased
+
+### Added
+- **CLI:** Progress bars for long-running operations (`diagnose`, `verify`, `troubleshoot`) showing per-detector status and elapsed time via `rich.progress`.
+- **CLI:** Download progress bar in `run_upgrade()` with percentage, byte count, and visual bar during installer downloads.
+- **Frontend:** Wrapped the app in a global `ErrorBoundary` (`layout.tsx`) so unhandled client-side React errors show a graceful fallback UI with a "Try Again" action instead of crashing the app.
+
+### Changed
+- Bumped version number across project files.
+
 ## [2.3.1] - 2026-06-22
 
 ### Fixed

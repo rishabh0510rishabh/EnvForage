@@ -3,13 +3,13 @@
 [Setup]
 AppId={{5DCE63EF-A39B-4DDF-90A0-B6D7D3193C5F}
 AppName=EnvForage
-AppVersion=2.3.1
+AppVersion=2.3.2
 DefaultDirName={autopf}\EnvForage
 DefaultGroupName=EnvForage
 PrivilegesRequired=none
 PrivilegesRequiredOverridesAllowed=dialog
 OutputDir=Output
-OutputBaseFilename=envforage-v2.3.1-setup
+OutputBaseFilename=envforage-v2.3.2-setup
 SetupIconFile=logo.ico
 Compression=lzma2/max
 SolidCompression=yes

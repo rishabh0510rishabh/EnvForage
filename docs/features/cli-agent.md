@@ -199,3 +199,34 @@ JSON on Windows, WSL2, and Ubuntu 22.04.
 - Machine-readable SARIF output format (for CI integration)
 - Quiet mode (`--quiet`) for use in CI pipelines
 - Export as HTML report
+
+---
+
+## Progress Indicators
+
+The CLI displays real-time progress feedback during long-running operations using `rich.progress`.
+
+### Architecture
+
+`ReportBuilder.build()` accepts an optional `progress_callback` parameter. Before each detector runs, the callback is invoked with a status message (e.g., "Detecting GPUs"). The CLI commands (`diagnose`, `verify`, `troubleshoot`) pass a callback that updates a `rich.progress.Progress` spinner.
+
+```text
+┌─────────────────────────────────────────┐
+│  ReportBuilder.build()                  │
+│  ┌──────────┐  ┌──────────┐  ┌───────┐ │
+│  │ detect_os│→│detect_cpu│→│detect_…│ │
+│  └────┬─────┘  └────┬─────┘  └───┬───┘ │
+│       │ callback     │ callback   │     │
+│       ▼              ▼            ▼     │
+│  ┌─────────────────────────────────┐   │
+│  │  rich.progress.Progress         │   │
+│  │  SpinnerColumn + TextColumn     │   │
+│  │  + TimeElapsedColumn            │   │
+│  └─────────────────────────────────┘   │
+└─────────────────────────────────────────┘
+```
+
+### Behavior
+
+- **When active**: Spinner cycles through detector names with elapsed time
+- **When disabled**: `--quiet`, `--format json`, `--format minimal`, or non-TTY output

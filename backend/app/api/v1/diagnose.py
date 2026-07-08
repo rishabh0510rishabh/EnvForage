@@ -12,7 +12,7 @@ from fastapi import APIRouter, Depends
 from app.ai.prompts.system import EXPLAIN_SYSTEM_PROMPT
 from app.ai.providers import get_provider
 from app.ai.providers.base import LLMProviderError
-from app.api.deps import DB
+from app.api.deps import DB, get_current_user
 from app.compatibility.models import OSTarget
 from app.core.exceptions import AIServiceUnavailableError, InternalServerError
 from app.middleware.rate_limit import ai_rate_limit
@@ -30,7 +30,7 @@ from app.worker import run_diagnose_task
 
 logger = logging.getLogger(__name__)
 
-router = APIRouter()
+router = APIRouter(dependencies=[Depends(get_current_user)])
 
 # Maximum number of profiles fetched per page when paginating.
 # Kept intentionally small so each page fetch is cheap; the while-loop below

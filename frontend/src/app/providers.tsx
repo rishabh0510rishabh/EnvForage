@@ -1,7 +1,6 @@
 "use client";
 
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { Moon, Sun } from "lucide-react";
 
 // Create a context to share theme state across components
 const ThemeContext = createContext<{
@@ -16,11 +15,10 @@ export function useTheme() {
 		throw new Error("useTheme must be used within ThemeProvider");
 	}
 	return context;
-}
-
+} 
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-	const [theme, setTheme] = useState<"dark" | "light" | "system">("light");
+	const [theme, setTheme] = useState<"dark" | "light" | "system">("light");   
 	const [mounted, setMounted] = useState(false);
 
 	const applyTheme = (newTheme: "dark" | "light" | "system") => {
@@ -59,10 +57,10 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 	}, []);
 
 	const toggleTheme = () => {
-		const newTheme = theme === "dark" ? "light" : "dark";
-		setTheme(newTheme);
+	const newTheme = theme === "dark" ? "light" : theme === "light" ? "system" : "dark"; 
+		setTheme(newTheme); 
 		localStorage.setItem("theme", newTheme);
-		applyTheme(newTheme);
+		applyTheme(newTheme); 
 	};
 
 	return (
@@ -71,27 +69,6 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 		</ThemeContext.Provider>
 	);
 }
-
-export function ThemeToggle() {
-	const { theme, toggleTheme, mounted } = useTheme();
-
-	// Prevent hydration mismatch by not rendering until mounted
-	if (!mounted) {
-		return null;
-	}
-
-	return (
-		<button
-			onClick={toggleTheme}
-			className="theme-toggle-navbar"
-			title={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
-			aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
-		>
-			{theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
-		</button>
-	);
-}
-
 
 // --- Advanced System Preference Media Listener ---
 export function useSystemThemePreference() {

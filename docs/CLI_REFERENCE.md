@@ -11,6 +11,24 @@ pip install envforage
 - `--version`: Show the version and exit.
 - `--help`: Show the help message and exit.
 
+## Progress Indicators
+
+Long-running CLI commands display a real-time spinner with per-step status and elapsed time:
+
+```text
+Detecting GPUs 0:00:03
+```
+
+The following commands show progress indicators:
+- **`envforage diagnose`** — cycles through each detector (OS, CPU, RAM, GPU, CUDA, ROCm, disk, Python)
+- **`envforage verify`** — shows progress while scanning the environment before verification
+- **`envforage troubleshoot`** — shows progress while building the diagnostic report
+
+Progress display is automatically disabled when:
+- `--quiet` / `-q` flag is used
+- `--format json` or `--format minimal` is used
+- Output is not a terminal (piped or redirected)
+
 ---
 
 ## 1. `envforage diagnose`

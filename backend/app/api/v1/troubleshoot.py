@@ -10,12 +10,12 @@ from fastapi.responses import StreamingResponse
 from app.ai.models import TroubleshootRequest
 from app.ai.providers.base import LLMProviderError
 from app.ai.service import AITroubleshootService
-from app.api.deps import DB
+from app.api.deps import DB, get_current_user
 from app.core.exceptions import AIServiceUnavailableError, InternalServerError
 from app.middleware.rate_limit import ai_rate_limit
 
 logger = logging.getLogger(__name__)
-router = APIRouter()
+router = APIRouter(dependencies=[Depends(get_current_user)])
 
 _service = AITroubleshootService()
 

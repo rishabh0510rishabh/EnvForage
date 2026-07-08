@@ -23,6 +23,10 @@ if "pytest" not in sys.modules:
 
 DEV_SECRET_KEY = "dev-secret-key-change-in-production"
 
+# Minimum SECRET_KEY length enforced outside development. A 256 bit
+# (32 byte) key matches the HS256 output size and resists brute force.
+SECRET_KEY_MIN_LENGTH = 32
+
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
@@ -195,6 +199,17 @@ class Settings(BaseSettings):
                     "to the public repository and must never be used outside local development."
                 )
 
+            # Reject weak custom keys outside development. A short secret keeps
+            # HS256 JWTs brute forceable even when the value differs from the
+            # committed default, so enforce a 32 character minimum.
+            if len(self.secret_key) < SECRET_KEY_MIN_LENGTH:
+                raise ValueError(
+                    f"SECRET_KEY must be at least {SECRET_KEY_MIN_LENGTH} characters when "
+                    f"environment='{self.environment}'. "
+                    "Generate a strong value with: "
+                    'python -c "from secrets import token_urlsafe; print(token_urlsafe(32))"'
+                )
+
             # Production deployments with multiple workers must use Redis
             if self.environment == "production" and not self.redis_url:
                 import logging
@@ -278,13 +293,20 @@ class Settings(BaseSettings):
 
             # Validate ADMIN_API_KEY is configured
             if not self.admin_api_key or self.admin_api_key.strip() == "":
-                # For dummy deployments, just skip this error
-                pass
+                raise ValueError(
+                    f"ADMIN_API_KEY is required when environment='{self.environment}'. "
+                    "The admin API endpoints would otherwise be reachable without "
+                    "authentication. Generate a strong value with: "
+                    'python -c "from secrets import token_urlsafe; print(token_urlsafe(32))"'
+                )
 
             # Validate ADMIN_API_KEY has minimum length (32 characters for security)
-            if len(self.admin_api_key) > 0 and len(self.admin_api_key) < 32:
-                # For dummy deployments, just skip this error
-                pass
+            if len(self.admin_api_key) < 32:
+                raise ValueError(
+                    f"ADMIN_API_KEY must be at least 32 characters when "
+                    f"environment='{self.environment}'. Generate a strong value with: "
+                    'python -c "from secrets import token_urlsafe; print(token_urlsafe(32))"'
+                )
 
         return self
 

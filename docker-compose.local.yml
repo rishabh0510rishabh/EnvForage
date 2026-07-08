@@ -35,7 +35,7 @@ services:
     volumes:
       - redisdata:/data
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: ["CMD-SHELL", "REDISCLI_AUTH=${REDIS_PASSWORD:-devredis123} redis-cli ping"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -56,6 +56,78 @@ services:
         condition: service_healthy
     volumes:
       - pgadmindata:/var/lib/pgadmin
+    networks:
+      - envforage-network
+
+  migrate:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: envforage-migrate-local
+    restart: "no"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-envforage_admin}:${POSTGRES_PASSWORD:-devpassword123}@db:5432/${POSTGRES_DB:-envforage_dev}
+      REDIS_URL: redis://:${REDIS_PASSWORD:-devredis123}@redis:6379/0
+      ENVIRONMENT: development
+      DEBUG: "true"
+      SECRET_KEY: dev-secret-key-change-in-production
+    command: alembic upgrade head
+    networks:
+      - envforage-network
+
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: envforage-api-local
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-envforage_admin}:${POSTGRES_PASSWORD:-devpassword123}@db:5432/${POSTGRES_DB:-envforage_dev}
+      REDIS_URL: redis://:${REDIS_PASSWORD:-devredis123}@redis:6379/0
+      ENVIRONMENT: development
+      DEBUG: "true"
+      SECRET_KEY: dev-secret-key-change-in-production
+      ALLOWED_ORIGINS: http://localhost:3000,http://127.0.0.1:3000
+      ENVFORAGE_LLM_PROVIDER: mock
+    volumes:
+      - ./backend:/app
+    command: >
+      sh -c "
+        python -m app.services.seed_service &&
+        uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+      "
+    networks:
+      - envforage-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        - NEXT_PUBLIC_API_URL=http://localhost:8000/api/v1
+        - BACKEND_API_URL=http://api:8000
+    container_name: envforage-frontend-local
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+    depends_on:
+      - api
     networks:
       - envforage-network
 

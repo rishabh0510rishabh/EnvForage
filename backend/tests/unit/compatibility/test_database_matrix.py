@@ -22,6 +22,19 @@ from app.services.sync_service import (
 
 ADMIN_HEADERS = {"X-Admin-API-Key": "test-admin-key-for-ci"}
 
+def _user_token(email: str = "test@example.com") -> str:
+    from datetime import UTC, datetime, timedelta
+
+    import jwt
+
+    from app.config import get_settings
+
+    settings = get_settings()
+    exp = datetime.now(UTC) + timedelta(hours=1)
+    return jwt.encode({"email": email, "exp": exp}, settings.secret_key, algorithm="HS256")
+
+
+AUTH_HEADERS = {"Authorization": f"Bearer {_user_token()}"}
 
 @pytest.fixture(autouse=True)
 async def auto_clear_cache():
@@ -139,7 +152,7 @@ async def test_admin_matrix_crud_cuda(client, db_session):
     entry_id = resp_create.json()["id"]
 
     # 3. Read - GET compatibility lists
-    resp_list = await client.get("/api/v1/compatibility/cuda")
+    resp_list = await client.get("/api/v1/compatibility/cuda", headers=AUTH_HEADERS)
     assert resp_list.status_code == 200
     assert "99.9" in resp_list.json()["data"]
 
@@ -158,7 +171,7 @@ async def test_admin_matrix_crud_cuda(client, db_session):
     assert resp_delete.status_code == 204
 
     # Verify deleted
-    resp_list_after = await client.get("/api/v1/compatibility/cuda")
+    resp_list_after = await client.get("/api/v1/compatibility/cuda", headers=AUTH_HEADERS)
     assert "99.9" not in resp_list_after.json()["data"]
 
 
@@ -180,7 +193,7 @@ async def test_admin_matrix_crud_rocm(client, db_session):
     entry_id = resp_create.json()["id"]
 
     # 2. Read - GET compatibility
-    resp_list = await client.get("/api/v1/compatibility/rocm")
+    resp_list = await client.get("/api/v1/compatibility/rocm", headers=AUTH_HEADERS)
     assert "99.9.9" in resp_list.json()["data"]
 
     # 3. Update - PUT
@@ -218,7 +231,7 @@ async def test_admin_matrix_crud_python(client, db_session):
     entry_id = resp_create.json()["id"]
 
     # 2. Read - GET compatibility
-    resp_list = await client.get("/api/v1/compatibility/python/testframework")
+    resp_list = await client.get("/api/v1/compatibility/python/testframework", headers=AUTH_HEADERS)
     assert resp_list.status_code == 200
     assert resp_list.json()["data"][0]["version"] == "9.9.9"
 

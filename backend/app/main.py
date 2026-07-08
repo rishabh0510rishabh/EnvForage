@@ -27,6 +27,7 @@ from app.api.v1 import (
     scripts,
     troubleshoot,
     verify,
+    webhooks,
 )
 from app.api.v1 import (
     health as health_v1,
@@ -153,6 +154,7 @@ def create_app() -> FastAPI:
     app.include_router(media_upload.router, prefix="/api/v1", tags=["media"])
     app.include_router(spatial_query.router, prefix="/api/v1", tags=["locations"])
     app.include_router(health_v1.router, prefix="/api/v1", tags=["health"])
+    app.include_router(webhooks.router, prefix="/api/v1", tags=["webhooks"])
 
     # ── Health check ──────────────────────────────────────────
     @app.get("/health", include_in_schema=False)

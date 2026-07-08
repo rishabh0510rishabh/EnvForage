@@ -3,11 +3,22 @@ Tests for GET /api/v1/compatibility/* endpoints.
 Issue #85 — Expose Compatibility Matrices via REST API.
 """
 
+from datetime import UTC, datetime, timedelta
+
+import jwt
 from fastapi.testclient import TestClient
 
+from app.config import get_settings
 from app.main import app
 
-client = TestClient(app)
+
+def _valid_token(email: str = "test@example.com", hours: int = 1) -> str:
+    settings = get_settings()
+    exp = datetime.now(UTC) + timedelta(hours=hours)
+    return jwt.encode({"email": email, "exp": exp}, settings.secret_key, algorithm="HS256")
+
+
+client = TestClient(app, headers={"Authorization": f"Bearer {_valid_token()}"})
 BASE = "/api/v1/compatibility"
 
 

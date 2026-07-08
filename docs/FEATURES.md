@@ -6,6 +6,7 @@ The EnvForage platform is categorized into five distinct feature pillars, repres
 - **Deterministic Hardware Extraction:** Analyzes OS Kernels, CPU instruction sets (x86/ARM), and active Python environments.
 - **GPU Capability Profiling:** Executes and parses low-level sub-processes (`nvidia-smi`, `rocminfo`) to detect VRAM, CUDA levels, and ROCm compatibility.
 - **Anonymous Hardware Fingerprinting:** Generates non-reversible SHA-256 hashes of system setups to track recurring hardware profiles without compromising PII.
+- **Progress Feedback UX:** Real-time spinner with per-detector status and elapsed time during environment scanning, providing visibility into long-running operations.
 
 ## 2. Dynamic Compatibility Engine
 - **Matrix Resolution:** Intersects local hardware telemetry against continuously updated JSON rulesets (Python, CUDA, PyTorch versions).

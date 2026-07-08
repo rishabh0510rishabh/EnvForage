@@ -6,7 +6,7 @@ from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException
 
-from app.api.deps import DB
+from app.api.deps import DB, get_current_user
 from app.middleware.rate_limit import general_rate_limit
 from app.models.diagnostic import VerificationCheck, VerificationResult
 from app.models.profile import EnvironmentProfile
@@ -16,7 +16,7 @@ from app.schemas.verify import (
     VerificationResponse,
 )
 
-router = APIRouter()
+router = APIRouter(dependencies=[Depends(get_current_user)])
 
 # Regex to strip ANSI escape codes (colors, etc.)
 ANSI_ESCAPE = re.compile(r"\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])")

@@ -6,6 +6,7 @@ from typing import Any
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
 
+from app.api.deps import get_current_user
 from app.middleware.rate_limit import repair_rate_limit
 from app.services.repair_service import (
     RepairService,
@@ -14,7 +15,7 @@ from app.services.repair_service import (
 from app.templates.safety import SafetyViolationError
 
 logger = logging.getLogger(__name__)
-router = APIRouter()
+router = APIRouter(dependencies=[Depends(get_current_user)])
 
 # Singleton service
 _repair_service = RepairService()

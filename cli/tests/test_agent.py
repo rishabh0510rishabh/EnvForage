@@ -457,7 +457,7 @@ class TestReportBuilder:
 
         report = ReportBuilder().build()
         assert isinstance(report, DiagnosticReport)
-        assert report.agent_version == "2.3.1"
+        assert report.agent_version == "2.3.2"
         assert report.os.name
         assert report.cpu.cores >= 1
 
@@ -607,6 +607,92 @@ class TestVerifyCommand:
         data = json.loads(result.output)
         assert data["status"] == "FAIL"
         assert "CUDA not available" in data["message"]
+
+    @patch("envforage.cli._check_docker_available")
+    def test_verify_sandbox_docker_unavailable(self, mock_docker_avail: MagicMock) -> None:
+        mock_docker_avail.return_value = False
+        from envforage.cli import cli
+        from click.testing import CliRunner
+
+        runner = CliRunner()
+        result = runner.invoke(cli, ["verify", "--sandbox", "python:3.11-slim"])
+        assert result.exit_code == 1
+        data = json.loads(result.output)
+        assert data["status"] == "FAIL"
+        assert "Docker is not available" in data["message"]
+
+    @patch("envforage.cli._check_docker_available")
+    @patch("pathlib.Path.exists")
+    def test_verify_sandbox_scripts_not_found(self, mock_exists: MagicMock, mock_docker_avail: MagicMock) -> None:
+        mock_docker_avail.return_value = True
+        mock_exists.return_value = False
+        from envforage.cli import cli
+        from click.testing import CliRunner
+
+        runner = CliRunner()
+        result = runner.invoke(cli, ["verify", "--sandbox", "python:3.11-slim"])
+        assert result.exit_code == 1
+        data = json.loads(result.output)
+        assert data["status"] == "FAIL"
+        assert "Required verification scripts not found" in data["message"]
+
+    @patch("envforage.cli._check_docker_available")
+    @patch("envforage.cli._check_docker_gpu_support")
+    @patch("pathlib.Path.exists")
+    @patch("pathlib.Path.glob")
+    @patch("subprocess.Popen")
+    def test_verify_sandbox_pass(self, mock_popen: MagicMock, mock_glob: MagicMock, mock_exists: MagicMock, mock_gpu_support: MagicMock, mock_docker_avail: MagicMock) -> None:
+        mock_docker_avail.return_value = True
+        mock_gpu_support.return_value = True
+        mock_exists.return_value = True
+        mock_glob.return_value = [Path("verify_torch.sh")]
+
+        # Mock Popen
+        mock_proc = MagicMock()
+        mock_proc.returncode = 0
+        mock_proc.stdout = [
+            "[PASS] Python 3.11 (Python 3.11.9)\n",
+            "[PASS] PyTorch import successful\n",
+        ]
+        mock_popen.return_value = mock_proc
+
+        from envforage.cli import cli
+        from click.testing import CliRunner
+
+        runner = CliRunner()
+        result = runner.invoke(cli, ["verify", "--sandbox", "python:3.11-slim", "--profile", "pytorch-cuda", "-q"])
+        assert result.exit_code == 0
+        data = json.loads(result.output)
+        assert data["status"] == "PASS"
+        assert "succeeded in sandbox" in data["message"]
+
+    @patch("envforage.cli._check_docker_available")
+    @patch("pathlib.Path.exists")
+    @patch("pathlib.Path.glob")
+    @patch("subprocess.Popen")
+    def test_verify_sandbox_fail(self, mock_popen: MagicMock, mock_glob: MagicMock, mock_exists: MagicMock, mock_docker_avail: MagicMock) -> None:
+        mock_docker_avail.return_value = True
+        mock_exists.return_value = True
+        mock_glob.return_value = [Path("verify_torch.sh")]
+
+        # Mock Popen
+        mock_proc = MagicMock()
+        mock_proc.returncode = 1
+        mock_proc.stdout = [
+            "[PASS] Python 3.11 (Python 3.11.9)\n",
+            "[FAIL] torch.cuda.is_available() returned False\n",
+        ]
+        mock_popen.return_value = mock_proc
+
+        from envforage.cli import cli
+        from click.testing import CliRunner
+
+        runner = CliRunner()
+        result = runner.invoke(cli, ["verify", "--sandbox", "python:3.11-slim", "--profile", "pytorch-cuda", "-q"])
+        assert result.exit_code == 1
+        data = json.loads(result.output)
+        assert data["status"] == "FAIL"
+        assert "Sandbox execution failed" in data["message"]
 
     @patch("subprocess.run")
     def test_verify_tensorflow_pass(self, mock_run: MagicMock) -> None:

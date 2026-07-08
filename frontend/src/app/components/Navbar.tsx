@@ -6,8 +6,8 @@ import { usePathname } from "next/navigation";
 
 import { Menu, X } from "lucide-react";
 import packageJson from "../../../package.json";
-import { ThemeToggle } from "../providers";
-
+import { ThemeToggle } from "../../components/ThemeToggle";  
+ 
 export default function Navbar() {
 	const pathname = usePathname();
 	const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);

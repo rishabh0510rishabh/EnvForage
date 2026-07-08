@@ -9,6 +9,8 @@ Usage:
 
 from __future__ import annotations
 
+from typing import Callable
+
 from envforage.detectors import (
     detect_cpu,
     detect_cuda,
@@ -39,19 +41,42 @@ class ReportBuilder:
         """
         self._timeout = timeout
 
-    def build(self) -> DiagnosticReport:
+    def build(self, progress_callback: Callable[[str], None] | None = None) -> DiagnosticReport:
         """
         Run all detectors and return a validated DiagnosticReport.
 
         Always succeeds — worst case returns a report with empty/None fields.
+
+        Args:
+            progress_callback: Optional function called with a status message
+                               before each detector runs.
         """
+        def _step(msg: str) -> None:
+            if progress_callback:
+                progress_callback(msg)
+
+        _step("Detecting OS")
         os_info = detect_os()
+
+        _step("Detecting CPU")
         cpu_info = detect_cpu()
+
+        _step("Detecting RAM")
         ram_info = detect_ram()
+
+        _step("Detecting GPUs")
         gpus = detect_gpus(timeout=self._timeout)
+
+        _step("Detecting CUDA")
         cuda_info = detect_cuda(timeout=self._timeout)
+
+        _step("Detecting ROCm")
         rocm_info = detect_rocm()
+
+        _step("Detecting disk")
         disk_info = detect_disk()
+
+        _step("Detecting Python installations")
         installations, active_python = detect_python()
 
         return DiagnosticReport(

@@ -235,9 +235,18 @@ export const apiClient = axios.create({
 apiClient.interceptors.response.use(
     (response) => response,
     async (error: AxiosError) => {
-        const config = error.config as typeof error.config & { retryCount?: number };
-        
-        if (!config || !config.retryCount) {
+        const config = error.config as
+            | (typeof error.config & { retryCount?: number })
+            | undefined;
+
+        // error.config can be undefined (e.g. errors raised before the
+        // request config is attached, or by a request interceptor). Bail
+        // out instead of crashing on `config.retryCount = 0` below.
+        if (!config) {
+            return Promise.reject(error);
+        }
+
+        if (!config.retryCount) {
             config.retryCount = 0;
         }
 

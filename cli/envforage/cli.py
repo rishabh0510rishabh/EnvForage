@@ -21,6 +21,7 @@ import click
 import httpx
 from rich.console import Console
 from rich.panel import Panel
+from rich.progress import Progress, SpinnerColumn, TextColumn, TimeElapsedColumn
 from rich.syntax import Syntax
 from rich.table import Table
 from rich import box
@@ -230,13 +231,25 @@ async def _diagnose(
     if not quiet:
         console.print(
             Panel(
-                f"[bold cyan]EnvForage Diagnostic Agent[/] v{__version__}\n"
-                "[dim]Scanning your environment...[/]",
+                f"[bold cyan]EnvForage Diagnostic Agent[/] v{__version__}",
                 expand=False,
             )
         )
 
-    report = ReportBuilder(timeout=timeout).build()
+    if quiet or output_format in ("json", "minimal"):
+        report = ReportBuilder(timeout=timeout).build()
+    else:
+        with Progress(
+            SpinnerColumn(),
+            TextColumn("[progress.description]{task.description}"),
+            TimeElapsedColumn(),
+            console=console,
+        ) as progress:
+            task = progress.add_task("Scanning environment...", total=None)
+            def _update_progress(msg: str) -> None:
+                progress.update(task, description=msg)
+            report = ReportBuilder(timeout=timeout).build(progress_callback=_update_progress)
+            progress.update(task, description="[green]Scan complete[/]")
 
     if report.os.wsl_version == "WSL2":
         wsl_gpu_ok, wsl_gpu_issues = detect_wsl_gpu_passthrough(timeout=timeout)
@@ -496,6 +509,245 @@ def _print_diagnose_response(result: dict) -> None:
     console.print(f"\n  Report ID: {result.get('report_id', '?')}")
 
 
+def _check_docker_available() -> bool:
+    """Check if Docker is installed and daemon is running."""
+    import shutil
+    import subprocess
+    if not shutil.which("docker"):
+        return False
+    try:
+        res = subprocess.run(["docker", "info"], capture_output=True, text=True, timeout=5)
+        return res.returncode == 0
+    except Exception:
+        return False
+
+
+def _check_docker_gpu_support() -> bool:
+    """Check if Docker can run containers with GPU support."""
+    import subprocess
+    try:
+        res = subprocess.run(
+            ["docker", "run", "--rm", "--gpus", "all", "alpine:latest", "echo", "gpu_ok"],
+            capture_output=True,
+            text=True,
+            timeout=5
+        )
+        return res.returncode == 0
+    except Exception:
+        return False
+
+
+def _print_sandbox_verification_summary(checks: list[dict[str, any]]) -> None:
+    """Print a beautiful human-readable verification matrix for sandbox runs."""
+    table = Table(box=box.ROUNDED, show_header=True, padding=(0, 1))
+    table.add_column("Sandbox Check Matrix", style="bold cyan", width=30)
+    table.add_column("Status", width=12, justify="center")
+    table.add_column("Details")
+
+    for check in checks:
+        status_str = "[bold green]PASS[/]" if check["passed"] else "[bold red]FAIL[/]"
+        detail_str = check["detail"] or ""
+        table.add_row(check["name"], status_str, detail_str)
+
+    console.print("\n[bold]=== Sandbox Verification Report ===[/]")
+    console.print(table)
+
+
+def _run_sandbox_verify(profile: str | None, output: str | None, quiet: bool, sandbox: str) -> None:
+    """Run verification flow inside a containerized sandbox environment."""
+    import os
+    import re
+    import subprocess
+    from pathlib import Path
+
+    if not _check_docker_available():
+        res = {
+            "status": "FAIL",
+            "message": "Docker is not available or not running",
+            "error": "Make sure Docker Desktop or the Docker daemon is running.",
+        }
+        click.echo(json.dumps(res, indent=2))
+        sys.exit(1)
+
+    cwd = os.getcwd()
+    setup_file = "setup.sh"
+    setup_path = Path(cwd) / setup_file
+    setup_exists = setup_path.exists()
+
+    # Determine verification script
+    verify_file = None
+    if profile:
+        profile_mapping = {
+            "pytorch-cuda": "verify_torch.sh",
+            "tf-gpu": "verify_tf.sh",
+            "yolov8": "verify_torch.sh",
+            "stable-diffusion": "verify_diffusers.sh",
+            "opencv-beginner": "verify_opencv.sh",
+        }
+        mapped = profile_mapping.get(profile)
+        if mapped and (Path(cwd) / mapped).exists():
+            verify_file = mapped
+
+    if not verify_file:
+        verify_candidates = [f.name for f in Path(cwd).glob("verify_*.sh")]
+        if (Path(cwd) / "verify.sh").exists():
+            verify_candidates.append("verify.sh")
+
+        if len(verify_candidates) == 1:
+            verify_file = verify_candidates[0]
+        elif len(verify_candidates) > 1:
+            if "verify.sh" in verify_candidates:
+                verify_file = "verify.sh"
+            elif "verify_torch.sh" in verify_candidates:
+                verify_file = "verify_torch.sh"
+            else:
+                verify_file = verify_candidates[0]
+
+    if not setup_exists and not verify_file:
+        res = {
+            "status": "FAIL",
+            "message": "Required verification scripts not found in current directory",
+            "error": "Could not find setup.sh or any verify_*.sh / verify.sh script.",
+        }
+        click.echo(json.dumps(res, indent=2))
+        sys.exit(1)
+
+    # Base docker run command
+    cmd = ["docker", "run", "--rm"]
+
+    # Detect if GPU flag should be added to Docker
+    gpu_requested = False
+    if profile:
+        gpu_requested = any(term in profile.lower() for term in ["cuda", "gpu", "diffusion", "finetune"])
+    if not gpu_requested:
+        gpu_requested = "gpu" in sandbox.lower()
+    if not gpu_requested:
+        try:
+            report = ReportBuilder().build()
+            if report.gpus or report.cuda.version:
+                gpu_requested = True
+        except Exception:
+            pass
+
+    if gpu_requested:
+        if _check_docker_gpu_support():
+            cmd.extend(["--gpus", "all"])
+        elif not quiet:
+            console.print("[yellow]⚠ WARNING: GPU requested, but Docker GPU support is not available. Running container without GPU access.[/]")
+
+    cmd.extend(["-v", f"{cwd}:/workspace", "-w", "/workspace"])
+
+    # Construct the commands to copy and run scripts in native /app dir inside container
+    inner_script = []
+    inner_script.append("mkdir -p /app")
+    inner_script.append('for f in setup.sh verify_*.sh verify.sh requirements.txt pyproject.toml environment.yml; do if [ -f "/workspace/$f" ]; then cp "/workspace/$f" /app/; fi; done')
+    inner_script.append("cd /app")
+
+    if setup_exists:
+        inner_script.append("sed -i 's/\\r$//' ./setup.sh")
+        inner_script.append("chmod +x ./setup.sh")
+        inner_script.append("./setup.sh")
+
+    if verify_file:
+        inner_script.append(f"sed -i 's/\\r$//' ./{verify_file}")
+        inner_script.append(f"chmod +x ./{verify_file}")
+        inner_script.append('if [ -f ".venv/bin/activate" ]; then source .venv/bin/activate; fi')
+        inner_script.append(f"./{verify_file}")
+
+    bash_command = " && ".join(inner_script)
+    cmd.extend([sandbox, "bash", "-c", bash_command])
+
+    if not quiet:
+        console.print(f"[bold cyan]Spinning up Docker sandbox container ({sandbox})...[/]")
+
+    try:
+        proc = subprocess.Popen(
+            cmd,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True,
+            bufsize=1
+        )
+    except Exception as e:
+        res = {
+            "status": "FAIL",
+            "message": "Failed to start Docker container",
+            "error": str(e),
+        }
+        click.echo(json.dumps(res, indent=2))
+        sys.exit(1)
+
+    output_lines = []
+    if proc.stdout:
+        for line in proc.stdout:
+            if not quiet:
+                click.echo(line, nl=False)
+            output_lines.append(line)
+
+    proc.wait()
+    exit_code = proc.returncode
+
+    # Parse verification check outputs
+    ansi_escape = re.compile(r"\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])")
+    checks = []
+
+    for line in output_lines:
+        clean_line = ansi_escape.sub("", line).strip()
+        match = re.match(r"\[(PASS|FAIL|WARN)\]\s+(.*)", clean_line)
+        if match:
+            level = match.group(1)
+            msg = match.group(2)
+            if level == "PASS":
+                checks.append({"name": msg, "passed": True, "detail": None})
+            elif level == "FAIL":
+                checks.append({"name": msg, "passed": False, "detail": None})
+            elif level == "WARN":
+                if checks:
+                    prev = checks[-1]
+                    if prev["detail"]:
+                        prev["detail"] += f" | WARN: {msg}"
+                    else:
+                        prev["detail"] = f"WARN: {msg}"
+                else:
+                    checks.append({"name": msg, "passed": True, "detail": f"WARN: {msg}"})
+
+    if exit_code == 0:
+        any_failed = any(not c["passed"] for c in checks)
+        if any_failed:
+            status = "FAIL"
+            message = "Verification script reported one or more check failures."
+        else:
+            status = "PASS"
+            message = f"Environment setup and verification succeeded in sandbox ({sandbox})."
+    else:
+        status = "FAIL"
+        message = "Sandbox execution failed with non-zero exit code."
+
+    if not quiet and checks:
+        _print_sandbox_verification_summary(checks)
+
+    res = {
+        "status": status,
+        "message": message,
+    }
+    if status == "FAIL" and output_lines:
+        error_lines = [ansi_escape.sub("", l).strip() for l in output_lines[-5:] if l.strip()]
+        res["error"] = " | ".join(error_lines)
+
+    res_json = json.dumps(res, indent=2)
+    if output:
+        Path(output).write_text(res_json, encoding="utf-8")
+        if not quiet:
+            console.print(f"\n[green][+][/] Report saved to [bold]{output}[/]")
+    else:
+        click.echo(res_json)
+
+    if status == "PASS":
+        sys.exit(0)
+    else:
+        sys.exit(1)
+
+
 # ── envforage verify ────────────────────────────────────────────────────────────
 
 
@@ -527,12 +779,18 @@ def _print_diagnose_response(result: dict) -> None:
     default=False,
     help="Output only the verification JSON result.",
 )
+@click.option(
+    "--sandbox",
+    default=None,
+    help="Run verification inside a Docker sandbox image (e.g. --sandbox python:3.11-slim).",
+)
 def verify(
     profile: str | None,
     output: str | None,
     quiet: bool,
     json_output: bool,
-) -> None: 
+    sandbox: str | None,
+) -> None:
     """
     Verify whether the generated ML environment works after setup.
 
@@ -541,7 +799,11 @@ def verify(
     """
     if json_output:
         quiet = True
-    
+
+    if sandbox:
+        _run_sandbox_verify(profile, output, quiet, sandbox)
+        return
+
     if not quiet and not json_output:
         console.print(
             Panel(
@@ -554,7 +816,20 @@ def verify(
     import subprocess
 
     # 1. Determine active Python
-    report = ReportBuilder().build()
+    if quiet or json_output:
+        report = ReportBuilder().build()
+    else:
+        with Progress(
+            SpinnerColumn(),
+            TextColumn("[progress.description]{task.description}"),
+            TimeElapsedColumn(),
+            console=console,
+        ) as progress:
+            task = progress.add_task("Scanning environment...", total=None)
+            def _update_progress(msg: str) -> None:
+                progress.update(task, description=msg)
+            report = ReportBuilder().build(progress_callback=_update_progress)
+            progress.update(task, description="[green]Scan complete[/]")
     active_py = report.active_python
     py_executable = active_py.path if active_py else sys.executable
 
@@ -907,6 +1182,8 @@ def upgrade() -> None:
 
 
 cli.add_command(audit_command)
+from envforge_agent.env_scan.command import env_scan_command
+cli.add_command(env_scan_command)
 
 
 # ── envforage rollback ──────────────────────────────────────────────────────────
@@ -1069,7 +1346,20 @@ async def _troubleshoot(api_url: str, quiet: bool) -> None:
         )
 
     # Build diagnostic report
-    report = ReportBuilder().build()
+    if quiet or output_format in ("json", "minimal"):
+        report = ReportBuilder(timeout=timeout).build()
+    else:
+        with Progress(
+            SpinnerColumn(),
+            TextColumn("[progress.description]{task.description}"),
+            TimeElapsedColumn(),
+            console=console,
+        ) as progress:
+            task = progress.add_task("Building diagnostic report...", total=None)
+            def _update_progress(msg: str) -> None:
+                progress.update(task, description=msg)
+            report = ReportBuilder().build(progress_callback=_update_progress)
+            progress.update(task, description="[green]Report ready[/]")
     url = f"{api_url.rstrip('/')}/api/v1/troubleshoot"
 
     if not quiet:

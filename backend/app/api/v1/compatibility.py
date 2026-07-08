@@ -7,10 +7,10 @@ Dynamically fetches from the database if available, falling back to static const
 from dataclasses import asdict
 from typing import Any
 
-from fastapi import APIRouter, HTTPException, Path
+from fastapi import APIRouter, Depends, HTTPException, Path
 from sqlalchemy import select
 
-from app.api.deps import DB
+from app.api.deps import DB, get_current_user
 from app.compatibility.matrix.cuda import (
     CUDA_MATRIX,
     FRAMEWORK_CUDA_SUPPORT,
@@ -32,7 +32,7 @@ from app.models.matrix import (
     RocmMatrixEntry as RocmMatrixDBModel,
 )
 
-router = APIRouter(prefix="/compatibility", tags=["Compatibility"])
+router = APIRouter(prefix="/compatibility", tags=["Compatibility"], dependencies=[Depends(get_current_user)])
 
 # ── Summary ───────────────────────────────────────────────────────────────────
 

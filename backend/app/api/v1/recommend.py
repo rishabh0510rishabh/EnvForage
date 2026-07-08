@@ -1,12 +1,13 @@
 """Recommend endpoint -- POST /api/v1/recommend."""
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 
+from app.api.deps import get_current_user
 from app.recommendation.engine import recommend_profiles
 from app.schemas.diagnostic import DiagnosticReportSchema
 from app.schemas.recommendation import RecommendationResponse
 
-router = APIRouter()
+router = APIRouter(dependencies=[Depends(get_current_user)])
 
 
 @router.post(

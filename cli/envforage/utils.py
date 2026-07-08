@@ -136,9 +136,27 @@ def run_upgrade(interactive: bool = True) -> None:
 
                 with client.stream("GET", installer_url) as r:
                     r.raise_for_status()
+                    try:
+                        total = int(r.headers.get("content-length", "0"))
+                    except (TypeError, ValueError):
+                        total = 0
+                    downloaded = 0
                     with open(temp_path, "wb") as f:
                         for chunk in r.iter_bytes(chunk_size=8192):
                             f.write(chunk)
+                            downloaded += len(chunk)
+                            if interactive and total > 0:
+                                pct = int(downloaded * 100 / total)
+                                bar_len = 30
+                                filled = int(bar_len * downloaded / total)
+                                bar = "#" * filled + "-" * (bar_len - filled)
+                                click.echo(
+                                    f"\r  [{bar}] {pct}% ({downloaded}/{total} bytes)",
+                                    nl=False,
+                                    err=True,
+                                )
+                    if interactive and total > 0:
+                        click.echo(err=True)
 
                 if interactive:
                     click.echo("Launching installer in the background and exiting...")

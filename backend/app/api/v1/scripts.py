@@ -9,7 +9,7 @@ from fastapi.responses import StreamingResponse
 from sqlalchemy import select
 from sqlalchemy.orm import selectinload
 
-from app.api.deps import DB
+from app.api.deps import DB, get_current_user
 from app.compatibility.errors import (
     IncompatibilityError,
     UnknownVersionError,
@@ -20,7 +20,7 @@ from app.models.profile import EnvironmentProfile
 from app.schemas.script import GenerationRequest, GenerationResponse
 from app.services import script_service
 
-router = APIRouter()
+router = APIRouter(dependencies=[Depends(get_current_user)])
 
 
 def _stream_zip(buffer: io.BytesIO) -> Iterator[bytes]:

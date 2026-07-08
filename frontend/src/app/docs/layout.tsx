@@ -88,6 +88,7 @@ import packageJson from "../../../package.json";
 const latestVersion = `v${packageJson.version}`;
 
 const historicalVersions = [
+	{ id: "v2.3.1", label: "v2.3.1" },
 	{ id: "v2.3.0", label: "v2.3.0" },
 	{ id: "v2.2.0", label: "v2.2.0" },
 	{ id: "v2.1.0", label: "v2.1.0" },
