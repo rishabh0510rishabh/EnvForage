@@ -120,7 +120,7 @@ export default function InstallPage() {
 						Full GUI setup. Adds EnvForage to your PATH and creates convenient right-click context menus.
 					</p>
 					<a
-						href={`https://github.com/rishabh0510rishabh/EnvForage/releases/download/v${packageJson.version}/envforage-v${packageJson.version}-setup.exe`}
+						href={`https://github.com/rishabh0510rishabh/EnvForage/releases/latest/download/envforage-v${packageJson.version}-installer.exe`}
 						target="_blank"
 						rel="noopener noreferrer"
 						className="btn btn-primary"
@@ -160,7 +160,7 @@ export default function InstallPage() {
 						A single portable file. No installation required—just download and run it directly from your command line.
 					</p>
 					<a
-						href={`https://github.com/rishabh0510rishabh/EnvForage/releases/download/v${packageJson.version}/envforage.exe`}
+						href={`https://github.com/rishabh0510rishabh/EnvForage/releases/latest/download/envforage-standalone.exe`}
 						target="_blank"
 						rel="noopener noreferrer"
 						className="btn btn-secondary"
