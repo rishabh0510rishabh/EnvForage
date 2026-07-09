@@ -1326,13 +1326,21 @@ def rollback(quiet: bool) -> None:
     default=False,
     help="Suppress all logging output and print only the analysis results.",
 )
-def troubleshoot(api_url: str | None, quiet: bool) -> None:
+@click.option(
+    "--timeout",
+    "-t",
+    type=int,
+    default=None,
+    help="Timeout in seconds for each detector subprocess call.",
+)
+def troubleshoot(api_url: str | None, quiet: bool, timeout: int | None) -> None:
     config = load_config()
     final_api_url = api_url or config.api_url
-    asyncio.run(_troubleshoot(final_api_url, quiet))
+    final_timeout = timeout if timeout is not None else config.timeout
+    asyncio.run(_troubleshoot(final_api_url, quiet, final_timeout))
 
 
-async def _troubleshoot(api_url: str, quiet: bool) -> None:
+async def _troubleshoot(api_url: str, quiet: bool, timeout: int) -> None:
     """
     Send diagnostic report to AI troubleshoot endpoint
     and stream analysis results live to terminal.
@@ -1346,7 +1354,7 @@ async def _troubleshoot(api_url: str, quiet: bool) -> None:
         )
 
     # Build diagnostic report
-    if quiet or output_format in ("json", "minimal"):
+    if quiet:
         report = ReportBuilder(timeout=timeout).build()
     else:
         with Progress(
@@ -1358,7 +1366,7 @@ async def _troubleshoot(api_url: str, quiet: bool) -> None:
             task = progress.add_task("Building diagnostic report...", total=None)
             def _update_progress(msg: str) -> None:
                 progress.update(task, description=msg)
-            report = ReportBuilder().build(progress_callback=_update_progress)
+            report = ReportBuilder(timeout=timeout).build(progress_callback=_update_progress)
             progress.update(task, description="[green]Report ready[/]")
     url = f"{api_url.rstrip('/')}/api/v1/troubleshoot"
 
