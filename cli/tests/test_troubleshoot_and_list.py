@@ -29,10 +29,8 @@ def _make_report_builder():
     return mock_builder, mock_report
 
 
-def _make_sync_response(status_code=200, json_data=None, connect_error=False):
+def _make_sync_response(status_code=200, json_data=None):
     """Build a mock synchronous httpx response."""
-    if connect_error:
-        return None  # signal to raise ConnectError
     mock_resp = MagicMock()
     mock_resp.status_code = status_code
     mock_resp.raise_for_status = MagicMock()
@@ -52,10 +50,15 @@ class TestTroubleshootCommand:
         mock_response.raise_for_status = MagicMock()
 
         if stream_lines is not None:
-            async def _aiter_lines():
-                for line in (stream_lines or []):
-                    yield line
-            mock_response.aiter_lines = _aiter_lines
+            class _AsyncIter:
+                def __init__(self, lines):
+                    self._lines = lines
+                def __aiter__(self):
+                    return self._async_gen()
+                async def _async_gen(self):
+                    for line in self._lines:
+                        yield line
+            mock_response.aiter_lines = MagicMock(return_value=_AsyncIter(stream_lines or []))
 
         mock_stream_ctx = MagicMock()
         if connect_error:
@@ -90,13 +93,13 @@ class TestTroubleshootCommand:
                 )
 
         assert "Traceback" not in result.output
-        assert "Cannot connect" in result.output or result.exit_code != 0
+        assert "Cannot connect" in result.output
 
-    def test_successful_stream_prints_no_traceback(self):
-        """A successful stream should exit cleanly."""
+    def test_successful_stream_parses_and_exits_cleanly(self):
+        """A successful SSE stream should be parsed and exit with code 0."""
+        valid_response = '{"root_cause": "CUDA not found", "suggested_fixes": [], "confidence": 0.9}'
         stream_lines = [
-            'data: {"chunk": "Checking CUDA..."}',
-            "data: [DONE]",
+            f"data: {valid_response}",
         ]
         mock_builder, _ = _make_report_builder()
         mock_class = self._make_stream_client(stream_lines=stream_lines)
@@ -110,6 +113,7 @@ class TestTroubleshootCommand:
                 )
 
         assert "Traceback" not in result.output
+        assert result.exit_code == 0
 
     def test_quiet_suppresses_panel_output(self):
         """--quiet should suppress the EnvForge AI Troubleshooter panel."""
