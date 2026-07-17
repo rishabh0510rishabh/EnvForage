@@ -124,7 +124,7 @@ jobs:
           Remove-Item $certPath
 
       - name: Compile Windows Installer (Inno Setup)
-        uses: Minionguyjpro/Inno-Setup-Action@v1.2.8
+        uses: Minionguyjpro/Inno-Setup-Action@v1.2.9
         with:
           path: cli/installer/setup.iss
 
