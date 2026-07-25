@@ -145,20 +145,24 @@ def test_verify_subprocess_nonzero_returncode():
     proc.stderr = "Segmentation fault"
 
     with patch("envforage.cli.ReportBuilder", _make_report()):
-        with patch("subprocess.run", return_value=proc):
+        with patch("subprocess.run", return_value=proc) as mock_run:
             runner = CliRunner()
             result = runner.invoke(cli, ["verify", "--quiet"])
 
-    output = json.loads(result.output)
-    assert output["status"] == "FAIL"
     assert result.exit_code != 0
     assert "Traceback" not in result.output
+    output = json.loads(result.output)
+    assert output["status"] == "FAIL"
+    assert "Segmentation fault" in output.get("error", "")
 
 
 def test_verify_timeout_shows_friendly_message():
-    """Subprocess timeout — should show 'timed out' message, no raw exception."""
+    """Subprocess timeout — should show 'timed out' message and use 15s timeout."""
     with patch("envforage.cli.ReportBuilder", _make_report()):
-        with patch("subprocess.run", side_effect=TimeoutExpired(cmd="python", timeout=15)):
+        with patch(
+            "subprocess.run",
+            side_effect=TimeoutExpired(cmd="python", timeout=15),
+        ) as mock_run:
             runner = CliRunner()
             result = runner.invoke(cli, ["verify", "--quiet"])
 
@@ -167,6 +171,13 @@ def test_verify_timeout_shows_friendly_message():
     assert "timed out" in output["message"].lower()
     assert result.exit_code != 0
     assert "Traceback" not in result.output
+    # Verify the 15-second timeout is configured
+    call_kwargs = mock_run.call_args[1] if mock_run.call_args[1] else {}
+    call_args = mock_run.call_args[0] if mock_run.call_args[0] else []
+    timeout_used = call_kwargs.get("timeout") or (
+        mock_run.call_args.kwargs.get("timeout") if hasattr(mock_run.call_args, "kwargs") else None
+    )
+    assert timeout_used == 15
 
 
 def test_verify_malformed_output_no_traceback():
