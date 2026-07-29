@@ -1,22 +1,9 @@
 from typing import Any
 
-from sqlalchemy import func, select
+from sqlalchemy import case, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.diagnostic import DiagnosticReport, VerificationCheck
-
-
-def _gpu_vendor(gpu_name: str | None) -> str:
-    if not gpu_name:
-        return "No GPU"
-    name = gpu_name.lower()
-    if "nvidia" in name:
-        return "NVIDIA"
-    if "amd" in name:
-        return "AMD"
-    if "intel" in name:
-        return "Intel"
-    return "Other"
 
 
 class AnalyticsEngine:
@@ -24,11 +11,17 @@ class AnalyticsEngine:
         self.db = db
 
     async def get_summary(self) -> dict[str, Any]:
-        gpu_rows = await self.db.execute(select(DiagnosticReport.gpu_name))
-        gpu_distribution: dict[str, int] = {}
-        for (gpu_name,) in gpu_rows.all():
-            vendor = _gpu_vendor(gpu_name)
-            gpu_distribution[vendor] = gpu_distribution.get(vendor, 0) + 1
+        vendor_case = case(
+            (DiagnosticReport.gpu_name.is_(None), "No GPU"),
+            (DiagnosticReport.gpu_name.ilike("%nvidia%"), "NVIDIA"),
+            (DiagnosticReport.gpu_name.ilike("%amd%"), "AMD"),
+            (DiagnosticReport.gpu_name.ilike("%intel%"), "Intel"),
+            else_="Other",
+        )
+        gpu_counts = await self.db.execute(
+            select(vendor_case, func.count()).group_by(vendor_case)
+        )
+        gpu_distribution: dict[str, int] = dict(gpu_counts.all())  # type: ignore[arg-type]
 
         python_counts = await self.db.execute(
             select(DiagnosticReport.python_version, func.count())
@@ -65,7 +58,7 @@ class AnalyticsEngine:
             .order_by(func.count().desc())
             .limit(10)
         )
-        common_failures = dict(failure_counts.all())
+        common_failures: dict[str, int] = dict(failure_counts.all())  # type: ignore[arg-type]
 
         return {
             "gpu_distribution": gpu_distribution,

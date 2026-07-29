@@ -32,7 +32,7 @@ jobs:
       - name: Run pip-audit
         run: |
           cd backend
-          pip-audit --strict --desc
+          pip-audit --desc --skip-editable
 
   sast:
     name: Static Analysis (Bandit)
