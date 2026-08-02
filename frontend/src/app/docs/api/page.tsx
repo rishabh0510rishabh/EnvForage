@@ -57,7 +57,8 @@ print(f"Packages: {data['packages']}")`,
     body: JSON.stringify(payload)
   });
   
-  const data = await response.json();
+  if (!response.ok) throw new Error("Request failed");
+const data = await response.json();
   console.log("Resolved Packages:", data.packages);
 };`,
 	};
