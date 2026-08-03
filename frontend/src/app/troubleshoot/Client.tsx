@@ -102,7 +102,7 @@ const SAMPLE_DIAGNOSTIC = {
 
 // ── Confidence bar ─────────────────────────────────────────────────────
 const ConfidenceBar = ({ value }: { value: number }) => {
-	const pct = Math.round(value * 100);
+	const pct = Math.round(value * 100 + Number.EPSILON);
 	const color =
 		pct >= 70 ? "var(--brand-accent)" : pct >= 40 ? "#eab308" : "#ef4444";
 	return (
