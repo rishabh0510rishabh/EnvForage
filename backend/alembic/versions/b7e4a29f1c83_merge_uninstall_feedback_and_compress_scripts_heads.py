@@ -9,7 +9,7 @@ from collections.abc import Sequence
 
 # revision identifiers, used by Alembic.
 revision: str = 'b7e4a29f1c83'
-down_revision: str | None = ('21fe8cc61865', 'compress_generated_scripts')
+down_revision: str | Sequence[str] | None = ('21fe8cc61865', 'compress_generated_scripts')
 branch_labels: str | Sequence[str] | None = None
 depends_on: str | Sequence[str] | None = None
 
