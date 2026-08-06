@@ -17,7 +17,7 @@ RUN groupadd --system envforage && \
 COPY pyproject.toml ./
 
 # Install Python dependencies
-RUN pip install --no-cache-dir --upgrade pip setuptools wheel \
+RUN pip install --no-cache-dir --upgrade pip "setuptools>=83.0.0" wheel \
     && pip install --no-cache-dir .
 
 # Copy application code
