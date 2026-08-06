@@ -38,9 +38,12 @@ function HeatmapTable({
     return <p className="text-sm text-gray-400">No CUDA data available yet.</p>;
   }
 
+  const compareVersions = (a: string, b: string) =>
+    a.localeCompare(b, undefined, { numeric: true, sensitivity: "base" });
+
   const cudaVersions = Array.from(
     new Set(data.map((d) => d.cuda_version)),
-  ).sort();
+  ).sort(compareVersions);
   const gpuNames = Array.from(new Set(data.map((d) => d.gpu_name))).sort();
   const lookup = new Map(
     data.map((d) => [`${d.cuda_version}|${d.gpu_name}`, d.count]),
@@ -147,12 +150,11 @@ function AnalyticsDashboard() {
   const [data, setData] = useState<AnalyticsSummary | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-
   const { accessToken, isLoading: authLoading } = useAuth();
-
   useEffect(() => {
     if (authLoading) return;
-
+    setLoading(true);
+    setError(null);
     let cancelled = false;
 
     api
@@ -160,8 +162,8 @@ function AnalyticsDashboard() {
       .then((result) => {
         if (!cancelled) setData(result);
       })
-      .catch((err: Error) => {
-        if (!cancelled) setError(err.message);
+      .catch((err: unknown) => {
+        if (!cancelled) setError(err instanceof Error ? err.message : "Unknown error");
       })
       .finally(() => {
         if (!cancelled) setLoading(false);

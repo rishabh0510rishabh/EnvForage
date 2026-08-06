@@ -76,14 +76,17 @@ class TestTelemetryDisabled:
         await _send_report(report, "http://localhost:8000", quiet=False)
 
         mock_httpx.assert_not_called()
+        captured = capsys.readouterr()
+        assert "Telemetry disabled" in captured.out
 
 
 class TestTelemetryEnabled:
     """Telemetry unset (default) or explicitly enabled must POST."""
 
     @pytest.mark.asyncio
-    async def test_posts_when_unset(self, report, mock_httpx, monkeypatch):
+    async def test_posts_when_unset(self, report, mock_httpx, monkeypatch, tmp_path):
         monkeypatch.delenv("ENVFORAGE_TELEMETRY", raising=False)
+        monkeypatch.chdir(tmp_path)
 
         await _send_report(report, "http://localhost:8000", quiet=True)
 
