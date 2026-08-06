@@ -94,7 +94,8 @@ def get_os_notes(
         notes.append(TENSORFLOW_WINDOWS_GPU_NOTE)
 
     if target_os == "MACOS":
-        notes.append(MACOS_MPS_NOTE)
+        if "torch" in frameworks:
+            notes.append(MACOS_MPS_NOTE)
         if "tensorflow" in frameworks:
             notes.append(MACOS_TENSORFLOW_NOTE)
 
