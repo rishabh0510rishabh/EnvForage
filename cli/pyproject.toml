@@ -56,7 +56,7 @@ Repository = "https://github.com/rishabh0510rishabh/EnvForage"
 "Bug Tracker" = "https://github.com/rishabh0510rishabh/EnvForage/issues"
 
 [tool.hatch.build.targets.wheel]
-packages = ["envforage"]
+packages = ["envforage", "envforge_agent"]
 
 [tool.hatch.version]
 path = "envforage/__init__.py"
