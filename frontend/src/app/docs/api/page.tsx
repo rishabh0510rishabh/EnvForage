@@ -338,6 +338,7 @@ print(f"Packages: {data['packages']}")`,
 								<code style={{ color: "inherit" }}>{codeSnippets[activeTab]}</code>
 							</pre>
 							<button
+							    aria-label="Copy request code" 
 								onClick={() => copyCode(codeSnippets[activeTab], "request")}
 								style={{
 									position: "absolute",
@@ -381,6 +382,7 @@ print(f"Packages: {data['packages']}")`,
 								<code style={{ color: "inherit" }}>{getSimulatedResponse()}</code>
 							</pre>
 							<button
+							    aria-label="Copy response code" 
 								onClick={() => copyCode(getSimulatedResponse(), "response")}
 								style={{
 									position: "absolute",
@@ -399,7 +401,7 @@ print(f"Packages: {data['packages']}")`,
 						</div>
 					</div>
 				</div>
-			</div>
+			</div> 
 
 			{/* Request Payload Definition */}
 			<h2
