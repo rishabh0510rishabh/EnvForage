@@ -38,6 +38,21 @@ redis:
   enabled: true
   image: redis:7-alpine
   port: 6379
+  # StatefulSet is an alternative to the default Redis Deployment
+  # (templates/redis.yaml) for production-grade deployments needing a
+  # stable network identity and persistent, per-pod storage. Disabled
+  # by default to avoid double-provisioning; enable one or the other.
+  statefulset:
+    enabled: false
+    replicas: 1
+    storage: 1Gi
+    resources:
+      requests:
+        cpu: 100m
+        memory: 128Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
 
 postgres:
   image: postgres:16-alpine
@@ -45,6 +60,20 @@ postgres:
   password: changeme
   db: envforage
   storage: 5Gi
+  # StatefulSet is an alternative to the default Postgres Deployment
+  # (templates/postgres.yaml) for production-grade deployments needing
+  # a stable network identity and per-pod persistent storage. Disabled
+  # by default to avoid double-provisioning; enable one or the other.
+  statefulset:
+    enabled: false
+    replicas: 1
+    resources:
+      requests:
+        cpu: 250m
+        memory: 256Mi
+      limits:
+        cpu: "1"
+        memory: 1Gi
 
 ollama:
   image: ollama/ollama:latest
