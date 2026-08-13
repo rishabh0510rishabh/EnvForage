@@ -161,6 +161,7 @@ class CompatibilityResolver:
                         supported_cuda=db_entry.supported_cuda,
                         supported_rocm=db_entry.supported_rocm,
                         supported_python=db_entry.supported_python,
+                        min_macos_version=getattr(db_entry, "min_macos_version", None),
                     )
                     for db_entry in db_entries
                 ]
@@ -221,6 +222,7 @@ class CompatibilityResolver:
         rocm_version: str | None = None,
         cuda_required: bool = False,
         rocm_required: bool = False,
+        macos_version: str | None = None,
         overrides: dict[str, str] | None = None,
         db: AsyncSession | None = None,
     ) -> ResolvedEnvironment:
@@ -293,6 +295,7 @@ class CompatibilityResolver:
                 python_version=python_version,
                 cuda_version=cuda_version,
                 rocm_version=rocm_version,
+                macos_version=macos_version,
                 override_version=overrides.get(constraint.name),
             )
             resolved_packages.append(resolved)
@@ -306,11 +309,16 @@ class CompatibilityResolver:
             self._warn_on_abi_sensitive_hybrid_environment(resolved_packages)
         )
 
+        mps_supported = target_os == "MACOS" and any(
+            pkg.name == "torch" for pkg in resolved_packages
+        )
+
         return ResolvedEnvironment(
             python_version=python_version,
             cuda_version=cuda_version,
             rocm_version=rocm_version,
             target_os=target_os,
+            mps_supported=mps_supported,
             packages=resolved_packages,
             warnings=warnings,
         )
@@ -361,6 +369,7 @@ class CompatibilityResolver:
         python_version: str,
         cuda_version: str | None,
         rocm_version: str | None,
+        macos_version: str | None,
         override_version: str | None,
     ) -> ResolvedPackage:
         """
@@ -380,6 +389,7 @@ class CompatibilityResolver:
                 python_version=python_version,
                 cuda_version=cuda_version,
                 rocm_version=rocm_version,
+                macos_version=macos_version,
             )
 
         # Use version from profile spec (treat as exact version if no range)
@@ -397,6 +407,7 @@ class CompatibilityResolver:
                 python_version=python_version,
                 cuda_version=cuda_version,
                 rocm_version=rocm_version,
+                macos_version=macos_version,
             )
 
         return await self._resolve_version_range(
@@ -406,6 +417,7 @@ class CompatibilityResolver:
             python_version=python_version,
             cuda_version=cuda_version,
             rocm_version=rocm_version,
+            macos_version=macos_version,
             cuda_variant=constraint.cuda_variant,
         )
 
@@ -417,6 +429,7 @@ class CompatibilityResolver:
         python_version: str,
         cuda_version: str | None,
         rocm_version: str | None,
+        macos_version: str | None,
         cuda_variant: str | None,
     ) -> ResolvedPackage:
         """
@@ -457,6 +470,13 @@ class CompatibilityResolver:
                 if rocm_version not in entry.supported_rocm:
                     continue
 
+            if (
+                macos_version is not None
+                and entry.min_macos_version
+                and Version(macos_version) < Version(entry.min_macos_version)
+            ):
+                continue
+
             if Version(entry.version) in spec:
                 matching_entries.append(entry)
 
@@ -485,6 +505,7 @@ class CompatibilityResolver:
             python_version=python_version,
             cuda_version=cuda_version,
             rocm_version=rocm_version,
+            macos_version=macos_version,
         )
 
     async def _resolve_exact_version(
@@ -495,6 +516,7 @@ class CompatibilityResolver:
         python_version: str,
         cuda_version: str | None,
         rocm_version: str | None,
+        macos_version: str | None = None,
     ) -> ResolvedPackage:
         """Validate an exact version against the matrix and return a ResolvedPackage."""
         entry = await self._get_framework_entry(db, package_name, version)
@@ -552,6 +574,25 @@ class CompatibilityResolver:
                     docs_url="https://pytorch.org/get-started/locally/",
                 )
 
+        # Validate macOS compatibility
+        if (
+            macos_version is not None
+            and entry.min_macos_version
+            and Version(macos_version) < Version(entry.min_macos_version)
+        ):
+            raise IncompatibilityError(
+                component="macos",
+                constraint=(
+                    f"{package_name} {version} requires macOS "
+                    f"{entry.min_macos_version}+"
+                ),
+                detected=f"macOS {macos_version}",
+                suggestion=(
+                    f"Update to macOS {entry.min_macos_version}+, or select a "
+                    f"different {package_name} version."
+                ),
+            )
+
         gpu_variant = self._resolve_gpu_variant(
             package_name, version, cuda_version, rocm_version
         )
@@ -569,6 +610,7 @@ class CompatibilityResolver:
         python_version: str,
         cuda_version: str | None,
         rocm_version: str | None = None,
+        macos_version: str | None = None,
     ) -> ResolvedPackage:
         """Validate and apply a user-specified version override."""
         return await self._resolve_exact_version(
@@ -578,6 +620,7 @@ class CompatibilityResolver:
             python_version=python_version,
             cuda_version=cuda_version,
             rocm_version=rocm_version,
+            macos_version=macos_version,
         )
 
     def _warn_on_abi_sensitive_hybrid_environment(

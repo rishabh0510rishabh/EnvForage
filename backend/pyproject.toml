@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=68.0", "wheel"]
+requires = ["setuptools>=83.0.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -24,6 +24,7 @@ dependencies = [
     "python-multipart>=0.0.9",
     "aiofiles>=23.2.1",
     "redis>=5.0.0",
+    "msgpack>=1.2.1",
     "apscheduler>=3.10.0",
     "PyJWT>=2.8.0",
     "passlib>=1.7.4",

@@ -7,7 +7,7 @@ generated, not package version compatibility.
 
 from typing import Literal
 
-OSTarget = Literal["LINUX", "WSL", "WIN"]
+OSTarget = Literal["LINUX", "WSL", "WIN", "MACOS"]
 
 # ── Script format rules ────────────────────────────────────────────────────────
 
@@ -34,6 +34,13 @@ OS_SCRIPT_FORMATS: dict[str, list[str]] = {
         "docker-compose.yml",
         "devcontainer.json",
     ],
+    "MACOS": [
+        "setup.sh",
+        "requirements.txt",
+        "Dockerfile",
+        "docker-compose.yml",
+        "devcontainer.json",
+    ],
 }
 
 # ── CUDA / GPU rules ──────────────────────────────────────────────────────────
@@ -51,6 +58,20 @@ WSL_GPU_NOTE = (
     "WSL2 GPU access requires NVIDIA drivers installed on the Windows host. "
     "Do NOT install CUDA toolkit inside WSL if drivers are already on Windows. "
     "See: https://docs.nvidia.com/cuda/wsl-user-guide/"
+)
+
+# TensorFlow on Apple Silicon requires the tensorflow-macos + tensorflow-metal
+# plugin packages instead of the standard `pip install tensorflow`.
+MACOS_TENSORFLOW_NOTE = (
+    "TensorFlow on Apple Silicon requires `tensorflow-macos` and the "
+    "`tensorflow-metal` plugin instead of the standard `tensorflow` package. "
+    "See: https://developer.apple.com/metal/tensorflow-plugin/"
+)
+
+# PyTorch MPS backend has a minimum macOS version requirement.
+MACOS_MPS_NOTE = (
+    "PyTorch MPS (Metal) acceleration requires macOS 12.3+. "
+    "See: https://pytorch.org/docs/stable/notes/mps.html"
 )
 
 
@@ -71,6 +92,12 @@ def get_os_notes(
 
     if target_os == "WIN" and "tensorflow" in frameworks and cuda_required:
         notes.append(TENSORFLOW_WINDOWS_GPU_NOTE)
+
+    if target_os == "MACOS":
+        if "torch" in frameworks:
+            notes.append(MACOS_MPS_NOTE)
+        if "tensorflow" in frameworks:
+            notes.append(MACOS_TENSORFLOW_NOTE)
 
     return notes
 

@@ -63,3 +63,25 @@ def downgrade():
         type_=sa.Text(),
         existing_nullable=False,
     )
+    conn = op.get_bind()
+    rows = conn.execute(
+        sa.text("SELECT id, content FROM generated_scripts")
+    ).fetchall()
+    for row in rows:
+        raw = row.content
+        if isinstance(raw, str):
+            raw = raw.encode("utf-8", errors="surrogateescape")
+        decompressed_content = zlib.decompress(raw).decode("utf-8")
+        conn.execute(
+            sa.text(
+                """
+                UPDATE generated_scripts
+                SET content = :content
+                WHERE id = :id
+                """
+            ),
+            {
+                "id": row.id,
+                "content": decompressed_content,
+            },
+        )

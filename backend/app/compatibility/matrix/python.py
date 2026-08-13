@@ -27,6 +27,7 @@ _HARDCODED_MATRIX: dict[str, list[FrameworkVersionEntry]] = {
             max_python="3.11",
             supported_python=["3.8", "3.9", "3.10", "3.11"],
             supported_cuda=["11.7", "11.8"],
+            min_macos_version="12.3",
         ),
         FrameworkVersionEntry(
             framework="torch",
@@ -35,6 +36,7 @@ _HARDCODED_MATRIX: dict[str, list[FrameworkVersionEntry]] = {
             max_python="3.11",
             supported_python=["3.8", "3.9", "3.10", "3.11"],
             supported_cuda=["11.7", "11.8"],
+            min_macos_version="12.3",
         ),
         FrameworkVersionEntry(
             framework="torch",
@@ -43,6 +45,7 @@ _HARDCODED_MATRIX: dict[str, list[FrameworkVersionEntry]] = {
             max_python="3.11",
             supported_python=["3.8", "3.9", "3.10", "3.11"],
             supported_cuda=["11.8", "12.1"],
+            min_macos_version="12.3",
         ),
         FrameworkVersionEntry(
             framework="torch",
@@ -51,6 +54,7 @@ _HARDCODED_MATRIX: dict[str, list[FrameworkVersionEntry]] = {
             max_python="3.11",
             supported_python=["3.8", "3.9", "3.10", "3.11"],
             supported_cuda=["11.8", "12.1"],
+            min_macos_version="12.3",
         ),
         FrameworkVersionEntry(
             framework="torch",
@@ -60,6 +64,7 @@ _HARDCODED_MATRIX: dict[str, list[FrameworkVersionEntry]] = {
             supported_python=["3.8", "3.9", "3.10", "3.11"],
             supported_cuda=["11.8", "12.1"],
             supported_rocm=["5.4.2", "5.6.0"],
+            min_macos_version="12.3",
         ),
         FrameworkVersionEntry(
             framework="torch",
@@ -68,6 +73,7 @@ _HARDCODED_MATRIX: dict[str, list[FrameworkVersionEntry]] = {
             max_python="3.11",
             supported_python=["3.8", "3.9", "3.10", "3.11"],
             supported_cuda=["11.8", "12.1"],
+            min_macos_version="12.3",
         ),
         FrameworkVersionEntry(
             framework="torch",
@@ -76,6 +82,7 @@ _HARDCODED_MATRIX: dict[str, list[FrameworkVersionEntry]] = {
             max_python="3.11",
             supported_python=["3.8", "3.9", "3.10", "3.11"],
             supported_cuda=["11.8", "12.1"],
+            min_macos_version="12.3",
         ),
         FrameworkVersionEntry(
             framework="torch",
@@ -84,6 +91,7 @@ _HARDCODED_MATRIX: dict[str, list[FrameworkVersionEntry]] = {
             max_python="3.11",
             supported_python=["3.8", "3.9", "3.10", "3.11"],
             supported_cuda=["11.8", "12.1"],
+            min_macos_version="12.3",
         ),
         FrameworkVersionEntry(
             framework="torch",
@@ -92,6 +100,7 @@ _HARDCODED_MATRIX: dict[str, list[FrameworkVersionEntry]] = {
             max_python="3.11",
             supported_python=["3.8", "3.9", "3.10", "3.11"],
             supported_cuda=["11.8", "12.1"],
+            min_macos_version="12.3",
         ),
         # torch 2.3.1 — patch release of 2.3.0, same Python/CUDA support.
         # Source: https://pytorch.org/get-started/previous-versions/
@@ -102,6 +111,7 @@ _HARDCODED_MATRIX: dict[str, list[FrameworkVersionEntry]] = {
             max_python="3.11",
             supported_python=["3.8", "3.9", "3.10", "3.11"],
             supported_cuda=["11.8", "12.1"],
+            min_macos_version="12.3",
         ),
         FrameworkVersionEntry(
             framework="torch",
@@ -111,6 +121,7 @@ _HARDCODED_MATRIX: dict[str, list[FrameworkVersionEntry]] = {
             supported_python=["3.8", "3.9", "3.10", "3.11", "3.12"],
             supported_cuda=["11.8", "12.1", "12.4"],
             supported_rocm=["6.0.0", "6.1.0"],
+            min_macos_version="12.3",
         ),
         FrameworkVersionEntry(
             framework="torch",
@@ -120,6 +131,7 @@ _HARDCODED_MATRIX: dict[str, list[FrameworkVersionEntry]] = {
             supported_python=["3.9", "3.10", "3.11", "3.12", "3.13"],
             supported_cuda=["11.8", "12.1", "12.4"],
             supported_rocm=["6.2.0"],
+            min_macos_version="12.3",
         ),
     ],
     "tensorflow": [
@@ -131,6 +143,7 @@ _HARDCODED_MATRIX: dict[str, list[FrameworkVersionEntry]] = {
             max_python="3.11",
             supported_python=["3.8", "3.9", "3.10", "3.11"],
             supported_cuda=["11.8"],
+            min_macos_version="12.0",
         ),
         FrameworkVersionEntry(
             framework="tensorflow",
@@ -139,6 +152,7 @@ _HARDCODED_MATRIX: dict[str, list[FrameworkVersionEntry]] = {
             max_python="3.11",
             supported_python=["3.9", "3.10", "3.11"],
             supported_cuda=["11.8"],
+            min_macos_version="12.0",
         ),
         FrameworkVersionEntry(
             framework="tensorflow",
@@ -147,6 +161,7 @@ _HARDCODED_MATRIX: dict[str, list[FrameworkVersionEntry]] = {
             max_python="3.11",
             supported_python=["3.9", "3.10", "3.11"],
             supported_cuda=["12.1"],
+            min_macos_version="12.0",
         ),
         FrameworkVersionEntry(
             framework="tensorflow",
@@ -155,6 +170,7 @@ _HARDCODED_MATRIX: dict[str, list[FrameworkVersionEntry]] = {
             max_python="3.13",
             supported_python=["3.9", "3.10", "3.11", "3.12", "3.13"],
             supported_cuda=["12.1"],
+            min_macos_version="12.0",
         ),
         # TF 2.16+ added with Python 3.13 support
     ],
@@ -166,6 +182,7 @@ _HARDCODED_MATRIX: dict[str, list[FrameworkVersionEntry]] = {
             max_python="3.11",
             supported_python=["3.8", "3.9", "3.10", "3.11"],
             supported_cuda=["11.8", "12.1"],
+            min_macos_version="12.3",
         ),
         FrameworkVersionEntry(
             framework="ultralytics",
@@ -174,6 +191,7 @@ _HARDCODED_MATRIX: dict[str, list[FrameworkVersionEntry]] = {
             max_python="3.11",
             supported_python=["3.8", "3.9", "3.10", "3.11"],
             supported_cuda=["11.8", "12.1"],
+            min_macos_version="12.3",
         ),
         FrameworkVersionEntry(
             framework="ultralytics",
@@ -182,6 +200,7 @@ _HARDCODED_MATRIX: dict[str, list[FrameworkVersionEntry]] = {
             max_python="3.12",
             supported_python=["3.8", "3.9", "3.10", "3.11", "3.12"],
             supported_cuda=["11.8", "12.1", "12.4"],
+            min_macos_version="12.3",
         ),
         FrameworkVersionEntry(
             framework="ultralytics",
@@ -190,6 +209,7 @@ _HARDCODED_MATRIX: dict[str, list[FrameworkVersionEntry]] = {
             max_python="3.13",
             supported_python=["3.9", "3.10", "3.11", "3.12", "3.13"],
             supported_cuda=["11.8", "12.1", "12.4"],
+            min_macos_version="12.3",
         ),
     ],
     "diffusers": [
@@ -203,6 +223,7 @@ _HARDCODED_MATRIX: dict[str, list[FrameworkVersionEntry]] = {
             max_python="3.11",
             supported_python=["3.8", "3.9", "3.10", "3.11"],
             supported_cuda=["11.7", "11.8", "12.1"],
+            min_macos_version="12.3",
         ),
         FrameworkVersionEntry(
             framework="diffusers",
@@ -211,6 +232,7 @@ _HARDCODED_MATRIX: dict[str, list[FrameworkVersionEntry]] = {
             max_python="3.11",
             supported_python=["3.8", "3.9", "3.10", "3.11"],
             supported_cuda=["11.8", "12.1"],
+            min_macos_version="12.3",
         ),
         FrameworkVersionEntry(
             framework="diffusers",
@@ -219,6 +241,7 @@ _HARDCODED_MATRIX: dict[str, list[FrameworkVersionEntry]] = {
             max_python="3.12",
             supported_python=["3.8", "3.9", "3.10", "3.11", "3.12"],
             supported_cuda=["11.8", "12.1"],
+            min_macos_version="12.3",
         ),
         FrameworkVersionEntry(
             framework="diffusers",
@@ -227,6 +250,7 @@ _HARDCODED_MATRIX: dict[str, list[FrameworkVersionEntry]] = {
             max_python="3.12",
             supported_python=["3.8", "3.9", "3.10", "3.11", "3.12"],
             supported_cuda=["11.8", "12.1"],
+            min_macos_version="12.3",
         ),
         FrameworkVersionEntry(
             framework="diffusers",
@@ -235,6 +259,7 @@ _HARDCODED_MATRIX: dict[str, list[FrameworkVersionEntry]] = {
             max_python="3.12",
             supported_python=["3.8", "3.9", "3.10", "3.11", "3.12"],
             supported_cuda=["11.8", "12.1"],
+            min_macos_version="12.3",
         ),
         FrameworkVersionEntry(
             framework="diffusers",
@@ -243,6 +268,7 @@ _HARDCODED_MATRIX: dict[str, list[FrameworkVersionEntry]] = {
             max_python="3.12",
             supported_python=["3.8", "3.9", "3.10", "3.11", "3.12"],
             supported_cuda=["11.8", "12.1"],
+            min_macos_version="12.3",
         ),
     ],
 }

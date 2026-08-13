@@ -6,7 +6,7 @@ Pure dataclasses — no I/O, no database, no side effects.
 from dataclasses import dataclass, field
 from typing import Any, Literal
 
-OSTarget = Literal["LINUX", "WSL", "WIN"]
+OSTarget = Literal["LINUX", "WSL", "WIN", "MACOS"]
 
 
 @dataclass(frozen=True)
@@ -38,6 +38,7 @@ class ResolvedEnvironment:
     cuda_version: str | None  # e.g. "12.1", None for CPU
     target_os: OSTarget
     rocm_version: str | None = None  # e.g. "5.6", None for CPU/CUDA
+    mps_supported: bool = False  # True if Apple Silicon/Metal backend applies
     packages: list[ResolvedPackage] = field(default_factory=list)
     warnings: list[str] = field(default_factory=list)
 
@@ -47,6 +48,7 @@ class ResolvedEnvironment:
             "cuda_version": self.cuda_version,
             "rocm_version": self.rocm_version,
             "target_os": self.target_os,
+            "mps_supported": self.mps_supported,
             "packages": [
                 {
                     "name": p.name,
@@ -102,3 +104,4 @@ class FrameworkVersionEntry:
     supported_cuda: list[str] = field(default_factory=list)
     supported_rocm: list[str] = field(default_factory=list)
     supported_python: list[str] = field(default_factory=list)
+    min_macos_version: str | None = None  # e.g. "12.3" for MPS support, None if no MPS
