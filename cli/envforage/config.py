@@ -10,12 +10,21 @@ class CliSettings(BaseSettings):
     api_url: str = Field(default="http://localhost:8000", description="EnvForage backend API URL")
     timeout: int = Field(default=30, description="HTTP request timeout in seconds")
     auto_update: bool = Field(default=False, description="Enable automatic prompts/checks for updates")
+    telemetry: str = Field(
+        default="on",
+        validation_alias="ENVFORAGE_TELEMETRY",
+        description="Set to 'off' to disable sending diagnostic reports to the API.",
+    )
 
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",
         extra="ignore",
     )
+
+    @property
+    def telemetry_enabled(self) -> bool:
+        return self.telemetry.strip().lower() != "off"
 
 
 def load_config() -> CliSettings:

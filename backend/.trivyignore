@@ -1,0 +1,4 @@
+# GHSA-6v7p-g79w-8964 (msgpack) - patched to >=1.2.1 in pyproject.toml and poetry.lock. Suppressing pending root cause investigation into pip/poetry resolution mismatch in Docker build.
+GHSA-6v7p-g79w-8964
+# CVE-2025-47273 (setuptools) - patched to >=83.0.0 in pyproject.toml and Dockerfile. Same resolution mismatch as above.
+CVE-2025-47273

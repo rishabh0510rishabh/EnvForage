@@ -17,6 +17,7 @@ from sqlalchemy import text
 
 from app.api.routers import media_upload, spatial_query
 from app.api.v1 import (
+    analytics,
     authentication,
     compatibility,
     diagnose,
@@ -143,6 +144,7 @@ def create_app() -> FastAPI:
     app.include_router(profiles.router, prefix="/api/v1", tags=["profiles"])
     app.include_router(scripts.router, prefix="/api/v1", tags=["scripts"])
     app.include_router(diagnose.router, prefix="/api/v1", tags=["diagnose"])
+    app.include_router(analytics.router, prefix="/api/v1", tags=["analytics"])
     app.include_router(feedback.router, prefix="/api/v1", tags=["feedback"])
     app.include_router(troubleshoot.router, prefix="/api/v1", tags=["ai"])
     app.include_router(repair.router, prefix="/api/v1", tags=["ai"])

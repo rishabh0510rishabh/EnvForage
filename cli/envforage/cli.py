@@ -442,6 +442,13 @@ def _print_recommendations(report: DiagnosticReport) -> None:
 
 async def _send_report(report: DiagnosticReport, api_url: str, quiet: bool) -> None:
     """POST the DiagnosticReport to the EnvForage API with retry logic."""
+    config = load_config()
+    if not config.telemetry_enabled:
+        if not quiet:
+            console.print(
+                "\n[yellow][!][/] Telemetry disabled (ENVFORAGE_TELEMETRY=off). Report not sent."
+            )
+        return
     url = f"{api_url.rstrip('/')}/api/v1/diagnose"
     if not quiet:
         console.print(f"\n[bold]Sending report to[/] {url} ...")

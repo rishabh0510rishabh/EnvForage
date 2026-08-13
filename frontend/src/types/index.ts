@@ -193,3 +193,18 @@ export interface PaginatedResponse<T> extends ApiResponse<T[]> {
         next_cursor?: string;
     };
 }
+
+// --- Analytics Dashboard Types ---
+export interface CudaHeatmapEntry {
+	cuda_version: string;
+	gpu_name: string;
+	count: number;
+}
+
+export interface AnalyticsSummary {
+	gpu_distribution: Record<string, number>;
+	python_version_histogram: Record<string, number>;
+	cuda_version_heatmap: CudaHeatmapEntry[];
+	os_distribution: Record<string, number>;
+	common_failures: Record<string, number>;
+}
