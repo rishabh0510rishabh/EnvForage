@@ -17,7 +17,7 @@ RUN groupadd --system envforage && \
 COPY pyproject.toml ./
 
 # Install Python dependencies
-RUN pip install --no-cache-dir --upgrade --ignore-installed pip "setuptools>=83.0.0" "msgpack>=1.2.1" wheel \
+RUN pip install --no-cache-dir --upgrade --ignore-installed pip "setuptools>=83.0.0" "msgpack>=1.2.1" "wheel>=0.46.2" "jaraco.context>=6.1.0" \
     && pip install --no-cache-dir .
 
 # Copy application code
