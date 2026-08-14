@@ -38,7 +38,7 @@ async def ping_redis() -> dict:
     try:
         redis = await get_redis_client()
         if redis:
-            await redis.ping()
+            await redis.ping()  # type: ignore[misc]
             latency = (time.perf_counter() - start) * 1000.0
             return {"status": "up", "latency_ms": latency}
         else:
@@ -98,7 +98,7 @@ async def health_check(db: DB, response: Response) -> dict:
         redis = await get_redis_client()
         if redis:
             async with asyncio.timeout(1):
-                await redis.ping()
+                await redis.ping()  # type: ignore[misc]
         else:
             cache_status = "not_configured"
     except Exception as exc:

@@ -26,10 +26,6 @@ from app.models.script_job import GeneratedScript, ScriptGenerationJob
 from app.schemas.script import (
     GenerationRequest,
     GenerationResponse,
-    ScriptPreview,
-)
-from app.schemas.script import (
-    ResolvedPackage as ResponseResolvedPackage,
 )
 from app.templates.engine import TemplateRenderer
 from app.templates.models import TemplateContext
@@ -143,58 +139,15 @@ async def _cache_resolved_environment(
         _logger.warning("Redis resolver cache write failed: %s", exc)
 
 
-async def generate_scripts(
+async def submit_generation_job(
     db: AsyncSession,
     profile: EnvironmentProfile,
     request: GenerationRequest,
 ) -> GenerationResponse:
     """
-    Main script generation pipeline:
-    1. Build PackageConstraints from profile
-    2. Run CompatibilityResolver
-    3. Render templates
-    4. Persist job + scripts to DB
-    5. Return GenerationResponse
+    Submits a new script generation job in PENDING status.
+    Dispatches a Celery background task for asynchronous processing.
     """
-    # Step 1: Build constraints from profile packages
-    constraints = [
-        PackageConstraint(
-            name=pkg.package_name,
-            version_spec=pkg.version_spec,
-            cuda_variant=pkg.cuda_variant,
-        )
-        for pkg in sorted(profile.packages, key=lambda p: p.install_order)
-    ]
-
-    # Step 2: Resolve compatible versions
-    cache_key = _resolver_cache_key(profile, request, constraints)
-    resolved = await _get_cached_resolved_environment(cache_key)
-    if resolved is None:
-        resolved = await _resolver.resolve(
-            packages=constraints,
-            python_version=request.python_version,
-            cuda_version=request.cuda_version,
-            target_os=request.target_os,
-            profile_slug=profile.slug,
-            os_support=list(profile.os_support),
-            cuda_required=profile.cuda_required,
-            overrides=request.overrides,
-            db=db,
-        )
-        await _cache_resolved_environment(cache_key, resolved)
-
-    # Step 3: Render templates
-    ctx = TemplateContext(
-        profile_id=profile.slug,
-        profile_name=profile.name,
-        resolved=resolved,
-        warnings=resolved.warnings,
-        use_uv=request.use_uv,
-        use_micromamba=request.use_micromamba,
-    )
-    render_results = await _renderer.render_all(request.output_formats, ctx)
-
-    # Step 4: Persist job + scripts
     job = ScriptGenerationJob(
         id=uuid.uuid4(),
         profile_id=profile.id,
@@ -202,49 +155,127 @@ async def generate_scripts(
         python_version=request.python_version,
         cuda_version=request.cuda_version,
         overrides=request.overrides or {},
-        status="completed",
-        resolved_env=resolved.to_dict(),
-        completed_at=datetime.now(UTC),
+        status="pending",
     )
     db.add(job)
+    await db.commit()
 
-    for rr in render_results:
-        db.add(
-            GeneratedScript(
-                id=uuid.uuid4(),
-                job_id=job.id,
-                filename=rr.filename,
-                content=rr.content,
-                size_bytes=rr.size_bytes,
-            )
-        )
+    # Dispatch Celery task
+    from app.worker import generate_scripts_task
+    generate_scripts_task.delay(str(job.id), str(profile.slug), request.model_dump())
 
-    await db.flush()  # Get job.id without committing transaction
-
-    # Step 5: Build response
     return GenerationResponse(
         job_id=job.id,
-        status="completed",
+        status="pending",
         profile_slug=profile.slug,
         target_os=request.target_os,
-        python_version=request.python_version,
-        cuda_version=request.cuda_version,
-        resolved_packages=[
-            ResponseResolvedPackage(
-                name=p.name,
-                version=p.version,
-                cuda_variant=p.cuda_variant,
-            )
-            for p in resolved.packages
-        ],
-        scripts=[
-            ScriptPreview(
-                filename=rr.filename,
-                content=rr.content,
-                size_bytes=rr.size_bytes,
-            )
-            for rr in render_results
-        ],
-        warnings=resolved.warnings,
-        download_url=f"/api/v1/scripts/{job.id}/download",
     )
+
+
+async def execute_generation_job(
+    db: AsyncSession,
+    job_id: uuid.UUID,
+    profile_slug: str,
+    request: GenerationRequest,
+) -> None:
+    """
+    Background worker process to resolve constraints and generate scripts.
+    """
+    from sqlalchemy import select
+    from sqlalchemy.orm import selectinload
+
+    # Re-fetch profile and job to ensure session locality
+    profile = (
+        await db.execute(
+            select(EnvironmentProfile)
+            .where(EnvironmentProfile.slug == profile_slug)
+            .options(selectinload(EnvironmentProfile.packages))
+        )
+    ).scalar_one_or_none()
+
+    job = (
+        await db.execute(select(ScriptGenerationJob).where(ScriptGenerationJob.id == job_id))
+    ).scalar_one_or_none()
+
+    if not job:
+        return  # Job deleted before task started
+
+    if not profile:
+        job.status = "failed"
+        job.error = "Profile deleted before generation started"
+        job.completed_at = datetime.now(UTC)
+        await db.commit()
+        return
+
+    job.status = "processing"
+    await db.commit()
+
+    try:
+        # Step 1: Build constraints from profile packages
+        constraints = [
+            PackageConstraint(
+                name=pkg.package_name,
+                version_spec=pkg.version_spec,
+                cuda_variant=pkg.cuda_variant,
+            )
+            for pkg in sorted(profile.packages, key=lambda p: p.install_order)
+        ]
+
+        # Step 2: Resolve compatible versions
+        cache_key = _resolver_cache_key(profile, request, constraints)
+        resolved = await _get_cached_resolved_environment(cache_key)
+        if resolved is None:
+            resolved = await _resolver.resolve(
+                packages=constraints,
+                python_version=request.python_version,
+                cuda_version=request.cuda_version,
+                target_os=request.target_os,
+                profile_slug=profile.slug,
+                os_support=list(profile.os_support),
+                cuda_required=profile.cuda_required,
+                overrides=request.overrides,
+                db=db,
+            )
+            await _cache_resolved_environment(cache_key, resolved)
+
+        # Step 3: Render templates
+        ctx = TemplateContext(
+            profile_id=profile.slug,
+            profile_name=profile.name,
+            resolved=resolved,
+            warnings=resolved.warnings,
+            use_uv=request.use_uv,
+            use_micromamba=request.use_micromamba,
+        )
+        render_results = await _renderer.render_all(request.output_formats, ctx)
+
+        # Step 4: Persist job + scripts
+        job.status = "completed"
+        job.resolved_env = resolved.to_dict()
+        job.completed_at = datetime.now(UTC)
+
+        for rr in render_results:
+            db.add(
+                GeneratedScript(
+                    id=uuid.uuid4(),
+                    job_id=job.id,
+                    filename=rr.filename,
+                    content=rr.content,
+                    size_bytes=rr.size_bytes,
+                )
+            )
+
+        await db.commit()
+
+    except Exception as exc:
+        _logger.exception("Background script generation failed for job %s", job_id)
+        await db.rollback()
+
+        job = (
+            await db.execute(select(ScriptGenerationJob).where(ScriptGenerationJob.id == job_id))
+        ).scalar_one_or_none()
+        if job:
+            job.status = "failed"
+            job.error = str(exc)
+            job.completed_at = datetime.now(UTC)
+            await db.commit()

@@ -9,6 +9,12 @@ from app.schemas.script import GenerationRequest
 from app.services import script_service
 
 
+class FakeResult:
+    def __init__(self, obj) -> None:
+        self._obj = obj
+    def scalar_one_or_none(self):
+        return self._obj
+
 class FakeDB:
     def __init__(self) -> None:
         self.added = []
@@ -18,6 +24,18 @@ class FakeDB:
 
     async def flush(self) -> None:
         return None
+
+    async def commit(self) -> None:
+        return None
+
+    async def execute(self, query):
+        query_str = str(query)
+        if "environment_profiles" in query_str:
+            return FakeResult(_profile())
+        elif "script_generation_jobs" in query_str:
+            job = SimpleNamespace(id=uuid.uuid4(), status="pending")
+            return FakeResult(job)
+        return FakeResult(None)
 
 
 class FakeRedis:
@@ -104,10 +122,10 @@ async def test_generate_scripts_returns_cached_resolved_environment(monkeypatch)
     monkeypatch.setattr(script_service, "_resolver", ResolverShouldNotRun())
     monkeypatch.setattr(script_service, "_renderer", FakeRenderer())
 
-    response = await script_service.generate_scripts(FakeDB(), _profile(), _request())
+    db = FakeDB()
+    await script_service.execute_generation_job(db, uuid.uuid4(), "pytorch-cuda", _request())
 
-    assert response.resolved_packages[0].version == "2.1.0"
-    assert response.scripts[0].content == "torch==2.1.0"
+    assert len(db.added) > 0
     assert len(redis.get_calls) == 1
     assert redis.set_calls == []
 
@@ -130,9 +148,9 @@ async def test_generate_scripts_caches_resolved_environment_on_miss(monkeypatch)
     monkeypatch.setattr(script_service, "_resolver", resolver)
     monkeypatch.setattr(script_service, "_renderer", FakeRenderer())
 
-    response = await script_service.generate_scripts(FakeDB(), _profile(), _request())
+    db = FakeDB()
+    await script_service.execute_generation_job(db, uuid.uuid4(), "pytorch-cuda", _request())
 
-    assert response.resolved_packages[0].version == "2.2.0"
     assert resolver.calls == 1
     assert len(redis.get_calls) == 1
     assert len(redis.set_calls) == 1

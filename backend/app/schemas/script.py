@@ -126,8 +126,8 @@ class ScriptPreview(BaseModel):
         examples=["#!/usr/bin/env bash"],
     )
 
-    size_bytes: int = Field(
-        ...,
+    size_bytes: int | None = Field(
+        default=None,
         description="Size of the generated file in bytes.",
         examples=[512],
     )
@@ -142,7 +142,7 @@ class GenerationResponse(BaseModel):
         examples=["550e8400-e29b-41d4-a716-446655440000"],
     )
 
-    status: Literal["completed", "failed"] = Field(
+    status: Literal["pending", "processing", "completed", "failed"] = Field(
         ...,
         description="Generation job status.",
         examples=["completed"],
@@ -160,25 +160,25 @@ class GenerationResponse(BaseModel):
         examples=["LINUX"],
     )
 
-    python_version: str = Field(
-        ...,
+    python_version: str | None = Field(
+        default=None,
         description="Resolved Python version.",
         examples=["3.11"],
     )
 
     cuda_version: str | None = Field(
-        None,
+        default=None,
         description="Resolved CUDA version.",
         examples=["12.1"],
     )
 
-    resolved_packages: list[ResolvedPackage] = Field(
-        ...,
+    resolved_packages: list[ResolvedPackage] | None = Field(
+        default=None,
         description="Packages resolved during compatibility validation.",
     )
 
-    scripts: list[ScriptPreview] = Field(
-        ...,
+    scripts: list[ScriptPreview] | None = Field(
+        default=None,
         description="Generated script previews.",
     )
 
@@ -188,10 +188,16 @@ class GenerationResponse(BaseModel):
         examples=[["CUDA driver version is close to minimum supported version"]],
     )
 
-    download_url: str = Field(
-        ...,
+    download_url: str | None = Field(
+        default=None,
         description="URL used to download the generated script bundle.",
         examples=["/api/v1/scripts/550e8400/download"],
+    )
+
+    error_message: str | None = Field(
+        default=None,
+        description="Sanitized failure reason for failed jobs.",
+        examples=["Profile not compatible with target OS"],
     )
 
 

@@ -200,3 +200,49 @@ def run_diagnose_task(
     )
 
     return response.model_dump()
+
+
+@celery_app.task(name="generate_scripts_task")  # type: ignore[untyped-decorator]
+def generate_scripts_task(job_id: str, profile_slug: str, request_dict: dict[str, Any]) -> dict[str, Any]:
+    """
+    Background worker process to resolve constraints and generate scripts.
+    """
+    import asyncio
+    import uuid
+
+    from app.database import AsyncSessionLocal
+    from app.schemas.script import GenerationRequest
+    from app.services.script_service import execute_generation_job
+
+    async def _execute() -> None:
+        async with AsyncSessionLocal() as db:
+            try:
+                request = GenerationRequest(**request_dict)
+                await execute_generation_job(db, uuid.UUID(job_id), profile_slug, request)
+            except Exception as exc:
+                import logging
+                from datetime import UTC, datetime
+
+                from sqlalchemy import select
+
+                from app.models.script_job import ScriptGenerationJob
+
+                logger = logging.getLogger(__name__)
+                logger.exception("Outer task failure for job %s", job_id)
+
+                try:
+                    await db.rollback()
+                    job = (
+                        await db.execute(select(ScriptGenerationJob).where(ScriptGenerationJob.id == uuid.UUID(job_id)))
+                    ).scalar_one_or_none()
+                    if job:
+                        job.status = "failed"
+                        job.error = f"Task dispatch failure: {exc}"
+                        job.completed_at = datetime.now(UTC)
+                        await db.commit()
+                except Exception as inner_exc:
+                    logger.error("Failed to persist task dispatch failure: %s", inner_exc)
+                    raise
+
+    asyncio.run(_execute())
+    return {"status": "processing_completed"}
