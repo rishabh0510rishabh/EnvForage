@@ -80,10 +80,11 @@ class GeneratedScript(Base):
     )
     filename: Mapped[str] = mapped_column(String(128), nullable=False)
     content: Mapped[str] = mapped_column(
-    CompressedText,
-    nullable=False,
-)
+        CompressedText,
+        nullable=False,
+    )
     size_bytes: Mapped[int | None] = mapped_column()
+    security_score: Mapped[str] = mapped_column(String(16), nullable=False, server_default="Low")
 
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False

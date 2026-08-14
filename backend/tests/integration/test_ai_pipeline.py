@@ -98,7 +98,7 @@ class TestEndToEndRepairPipeline:
         result = await repair_service.render_repair(template_id, params)
         # If we got here, the safety filter already passed (it's called inside render_repair)
         # But let's double-check by running it again explicitly
-        validated = await validate_rendered_output(
+        validated, _ = await validate_rendered_output(
             result["content"], template_name=template_id
         )
         assert validated == result["content"]
@@ -168,7 +168,7 @@ class TestSafetyFilterIntegration:
 
     async def test_allows_safe_content(self):
         safe = "#!/bin/bash\nnvcc --version\npython --version\necho 'All good'"
-        result = await validate_rendered_output(safe, template_name="test")
+        result, _ = await validate_rendered_output(safe, template_name="test")
         assert result == safe
 
     async def test_safety_violation_has_details(self):

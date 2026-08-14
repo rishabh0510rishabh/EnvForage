@@ -132,6 +132,12 @@ class ScriptPreview(BaseModel):
         examples=[512],
     )
 
+    security_score: Literal["Low", "Medium", "High"] = Field(
+        ...,
+        description="Assessed risk level based on script content analysis.",
+        examples=["Low"],
+    )
+
 
 class GenerationResponse(BaseModel):
     """Response for POST /scripts/generate."""

@@ -11,7 +11,7 @@ import json
 import logging
 import os
 import re
-from typing import Any
+from typing import Any, Literal
 
 import bashlex
 from pydantic import BaseModel
@@ -100,15 +100,15 @@ class SafetyViolationError(Exception):
         )
 
 
-def _validate_bash_ast(content: str, template_name: str = "") -> None:
-    """Parse and validate shell scripts using bashlex AST parsing."""
+def _validate_bash_ast(content: str, template_name: str = "") -> Literal["Low", "Medium", "High"]:
+    """Parse and validate shell scripts using bashlex AST parsing. Returns risk score (Low, Medium, High)."""
     try:
         nodes = bashlex.parse(content)
     except Exception as e:
         logger.warning(
             f"Bash AST parsing skipped for {template_name} due to parser error/limitation: {str(e)}"
         )
-        return
+        return "Low"
 
     violations = []
 
@@ -319,6 +319,60 @@ def _validate_bash_ast(content: str, template_name: str = "") -> None:
             context=f"Template: {template_name}",
         )
 
+    # --- AST Analysis for Security Score ---
+    safe_commands = {
+        "echo", "cd", "mkdir", "rm", "cp", "mv", "apt-get", "apt", "yum", "dnf",
+        "pacman", "zypper", "apk", "brew", "pip", "pip3", "python", "python3",
+        "conda", "mamba", "micromamba", "uv", "poetry", "curl", "wget", "tar",
+        "unzip", "git", "export", "source", "chmod", "chown", "sudo", "cat",
+        "grep", "sed", "awk", "tail", "head", "tee", "set", "env", "sh", "bash",
+        "true", "false", "exit", "return", "if", "then", "else", "fi", "while",
+        "do", "done", "for", "in", "case", "esac", "test", "local", "declare",
+        "read", "sleep", "wait", "xargs", "find", "ls", "ln", "[", "[[", "{", "}"
+    }
+
+    class SecurityVisitor(bashlex.ast.nodevisitor):
+        def __init__(self):
+            self.risk_score = 0
+
+        def visitcommand(self, n, parts):
+            cmd_word = ""
+            if parts and hasattr(parts[0], "word"):
+                cmd_word = parts[0].word.replace('"', '').replace("'", '').replace("\\", "")
+
+            # Check for eval, exec, base64
+            if cmd_word in ("eval", "exec"):
+                self.risk_score += 2
+            elif cmd_word == "base64":
+                for part in parts[1:]:
+                    if hasattr(part, "word") and "decode" in part.word:
+                        self.risk_score += 2
+            elif cmd_word == "rm":
+                for part in parts[1:]:
+                    if hasattr(part, "word"):
+                        arg_word = part.word.replace('"', '').replace("'", '').replace("\\", "")
+                        if "r" in arg_word and "f" in arg_word and arg_word.startswith("-"):
+                            self.risk_score += 5  # High risk for rm -rf
+            elif cmd_word and cmd_word not in safe_commands and not cmd_word.startswith("-") and "=" not in cmd_word:
+                self.risk_score += 1
+
+        def visitcommandsubstitution(self, n, command):
+            self.risk_score += 1
+
+        def visitparameter(self, n, value):
+            self.risk_score += 1
+
+    visitor = SecurityVisitor()
+    for n in nodes:
+        visitor.visit(n)
+
+    if visitor.risk_score >= 5:
+        return "High"
+    elif visitor.risk_score >= 2:
+        return "Medium"
+    else:
+        return "Low"
+
 
 async def _validate_shellcheck(content: str, template_name: str = "") -> None:
     """Run shellcheck static analysis on the rendered content (async, non-blocking)."""
@@ -386,7 +440,7 @@ async def validate_rendered_output(
     content: str,
     template_name: str = "",
     llm_client: LLMProvider | None = None,
-) -> str:
+) -> tuple[str, Literal["Low", "Medium", "High"]]:
     """
     Scan rendered template output for forbidden patterns using Regex, AST validation,
     Shellcheck, and an optional AI engine.
@@ -394,6 +448,8 @@ async def validate_rendered_output(
     Raises:
         SafetyViolationError: If any checks fail or the AI flags a malicious script.
     """
+    security_score: Literal["Low", "Medium", "High"] = "Low"
+
     # 1. Regex Checks (CPU-bound but fast — stays synchronous)
     for compiled_pattern, description in _COMPILED:
         if compiled_pattern.search(content):
@@ -419,9 +475,12 @@ async def validate_rendered_output(
 
     if is_bash and content.strip():
         # _validate_bash_ast is CPU-bound (bashlex parsing) — offload to thread pool
-        # to avoid blocking the event loop on large scripts
-        loop = asyncio.get_running_loop()
-        await loop.run_in_executor(None, _validate_bash_ast, content, template_name)
+        # to avoid blocking the event loop on large scripts, or execute synchronously if no loop exists
+        try:
+            loop = asyncio.get_running_loop()
+            security_score = await loop.run_in_executor(None, _validate_bash_ast, content, template_name)
+        except RuntimeError:
+            security_score = _validate_bash_ast(content, template_name)
         await _validate_shellcheck(content, template_name)
 
     # 3. AI Safety Checks
@@ -465,4 +524,4 @@ async def validate_rendered_output(
                 f"AI Safety check failed due to provider error — degrading to regex-only: {str(e)}"
             )
 
-    return content
+    return content, security_score

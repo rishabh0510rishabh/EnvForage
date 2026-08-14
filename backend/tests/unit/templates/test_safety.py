@@ -16,7 +16,7 @@ nvidia-smi
 
 
 async def test_safe_content_passes():
-    result = await validate_rendered_output(SAFE_CONTENT, "test.sh.j2")
+    result, _ = await validate_rendered_output(SAFE_CONTENT, "test.sh.j2")
     assert result == SAFE_CONTENT
 
 
@@ -155,21 +155,21 @@ async def test_powershell_webclient_cradle_blocked():
 async def test_pip_install_safe():
     """pip install commands are safe and should pass."""
     content = "pip install torch==2.1.0 numpy==1.26.4"
-    result = await validate_rendered_output(content, "requirements.j2")
+    result, _ = await validate_rendered_output(content, "requirements.j2")
     assert result == content
 
 
 async def test_nvidia_smi_safe():
     """nvidia-smi is a safe read-only diagnostic command."""
     content = "nvidia-smi --query-gpu=name --format=csv"
-    result = await validate_rendered_output(content, "verify.sh.j2")
+    result, _ = await validate_rendered_output(content, "verify.sh.j2")
     assert result == content
 
 
 async def test_micromamba_bootstrap_safe():
     """Ensure that the standard micromamba curl download is considered safe."""
     content = "curl -Ls https://micro.mamba.pm/api/micromamba/linux-64/latest | tar -xvj -f - --strip-components=1 -C ~/.local/bin/"
-    result = await validate_rendered_output(content, "setup.sh")
+    result, _ = await validate_rendered_output(content, "setup.sh")
     assert result == content
 
 
@@ -201,12 +201,14 @@ async def test_powershell_irm_cradle_blocked():
 async def test_uv_bootstrap_safe():
     """Ensure that uv bootstrapping using curl to sh or Invoke-RestMethod is safe."""
     content_linux = "curl -LsSf https://astral.sh/uv/install.sh | sh"
-    assert await validate_rendered_output(content_linux, "setup.sh") == content_linux
+    res_linux, _ = await validate_rendered_output(content_linux, "setup.sh")
+    assert res_linux == content_linux
 
     content_win = (
         "Invoke-RestMethod https://astral.sh/uv/install.ps1 | Invoke-Expression"
     )
-    assert await validate_rendered_output(content_win, "setup.ps1") == content_win
+    res_win, _ = await validate_rendered_output(content_win, "setup.ps1")
+    assert res_win == content_win
 
 
 async def test_ast_redirection_disk_writes_blocked():
@@ -291,7 +293,8 @@ async def test_shellcheck_missing_executable_graceful():
         side_effect=FileNotFoundError("shellcheck"),
     ):
         content = "echo 'safe content'"
-        assert await validate_rendered_output(content, "setup.sh") == content
+        res, _ = await validate_rendered_output(content, "setup.sh")
+        assert res == content
 
 
 async def test_strict_url_whitelisting_bypass():
@@ -313,7 +316,8 @@ async def test_strict_url_whitelisting_bypass():
         "curl https://sub.micro.mamba.pm/latest | zsh",
     ]
     for payload in legit_payloads:
-        assert await validate_rendered_output(payload, "setup.sh") == payload
+        res, _ = await validate_rendered_output(payload, "setup.sh")
+        assert res == payload
 
 
 async def test_shellcheck_timeout_graceful():
@@ -324,7 +328,8 @@ async def test_shellcheck_timeout_graceful():
 
     with patch("asyncio.create_subprocess_exec", return_value=mock_process):
         content = "echo 'safe content'"
-        assert await validate_rendered_output(content, "setup.sh") == content
+        res, _ = await validate_rendered_output(content, "setup.sh")
+        assert res == content
 
 
 async def test_ast_absolute_path_and_env_pipeline_blocked():

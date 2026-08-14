@@ -216,6 +216,7 @@ async def generate_scripts(
                 filename=rr.filename,
                 content=rr.content,
                 size_bytes=rr.size_bytes,
+                security_score=rr.security_score,
             )
         )
 
@@ -242,6 +243,7 @@ async def generate_scripts(
                 filename=rr.filename,
                 content=rr.content,
                 size_bytes=rr.size_bytes,
+                security_score=rr.security_score,
             )
             for rr in render_results
         ],

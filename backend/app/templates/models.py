@@ -2,7 +2,7 @@
 
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
-from typing import Any
+from typing import Any, Literal
 
 from app.compatibility.models import ResolvedEnvironment
 
@@ -64,6 +64,7 @@ class RenderResult:
 
     filename: str
     content: str
+    security_score: Literal["Low", "Medium", "High"] = "Low"
     size_bytes: int = field(init=False)
 
     def __post_init__(self) -> None:

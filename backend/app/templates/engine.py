@@ -147,11 +147,11 @@ class TemplateRenderer:
         env = _get_jinja_env(settings.custom_template_dir)
         template = env.get_template(template_path)
         rendered = template.render(**context.to_dict())
-        safe_content = await validate_rendered_output(
+        safe_content, security_score = await validate_rendered_output(
             rendered, template_name=template_path
         )
 
-        return RenderResult(filename=output_filename, content=safe_content)
+        return RenderResult(filename=output_filename, content=safe_content, security_score=security_score)
 
     async def render_all(
         self,
