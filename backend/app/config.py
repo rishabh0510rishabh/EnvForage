@@ -141,6 +141,24 @@ class Settings(BaseSettings):
     def allowed_origins_list(self) -> list[str]:
         return [o.strip() for o in self.allowed_origins.split(",")]
 
+    # ── SECURITY HEADERS ──────────────────────────────────────
+    security_csp_directives: str = (
+        "default-src 'self'; "
+        "script-src 'self'; "
+        "style-src 'self' 'unsafe-inline'; "
+        "img-src 'self' data: blob:; "
+        "font-src 'self' data:; "
+        "connect-src 'self'; "
+        "frame-ancestors 'none'; "
+        "base-uri 'self'; "
+        "form-action 'self'; "
+        "report-uri /api/v1/csp-report"
+    )
+    security_x_frame_options: str = "DENY"
+    security_x_content_type_options: str = "nosniff"
+    security_referrer_policy: str = "strict-origin-when-cross-origin"
+    security_hsts_header: str = "max-age=31536000; includeSubDomains; preload"
+
     # ── S3 / Blob Storage ─────────────────────────────────────
     # Leave blank to disable S3 integration (uploads stay local).
     aws_access_key_id: str = ""

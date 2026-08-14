@@ -12,6 +12,7 @@ import structlog
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.httpsredirect import HTTPSRedirectMiddleware
 from fastapi.responses import JSONResponse
 from sqlalchemy import text
 
@@ -124,14 +125,26 @@ def create_app() -> FastAPI:
     # This keeps API error formatting and logging behavior consistent
     # across the application through a single implementation.
     register_exception_handlers(app)
-    # ── CORS ─────────────────────────────────────────────────
+    # ── CORS & Security ──────────────────────────────────────
+    if _is_prod:
+        # Enforce no wildcard CORS in production
+        if "*" in settings.allowed_origins_list:
+            raise ValueError(
+                "Wildcard '*' is not allowed in ALLOWED_ORIGINS in production environment for security hardening."
+            )
+        # Trust forwarded headers from reverse proxies (like Caddy) to prevent redirect loops
+        from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
+        app.add_middleware(ProxyHeadersMiddleware, trusted_hosts="*")
+        # Enforce HTTPS redirects in production
+        app.add_middleware(HTTPSRedirectMiddleware)
 
     app.add_middleware(
         CORSMiddleware,
         allow_origins=settings.allowed_origins_list,
         allow_credentials=False,
-        allow_methods=["*"],
-        allow_headers=["*"],
+        allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+        allow_headers=["Authorization", "Content-Type", "Accept", "X-Requested-With", "X-API-Version"],
+        max_age=86400,
     )
     app.add_middleware(PayloadSizeLimitMiddleware)
     app.add_middleware(SecurityHeadersMiddleware)
