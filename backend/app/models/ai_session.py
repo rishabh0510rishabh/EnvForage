@@ -17,17 +17,17 @@ class AISession(Base):
         UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
     )
     diagnostic_id: Mapped[uuid.UUID | None] = mapped_column(
-        UUID(as_uuid=True), ForeignKey("diagnostic_reports.id", ondelete="SET NULL")
+        UUID(as_uuid=True), ForeignKey("diagnostic_reports.id", ondelete="SET NULL"), index=True
     )
     verification_id: Mapped[uuid.UUID | None] = mapped_column(
-        UUID(as_uuid=True), ForeignKey("verification_results.id", ondelete="SET NULL")
+        UUID(as_uuid=True), ForeignKey("verification_results.id", ondelete="SET NULL"), index=True
     )
     profile_id: Mapped[uuid.UUID | None] = mapped_column(
-        UUID(as_uuid=True), ForeignKey("environment_profiles.id", ondelete="SET NULL")
+        UUID(as_uuid=True), ForeignKey("environment_profiles.id", ondelete="SET NULL"), index=True
     )
     provider: Mapped[str] = mapped_column(String(32), nullable=False)
     model: Mapped[str] = mapped_column(String(64), nullable=False)
-    created_at: Mapped[datetime] = mapped_column(nullable=False)
+    created_at: Mapped[datetime] = mapped_column(nullable=False, index=True)
 
     # Relationships
     suggestions: Mapped[list["AISuggestion"]] = relationship(
@@ -48,6 +48,7 @@ class AISuggestion(Base):
         UUID(as_uuid=True),
         ForeignKey("ai_sessions.id", ondelete="CASCADE"),
         nullable=False,
+        index=True,
     )
     step_number: Mapped[int] = mapped_column(Integer, nullable=False)
     title: Mapped[str] = mapped_column(String(256), nullable=False)
@@ -55,7 +56,7 @@ class AISuggestion(Base):
     severity: Mapped[str] = mapped_column(String(16), nullable=False)
     safe_commands: Mapped[list[str] | None] = mapped_column(ARRAY(String))
     template_id: Mapped[str | None] = mapped_column(String(128))
-    created_at: Mapped[datetime] = mapped_column(nullable=False)
+    created_at: Mapped[datetime] = mapped_column(nullable=False, index=True)
 
     # Relationships
     session: Mapped["AISession"] = relationship(
@@ -70,7 +71,7 @@ class AIAuditLog(Base):
         UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
     )
     session_id: Mapped[uuid.UUID | None] = mapped_column(
-        UUID(as_uuid=True), ForeignKey("ai_sessions.id", ondelete="SET NULL")
+        UUID(as_uuid=True), ForeignKey("ai_sessions.id", ondelete="SET NULL"), index=True
     )
     input_hash: Mapped[str] = mapped_column(String(64), nullable=False)
     safety_passed: Mapped[bool] = mapped_column(Boolean, nullable=False)
@@ -78,7 +79,7 @@ class AIAuditLog(Base):
     provider: Mapped[str | None] = mapped_column(String(32))
     tokens_used: Mapped[int | None] = mapped_column(Integer)
     latency_ms: Mapped[int | None] = mapped_column(Integer)
-    created_at: Mapped[datetime] = mapped_column(nullable=False)
+    created_at: Mapped[datetime] = mapped_column(nullable=False, index=True)
 
     # Relationships
     session: Mapped["AISession | None"] = relationship(

@@ -42,17 +42,18 @@ class VerificationResult(Base):
         UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
     )
     report_id: Mapped[uuid.UUID | None] = mapped_column(
-        UUID(as_uuid=True), ForeignKey("diagnostic_reports.id", ondelete="SET NULL")
+        UUID(as_uuid=True), ForeignKey("diagnostic_reports.id", ondelete="SET NULL"), index=True
     )
     profile_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True),
         ForeignKey("environment_profiles.id", ondelete="CASCADE"),
         nullable=False,
+        index=True,
     )
     overall_status: Mapped[str] = mapped_column(String(16), nullable=False)
 
     created_at: Mapped[datetime] = mapped_column(
-        nullable=False, server_default=func.now()
+        nullable=False, server_default=func.now(), index=True
     )
 
     # Relationships
@@ -74,13 +75,14 @@ class VerificationCheck(Base):
         UUID(as_uuid=True),
         ForeignKey("verification_results.id", ondelete="CASCADE"),
         nullable=False,
+        index=True,
     )
     check_name: Mapped[str] = mapped_column(String(128), nullable=False)
     passed: Mapped[bool] = mapped_column(Boolean, nullable=False)
     detail: Mapped[str | None] = mapped_column(Text)
 
     created_at: Mapped[datetime] = mapped_column(
-        nullable=False, server_default=func.now()
+        nullable=False, server_default=func.now(), index=True
     )
 
     # Relationships

@@ -71,6 +71,7 @@ class ProfilePackage(Base):
         UUID(as_uuid=True),
         ForeignKey("environment_profiles.id", ondelete="CASCADE"),
         nullable=False,
+        index=True,
     )
     package_name: Mapped[str] = mapped_column(String(128), nullable=False)
     version_spec: Mapped[str] = mapped_column(String(64), nullable=False)
@@ -78,7 +79,7 @@ class ProfilePackage(Base):
     is_optional: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     install_order: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
     created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now(), nullable=False
+        DateTime(timezone=True), server_default=func.now(), nullable=False, index=True
     )
     deleted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 

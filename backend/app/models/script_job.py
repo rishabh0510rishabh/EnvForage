@@ -44,6 +44,7 @@ class ScriptGenerationJob(Base):
         UUID(as_uuid=True),
         ForeignKey("environment_profiles.id", ondelete="CASCADE"),
         nullable=False,
+        index=True,
     )
     target_os: Mapped[str] = mapped_column(String(16), nullable=False)
     python_version: Mapped[str] = mapped_column(String(8), nullable=False)
@@ -54,9 +55,9 @@ class ScriptGenerationJob(Base):
     resolved_env: Mapped[dict[str, Any] | None] = mapped_column(JSONB)
 
     created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now(), nullable=False
+        DateTime(timezone=True), server_default=func.now(), nullable=False, index=True
     )
-    completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), index=True)
 
     # Relationships
     profile: Mapped["EnvironmentProfile"] = relationship(  # type: ignore[name-defined]  # noqa: F821
@@ -77,16 +78,17 @@ class GeneratedScript(Base):
         UUID(as_uuid=True),
         ForeignKey("script_generation_jobs.id", ondelete="CASCADE"),
         nullable=False,
+        index=True,
     )
     filename: Mapped[str] = mapped_column(String(128), nullable=False)
     content: Mapped[str] = mapped_column(
     CompressedText,
     nullable=False,
-)
+    )
     size_bytes: Mapped[int | None] = mapped_column()
 
     created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now(), nullable=False
+        DateTime(timezone=True), server_default=func.now(), nullable=False, index=True
     )
 
     # Relationships
