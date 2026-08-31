@@ -49,6 +49,8 @@ class TemplateContext:
                 }
                 for p in self.resolved.packages
             ],
+            "has_cuda_packages": any(bool(p.cuda_variant) for p in self.resolved.packages),
+            "has_standard_packages": any(not p.cuda_variant for p in self.resolved.packages),
             "warnings": self.warnings,
             "generated_at": self.generated_at.strftime("%Y-%m-%d %H:%M UTC"),
             "envforage_version": self.envforage_version,

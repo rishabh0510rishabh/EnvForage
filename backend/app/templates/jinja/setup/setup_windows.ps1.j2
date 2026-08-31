@@ -57,27 +57,40 @@ Write-Info "Starting pre-flight checks..."
 
 $RequiredPython = "{{ python_version }}"
 $PythonBin = $null
+$PythonArgs = @()
 
-foreach ($py in @("py -{{ python_version }}", "python{{ python_version }}", "python", "python3")) {
-    try {
-        $ver = & $py --version 2>$null
-        if ($ver -match "Python $($RequiredPython)") {
-            $PythonBin = $py
-            break
-        }
-    } catch { }
+# First check Windows Python Launcher with specific version argument
+try {
+    $ver = & py "-$RequiredPython" --version 2>$null
+    if ($ver -match "Python $($RequiredPython)") {
+        $PythonBin = "py"
+        $PythonArgs = @("-$RequiredPython")
+    }
+} catch { }
+
+if (-not $PythonBin) {
+    foreach ($cmd in @("python{{ python_version }}", "python", "python3")) {
+        try {
+            $ver = & $cmd --version 2>$null
+            if ($ver -match "Python $($RequiredPython)") {
+                $PythonBin = $cmd
+                $PythonArgs = @()
+                break
+            }
+        } catch { }
+    }
 }
 
 if (-not $PythonBin) {
     Write-Err "Python {{ python_version }} not found. Download from: https://www.python.org/downloads/"
 }
-Write-Info "Python found: $(& $PythonBin --version)"
+Write-Info "Python found: $(& $PythonBin @PythonArgs --version)"
 
 # ── Virtual environment ───────────────────────────────────────────────────────
 $VenvDir = ".venv"
 if (-not (Test-Path $VenvDir)) {
     Write-Info "Creating virtual environment in $VenvDir..."
-    & $PythonBin -m venv $VenvDir
+    & $PythonBin @PythonArgs -m venv $VenvDir
 }
 
 # Activate

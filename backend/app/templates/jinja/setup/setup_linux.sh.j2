@@ -113,7 +113,7 @@ fi
 # ── Package installation ──────────────────────────────────────────────────────
 info "Installing packages..."
 
-{% if cuda_version %}
+{% if cuda_version and has_cuda_packages %}
 # PyTorch CUDA index (required for CUDA-specific builds)
 TORCH_INDEX="https://download.pytorch.org/whl/cu{{ cuda_version | replace('.', '') }}"
 
@@ -128,7 +128,10 @@ ${RUN_CMD}pip install \
 {% endif %}
 {% endfor %}
     --index-url "$TORCH_INDEX"
+{% endif %}
 
+{% if cuda_version %}
+{% if has_standard_packages %}
 # Install remaining packages from PyPI
 {% if use_uv %}
 ${RUN_CMD}uv pip install \
@@ -141,6 +144,7 @@ ${RUN_CMD}pip install \
 {% endif %}
 {% endfor %}
     --quiet
+{% endif %}
 {% else %}
 # CPU-only installation
 {% if use_uv %}
